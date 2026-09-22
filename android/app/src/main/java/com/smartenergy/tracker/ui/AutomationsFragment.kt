@@ -4,22 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.smartenergy.tracker.R
 import com.smartenergy.tracker.databinding.FragmentAutomationsBinding
-import com.smartenergy.tracker.network.ApiClient
 import com.smartenergy.tracker.network.EnergyRepository
-import kotlinx.coroutines.Dispatchers
+import com.smartenergy.tracker.network.PreferencesManager
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.Locale
 
 class AutomationsFragment : Fragment() {
     private var _binding: FragmentAutomationsBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var repo: EnergyRepository
+    private var activeSceneId: String = "eco_saver"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,52 +34,90 @@ class AutomationsFragment : Fragment() {
         repo = EnergyRepository.getInstance(requireContext())
 
         setupListeners()
-        loadLoadShifting()
+        updateScenePills()
+        displayServerConfig()
+    }
+
+    private fun displayServerConfig() {
+        val prefs = PreferencesManager.getInstance(requireContext())
+        binding.tvSettingServerUrl.text = "Target: ${prefs.baseUrl}"
     }
 
     private fun setupListeners() {
         binding.swipeRefreshAutomations.setOnRefreshListener {
-            loadLoadShifting()
+            displayServerConfig()
             binding.swipeRefreshAutomations.isRefreshing = false
         }
 
         binding.cardSceneNight.setOnClickListener {
-            applyScene("night_mode", "🌙 Night Mode active (non-essentials turned off)")
+            activeSceneId = "night_mode"
+            updateScenePills()
+            viewLifecycleOwner.lifecycleScope.launch {
+                repo.applyScene("night_mode")
+            }
         }
 
         binding.cardSceneEco.setOnClickListener {
-            applyScene("eco_saver", "🌿 Eco Shift applied: Dispatched to lowest tariff tier")
+            activeSceneId = "eco_saver"
+            updateScenePills()
+            viewLifecycleOwner.lifecycleScope.launch {
+                repo.applyScene("eco_saver")
+            }
         }
 
         binding.cardSceneWork.setOnClickListener {
-            applyScene("work_mode", "💼 Work Mode active: IT & Office circuits prioritized")
+            activeSceneId = "work_mode"
+            updateScenePills()
+            viewLifecycleOwner.lifecycleScope.launch {
+                repo.applyScene("work_mode")
+            }
         }
 
         binding.cardSceneViva.setOnClickListener {
-            applyScene("viva_demo", "⚡ Full Load Demo: All 6 appliances running for evaluation")
+            activeSceneId = "viva_demo"
+            updateScenePills()
+            viewLifecycleOwner.lifecycleScope.launch {
+                repo.applyScene("viva_demo")
+            }
+        }
+
+        binding.btnApplyShiftHeater.setOnClickListener {
+            repo.applyShiftRecommendation("app_heater", "05:00 AM")
+        }
+
+        binding.btnApplyShiftEv.setOnClickListener {
+            repo.applyShiftRecommendation("app_ev", "23:30 PM")
+        }
+
+        binding.btnOpenServerConfig.setOnClickListener {
+            ServerConfigDialog().show(parentFragmentManager, "ServerConfigDialog")
+        }
+
+        binding.btnOpenSimulationLab.setOnClickListener {
+            SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
         }
     }
 
-    private fun applyScene(sceneId: String, successMsg: String) {
-        viewLifecycleOwner.lifecycleScope.launch {
-            val ok = repo.applyScene(sceneId)
-            Toast.makeText(context, if (ok) successMsg else "Scene command dispatched", Toast.LENGTH_SHORT).show()
-        }
+    private fun updateScenePills() {
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.emerald_500)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+
+        binding.pillSceneNight.text = if (activeSceneId == "night_mode") "ACTIVE" else "INACTIVE"
+        binding.pillSceneNight.setTextColor(if (activeSceneId == "night_mode") activeColor else inactiveColor)
+
+        binding.pillSceneEco.text = if (activeSceneId == "eco_saver") "ACTIVE" else "INACTIVE"
+        binding.pillSceneEco.setTextColor(if (activeSceneId == "eco_saver") activeColor else inactiveColor)
+
+        binding.pillSceneWork.text = if (activeSceneId == "work_mode") "ACTIVE" else "INACTIVE"
+        binding.pillSceneWork.setTextColor(if (activeSceneId == "work_mode") activeColor else inactiveColor)
+
+        binding.pillSceneViva.text = if (activeSceneId == "viva_demo") "ACTIVE" else "INACTIVE"
+        binding.pillSceneViva.setTextColor(if (activeSceneId == "viva_demo") activeColor else inactiveColor)
     }
 
-    private fun loadLoadShifting() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            try {
-                val api = ApiClient.getService(requireContext())
-                val resp = withContext(Dispatchers.IO) { api.getLoadShifting() }
-                if (resp.isSuccessful && resp.body()?.data != null) {
-                    val shifting = resp.body()!!.data!!
-                    shifting.potentialSavings?.let { savings ->
-                        binding.tvShiftingSavingsBadge.text = String.format(Locale.US, "Save ₹%.2f/day", savings)
-                    }
-                }
-            } catch (_: Exception) {}
-        }
+    override fun onResume() {
+        super.onResume()
+        displayServerConfig()
     }
 
     override fun onDestroyView() {

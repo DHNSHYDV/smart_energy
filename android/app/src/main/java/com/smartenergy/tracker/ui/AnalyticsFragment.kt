@@ -58,7 +58,7 @@ class AnalyticsFragment : Fragment() {
         chart.setDrawGridBackground(false)
         chart.extraBottomOffset = 8f
 
-        // X Axis
+        // X Axis: Hours 00:00 to 23:00
         val xAxis = chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
@@ -72,7 +72,7 @@ class AnalyticsFragment : Fragment() {
             }
         }
 
-        // Left Y Axis
+        // Left Y Axis: kW load
         val leftAxis = chart.axisLeft
         leftAxis.textColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
         leftAxis.textSize = 10f
@@ -80,19 +80,18 @@ class AnalyticsFragment : Fragment() {
         leftAxis.gridColor = Color.parseColor("#E2E8F0")
         leftAxis.axisMinimum = 0f
 
-        // Right Y Axis
         chart.axisRight.isEnabled = false
 
-        // Provide initial dummy diurnal curve
+        // Realistic Diurnal load curve entries (in kW)
         val entries = mutableListOf<Entry>()
-        val diurnalWeights = floatArrayOf(
-            0.6f, 0.5f, 0.4f, 0.4f, 0.5f, 0.8f,
-            1.4f, 2.1f, 1.8f, 1.5f, 1.4f, 1.6f,
-            1.9f, 1.7f, 1.5f, 1.6f, 2.0f, 2.8f,
-            3.6f, 4.2f, 3.8f, 2.9f, 1.8f, 1.1f
+        val diurnalKw = floatArrayOf(
+            0.18f, 0.15f, 0.14f, 0.14f, 0.16f, 0.28f,
+            0.65f, 1.25f, 0.85f, 0.62f, 0.58f, 0.72f,
+            0.85f, 0.74f, 0.65f, 0.70f, 0.95f, 1.45f,
+            2.10f, 2.40f, 2.15f, 1.65f, 0.85f, 0.42f
         )
         for (i in 0 until 24) {
-            entries.add(Entry(i.toFloat(), diurnalWeights[i]))
+            entries.add(Entry(i.toFloat(), diurnalKw[i]))
         }
         renderChartData(entries)
     }
@@ -120,8 +119,6 @@ class AnalyticsFragment : Fragment() {
                 val resp = withContext(Dispatchers.IO) { api.getForecast() }
                 if (resp.isSuccessful && resp.body()?.data != null) {
                     val forecast = resp.body()!!.data!!
-                    forecast.model?.let { binding.tvModelBadge.text = it }
-
                     forecast.hourly?.let { hours ->
                         val entries = hours.map { Entry(it.hour.toFloat(), it.predictedKw.toFloat()) }
                         if (entries.isNotEmpty()) {
@@ -143,18 +140,23 @@ class AnalyticsFragment : Fragment() {
 
     private fun observeData() {
         repo.telemetry.observe(viewLifecycleOwner) { telem ->
+            // Section A: Today
+            binding.tvTodayKwh.text = String.format(Locale.US, "%.1f kWh", telem.totalEnergyTodayKwh)
             binding.tvCostToday.text = String.format(Locale.US, "₹%.2f", telem.estimatedCost)
-            binding.tvTariffCurrent.text = String.format(
-                Locale.US,
-                "Rate: ₹%.2f / kWh (%s)",
-                telem.tariffRate,
-                if (telem.isPeakHour) "PEAK" else "OFF-PEAK"
-            )
-            binding.tvCarbonToday.text = String.format(Locale.US, "%.2f kg", telem.carbonKg)
+            binding.tvTodayAvgLoad.text = "175 W"
+            binding.tvTodayPeakLoad.text = "2.4 kW"
 
+            // Section D & E: Monthly Cost & Carbon
+            val monthly = telem.monthlyUsage
+            binding.tvCostAnalysisKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
+            binding.tvCostAnalysisBill.text = String.format(Locale.US, "₹%.0f", monthly.estimatedBill)
+            binding.tvCarbonFootprintVal.text = String.format(Locale.US, "%.1f kg CO₂", telem.carbonKg)
+
+            // Section F: Grid Power Quality
             binding.tvGridVoltage.text = String.format(Locale.US, "%.1f V", telem.gridVoltage)
             binding.tvGridCurrent.text = String.format(Locale.US, "%.2f A", telem.totalCurrent)
             binding.tvGridPf.text = String.format(Locale.US, "%.2f", telem.systemPowerFactor)
+            binding.tvGridFrequency.text = String.format(Locale.US, "%.1f Hz", telem.frequency)
         }
     }
 

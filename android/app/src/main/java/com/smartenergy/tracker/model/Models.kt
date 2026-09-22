@@ -9,19 +9,31 @@ data class ApiResponse<T>(
     @SerializedName("count") val count: Int? = null
 )
 
+data class MonthlyUsage(
+    @SerializedName("kwh") var kwh: Double = 124.6,
+    @SerializedName("estimatedBill") var estimatedBill: Double = 996.0,
+    @SerializedName("dailyAverageKwh") var dailyAverageKwh: Double = 4.15,
+    @SerializedName("comparisonPct") var comparisonPct: Double = -8.4,
+    @SerializedName("projectedBill") var projectedBill: Double = 1240.0
+)
+
 data class Telemetry(
     @SerializedName("deviceId") val deviceId: String? = "ESP32-SIM-001",
     @SerializedName("timestamp") val timestamp: String? = null,
-    @SerializedName("gridVoltage") val gridVoltage: Double = 230.0,
-    @SerializedName("totalActivePower") val totalActivePower: Double = 0.0,
-    @SerializedName("totalCurrent") val totalCurrent: Double = 0.0,
-    @SerializedName("systemPowerFactor") val systemPowerFactor: Double = 0.98,
-    @SerializedName("totalEnergyTodayKwh") val totalEnergyTodayKwh: Double = 0.0,
-    @SerializedName("estimatedCost") val estimatedCost: Double = 0.0,
-    @SerializedName("carbonKg") val carbonKg: Double = 0.0,
-    @SerializedName("isPeakHour") val isPeakHour: Boolean = false,
-    @SerializedName("tariffRate") val tariffRate: Double = 7.50,
-    @SerializedName("speedMultiplier") val speedMultiplier: Double = 1.0,
+    @SerializedName("gridVoltage") var gridVoltage: Double = 229.4,
+    @SerializedName("totalActivePower") var totalActivePower: Double = 211.0,
+    @SerializedName("totalCurrent") var totalCurrent: Double = 0.98,
+    @SerializedName("systemPowerFactor") var systemPowerFactor: Double = 0.94,
+    @SerializedName("frequency") var frequency: Double = 50.0,
+    @SerializedName("totalEnergyTodayKwh") var totalEnergyTodayKwh: Double = 4.20,
+    @SerializedName("estimatedCost") var estimatedCost: Double = 33.60,
+    @SerializedName("carbonKg") var carbonKg: Double = 102.17,
+    @SerializedName("isPeakHour") var isPeakHour: Boolean = false,
+    @SerializedName("tariffRate") var tariffRate: Double = 8.00,
+    @SerializedName("speedMultiplier") var speedMultiplier: Double = 1.0,
+    @SerializedName("activeDevicesCount") var activeDevicesCount: Int = 3,
+    @SerializedName("totalDevicesCount") var totalDevicesCount: Int = 8,
+    @SerializedName("monthlyUsage") var monthlyUsage: MonthlyUsage = MonthlyUsage(),
     @SerializedName("appliances") val appliances: List<Appliance>? = null
 )
 
@@ -38,21 +50,21 @@ data class Appliance(
     @SerializedName("isAnomaly") var isAnomaly: Boolean = false,
     @SerializedName("category") val category: String? = "General",
     @SerializedName("icon") val icon: String? = null,
-    @SerializedName("runtimeSeconds") val runtimeSeconds: Long = 0,
-    @SerializedName("continuousOnSeconds") val continuousOnSeconds: Long = 0,
+    @SerializedName("runtimeSeconds") var runtimeSeconds: Long = 0,
+    @SerializedName("continuousOnSeconds") var continuousOnSeconds: Long = 0,
     @SerializedName("reading") var reading: SensorReading? = null
 )
 
 data class SensorReading(
     @SerializedName("sensorType") val sensorType: String? = "CT Clamp PZEM-004T",
-    @SerializedName("voltage") val voltage: Double = 230.0,
-    @SerializedName("current") val current: Double = 0.0,
-    @SerializedName("powerFactor") val powerFactor: Double = 0.95,
-    @SerializedName("activePower") val activePower: Double = 0.0,
-    @SerializedName("apparentPower") val apparentPower: Double = 0.0,
-    @SerializedName("reactivePower") val reactivePower: Double = 0.0,
-    @SerializedName("cumulativeEnergyKwh") val cumulativeEnergyKwh: Double = 0.0,
-    @SerializedName("status") val status: String? = "NORMAL"
+    @SerializedName("voltage") var voltage: Double = 229.4,
+    @SerializedName("current") var current: Double = 0.0,
+    @SerializedName("powerFactor") var powerFactor: Double = 0.95,
+    @SerializedName("activePower") var activePower: Double = 0.0,
+    @SerializedName("apparentPower") var apparentPower: Double = 0.0,
+    @SerializedName("reactivePower") var reactivePower: Double = 0.0,
+    @SerializedName("cumulativeEnergyKwh") var cumulativeEnergyKwh: Double = 0.0,
+    @SerializedName("status") var status: String? = "NORMAL"
 )
 
 data class AlertItem(
@@ -101,7 +113,7 @@ data class ForecastHour(
 data class LoadShiftingData(
     @SerializedName("currentPeakHour") val currentPeakHour: Boolean = false,
     @SerializedName("recommendations") val recommendations: List<ShiftRecommendation>? = null,
-    @SerializedName("potentialSavings") val potentialSavings: Double? = 0.0
+    @SerializedName("potentialSavings") val potentialSavings: Double? = 42.70
 )
 
 data class ShiftRecommendation(

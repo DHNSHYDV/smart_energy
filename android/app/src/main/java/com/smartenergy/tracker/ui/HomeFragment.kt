@@ -62,7 +62,6 @@ class HomeFragment : Fragment() {
             binding.swipeRefresh.isRefreshing = false
         }
 
-        // Top bar buttons
         binding.btnMenu.setOnClickListener {
             ServerConfigDialog().show(parentFragmentManager, "ServerConfigDialog")
         }
@@ -73,41 +72,39 @@ class HomeFragment : Fragment() {
                 val latest = alerts.first()
                 Toast.makeText(context, "Alert: ${latest.message}", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(context, "No active electrical anomalies detected.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "All electrical parameters nominal. No anomalies.", Toast.LENGTH_SHORT).show()
             }
         }
 
         binding.btnProfile.setOnClickListener {
-            Toast.makeText(context, "GridSense Enterprise EMS • Dhanush (Admin)", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "GridSense EMS • Dhanush (Admin)", Toast.LENGTH_SHORT).show()
         }
 
-        // Front Card Sandbox Pill
         binding.btnVivaSandbox.setOnClickListener {
             SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
         }
 
-        // Quick Actions 1-4
+        // Navigate to full Devices screen
+        binding.btnViewAllDevices.setOnClickListener {
+            (activity as? MainActivity)?.navigateToTab(R.id.nav_devices)
+        }
+
+        // 4 Macro Actions
         binding.actionNightMode.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val ok = repo.applyScene("night_mode")
-                val msg = if (ok) "🌙 Night Mode activated (non-essential loads shed)" else "Scene executed"
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                repo.applyScene("night_mode")
             }
         }
 
         binding.actionEcoShift.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val ok = repo.applyScene("eco_saver")
-                val msg = if (ok) "🌿 Eco Shift applied: High loads shifted to off-peak tariff" else "Eco shift applied"
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                repo.applyScene("eco_saver")
             }
         }
 
         binding.actionWorkMode.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                val ok = repo.applyScene("work_mode")
-                val msg = if (ok) "💼 Work Mode activated (IT & Office circuits prioritized)" else "Work mode set"
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                repo.applyScene("work_mode")
             }
         }
 
@@ -122,30 +119,55 @@ class HomeFragment : Fragment() {
                 binding.tvOnlineBadge.text = "● ONLINE 50.0Hz"
                 binding.tvOnlineBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.emerald_400))
             } else {
-                binding.tvOnlineBadge.text = "○ CONNECTING..."
-                binding.tvOnlineBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.amber_500))
+                binding.tvOnlineBadge.text = "● SIMULATION 50.0Hz"
+                binding.tvOnlineBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.emerald_400))
             }
         }
 
         repo.telemetry.observe(viewLifecycleOwner) { telem ->
+            // Current Power (W)
             binding.tvTotalPowerValue.text = String.format(Locale.US, "%,.0f", telem.totalActivePower)
             binding.tvCardBottomMetrics.text = String.format(
                 Locale.US,
-                "₹%.2f / day · PF %.2f · %.1fV",
-                telem.estimatedCost,
+                "%.1f V · %.2f PF · %.1f Hz",
+                telem.gridVoltage,
                 telem.systemPowerFactor,
-                telem.gridVoltage
+                telem.frequency
             )
 
-            telem.deviceId?.let { id ->
-                binding.tvBackGatewayChip.text = "● $id"
+            // Monthly billing inside card
+            val monthly = telem.monthlyUsage
+            binding.tvCardBillingSummary.text = String.format(
+                Locale.US,
+                "This Month: %.1f kWh · ₹%.0f est.",
+                monthly.kwh,
+                monthly.estimatedBill
+            )
+
+            // Monthly Energy Card
+            binding.tvMonthlyKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
+            binding.tvMonthlyBillEst.text = String.format(Locale.US, "Estimated Bill: ₹%.0f", monthly.estimatedBill)
+            binding.tvDailyAverageKwh.text = String.format(Locale.US, "%.2f kWh", monthly.dailyAverageKwh)
+            binding.tvMonthComparisonBadge.text = String.format(Locale.US, "↓ %.1f%% vs last mo", Math.abs(monthly.comparisonPct))
+
+            // Quick Status
+            binding.tvQuickTotalDevices.text = "${telem.totalDevicesCount}"
+            binding.tvQuickActiveDevices.text = "${telem.activeDevicesCount}"
+            binding.tvQuickCurrentLoad.text = String.format(Locale.US, "%,.0f W", telem.totalActivePower)
+
+            // Dynamic insight text
+            if (telem.totalActivePower > 2500) {
+                binding.tvEnergyInsightText.text = "High demand alert: Aggregate load is ${String.format(Locale.US, "%,.0f W", telem.totalActivePower)}. Running non-essential appliances during peak hours increases demand charges."
+            } else {
+                binding.tvEnergyInsightText.text = "Peak usage is expected between 18:00–22:00. Shifting your Water Heater & EV charging to off-peak hours could reduce your estimated monthly bill."
             }
         }
 
         repo.appliances.observe(viewLifecycleOwner) { list ->
-            circuitAdapter.submitList(list)
-            val activeCount = list.count { it.isOn }
-            binding.tvCircuitCountChip.text = "$activeCount Active"
+            // Only show top 2-3 active devices on Home to avoid duplication with Devices screen!
+            val activeDevices = list.filter { it.isOn }.take(3)
+            val displayList = if (activeDevices.isNotEmpty()) activeDevices else list.take(2)
+            circuitAdapter.submitList(displayList)
         }
 
         repo.alerts.observe(viewLifecycleOwner) { alerts ->

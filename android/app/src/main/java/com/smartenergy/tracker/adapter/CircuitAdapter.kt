@@ -36,22 +36,21 @@ class CircuitAdapter(
         fun bind(appliance: Appliance) {
             val ctx = itemView.context
             binding.tvCircuitName.text = appliance.name
-            binding.tvCircuitLocation.text = "${appliance.location ?: "General"} · ${appliance.category ?: "Zone"}"
+            binding.tvCircuitLocation.text = "${appliance.location ?: "General"}"
 
-            val reading = appliance.reading
             val activeWatts = if (appliance.isOn) {
-                reading?.activePower ?: appliance.ratedPower
+                appliance.reading?.activePower?.takeIf { it > 0 } ?: appliance.ratedPower
             } else 0.0
 
             val currentAmps = if (appliance.isOn) {
-                reading?.current ?: (activeWatts / 230.0)
+                appliance.reading?.current?.takeIf { it > 0 } ?: (activeWatts / (229.4 * appliance.powerFactor))
             } else 0.0
 
-            val pf = if (appliance.isOn) {
-                reading?.powerFactor ?: appliance.powerFactor
-            } else 1.0
+            val pf = if (appliance.isOn) appliance.powerFactor else 1.0
 
             if (appliance.isOn) {
+                binding.tvCircuitStatusBadge.text = "ONLINE"
+                binding.tvCircuitStatusBadge.setTextColor(ContextCompat.getColor(ctx, R.color.emerald_500))
                 binding.tvCircuitMetrics.text = String.format(
                     Locale.US,
                     "%,.0f W · %.2f A · PF %.2f",
@@ -61,23 +60,32 @@ class CircuitAdapter(
                 )
                 binding.tvCircuitMetrics.setTextColor(ContextCompat.getColor(ctx, R.color.card_purple_primary))
             } else {
-                binding.tvCircuitMetrics.text = "OFFLINE · 0.00 W"
+                binding.tvCircuitStatusBadge.text = "STANDBY"
+                binding.tvCircuitStatusBadge.setTextColor(ContextCompat.getColor(ctx, R.color.text_secondary))
+                binding.tvCircuitMetrics.text = "0 W · STANDBY"
                 binding.tvCircuitMetrics.setTextColor(ContextCompat.getColor(ctx, R.color.text_secondary))
             }
 
-            // Pick icon based on name/category
+            // Consistent Icon Mapping
             val nameLower = appliance.name.lowercase(Locale.US)
+            val iconType = appliance.icon?.lowercase(Locale.US) ?: ""
             when {
-                nameLower.contains("ac") || nameLower.contains("air") ->
+                iconType == "pc" || nameLower.contains("pc") || nameLower.contains("workstation") || nameLower.contains("computer") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_pc)
+                iconType == "fridge" || nameLower.contains("fridge") || nameLower.contains("refrigerator") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_fridge)
+                iconType == "bulb" || nameLower.contains("light") || nameLower.contains("lamp") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_bulb)
+                iconType == "tv" || nameLower.contains("tv") || nameLower.contains("oled") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_tv)
+                iconType == "ac" || nameLower.contains("ac") || nameLower.contains("air") ->
                     binding.ivCircuitIcon.setImageResource(R.drawable.ic_ac)
-                nameLower.contains("fridge") || nameLower.contains("refrigerator") ->
-                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_ac)
-                nameLower.contains("ev") || nameLower.contains("charger") || nameLower.contains("heater") || nameLower.contains("geyser") ->
-                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_bolt)
-                nameLower.contains("server") || nameLower.contains("work") || nameLower.contains("computer") ->
-                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_briefcase)
-                nameLower.contains("light") || nameLower.contains("lamp") ->
-                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_leaf)
+                iconType == "heater" || nameLower.contains("heater") || nameLower.contains("geyser") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_heater)
+                iconType == "ev" || nameLower.contains("ev") || nameLower.contains("charger") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_ev)
+                iconType == "microwave" || nameLower.contains("microwave") || nameLower.contains("oven") ->
+                    binding.ivCircuitIcon.setImageResource(R.drawable.ic_microwave)
                 else ->
                     binding.ivCircuitIcon.setImageResource(R.drawable.ic_bolt)
             }
@@ -85,7 +93,7 @@ class CircuitAdapter(
             // Anomaly indicator
             binding.indicatorAnomaly.visibility = if (appliance.isAnomaly) View.VISIBLE else View.GONE
 
-            // Avoid trigger on programmatic state binding
+            // Suppress callback during programmatic setChecked
             binding.switchCircuit.setOnCheckedChangeListener(null)
             binding.switchCircuit.isChecked = appliance.isOn
             binding.switchCircuit.setOnCheckedChangeListener { _, isChecked ->

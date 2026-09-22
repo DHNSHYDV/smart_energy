@@ -51,6 +51,29 @@ class DeviceDetailBottomSheet : BottomSheetDialogFragment() {
         binding.sheetApplianceName.text = app.name
         binding.sheetApplianceLocation.text = "${app.location ?: "General"} · ${app.category ?: "Zone"}"
 
+        val nameLower = app.name.lowercase(Locale.US)
+        val iconType = app.icon?.lowercase(Locale.US) ?: ""
+        when {
+            iconType == "pc" || nameLower.contains("pc") || nameLower.contains("workstation") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_pc)
+            iconType == "fridge" || nameLower.contains("fridge") || nameLower.contains("refrigerator") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_fridge)
+            iconType == "bulb" || nameLower.contains("light") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_bulb)
+            iconType == "tv" || nameLower.contains("tv") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_tv)
+            iconType == "ac" || nameLower.contains("ac") || nameLower.contains("air") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_ac)
+            iconType == "heater" || nameLower.contains("heater") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_heater)
+            iconType == "ev" || nameLower.contains("ev") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_ev)
+            iconType == "microwave" || nameLower.contains("microwave") ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_microwave)
+            else ->
+                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_bolt)
+        }
+
         val reading = app.reading
         val activeWatts = if (app.isOn) reading?.activePower ?: app.ratedPower else 0.0
         val currentAmps = if (app.isOn) reading?.current ?: (activeWatts / 230.0) else 0.0

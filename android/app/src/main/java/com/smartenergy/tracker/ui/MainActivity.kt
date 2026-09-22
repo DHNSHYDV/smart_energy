@@ -1,6 +1,8 @@
 package com.smartenergy.tracker.ui
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -16,12 +18,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var repo: EnergyRepository
 
-    private val homeFragment = HomeFragment()
-    private val devicesFragment = DevicesFragment()
-    private val analyticsFragment = AnalyticsFragment()
-    private val automationsFragment = AutomationsFragment()
+    val homeFragment = HomeFragment()
+    val devicesFragment = DevicesFragment()
+    val analyticsFragment = AnalyticsFragment()
+    val automationsFragment = AutomationsFragment()
 
     private var activeTabId: Int = R.id.nav_home
+    private val handler = Handler(Looper.getMainLooper())
+    private var hideToastRunnable: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupDockNavigation()
+        setupToastObserver()
     }
 
     private fun setupDockNavigation() {
@@ -46,6 +51,17 @@ class MainActivity : AppCompatActivity() {
         binding.navDevices.setOnClickListener { switchTab(R.id.nav_devices, devicesFragment) }
         binding.navAnalytics.setOnClickListener { switchTab(R.id.nav_analytics, analyticsFragment) }
         binding.navAutomations.setOnClickListener { switchTab(R.id.nav_automations, automationsFragment) }
+    }
+
+    fun navigateToTab(tabId: Int) {
+        val fragment = when (tabId) {
+            R.id.nav_home -> homeFragment
+            R.id.nav_devices -> devicesFragment
+            R.id.nav_analytics -> analyticsFragment
+            R.id.nav_automations -> automationsFragment
+            else -> homeFragment
+        }
+        switchTab(tabId, fragment)
     }
 
     private fun switchTab(tabId: Int, fragment: Fragment) {
@@ -82,8 +98,45 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupToastObserver() {
+        repo.toastEvent.observe(this) { message ->
+            if (!message.isNullOrEmpty()) {
+                showFloatingNotice(message)
+            }
+        }
+    }
+
+    private fun showFloatingNotice(message: String) {
+        hideToastRunnable?.let { handler.removeCallbacks(it) }
+
+        binding.tvFloatingToastText.text = message
+        binding.floatingToastCard.apply {
+            alpha = 0f
+            translationY = 40f
+            visibility = View.VISIBLE
+            animate()
+                .alpha(1f)
+                .translationY(0f)
+                .setDuration(220)
+                .start()
+        }
+
+        hideToastRunnable = Runnable {
+            binding.floatingToastCard.animate()
+                .alpha(0f)
+                .translationY(30f)
+                .setDuration(200)
+                .withEndAction {
+                    binding.floatingToastCard.visibility = View.GONE
+                }
+                .start()
+        }
+        handler.postDelayed(hideToastRunnable!!, 2600)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
+        hideToastRunnable?.let { handler.removeCallbacks(it) }
         repo.stop()
     }
 }
