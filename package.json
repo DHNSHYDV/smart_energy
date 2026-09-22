@@ -1,0 +1,24 @@
+{
+  "name": "smart-energy-conservation-tracker",
+  "version": "1.0.0",
+  "description": "Smart Energy Conservation Tracker - Environmental (Software Simulation of IoT Architecture)",
+  "private": true,
+  "scripts": {
+    "start": "node backend/src/server.js",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build:frontend": "cd frontend && npm run build",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": [
+    "iot",
+    "energy-conservation",
+    "simulation",
+    "esp32",
+    "mqtt",
+    "ct-sensor",
+    "smart-energy"
+  ],
+  "author": "Yash Sunil Bongale, Venkata Sai Ankith G, Aman Thakur, Hemasrija C",
+  "license": "ISC"
+}

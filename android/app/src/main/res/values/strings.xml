@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Smart Energy Tracker</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_appliances">Devices</string>
+    <string name="title_analytics">Analytics</string>
+    <string name="title_alerts">Alerts</string>
+    <string name="title_schedules">Schedules</string>
+    <string name="gateway_online">ESP32-SIM-001 (ONLINE)</string>
+    <string name="connect_laptop">Connect to Laptop</string>
+    <string name="server_ip_hint">192.168.1.42:5000</string>
+</resources>
