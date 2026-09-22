@@ -13,9 +13,6 @@ import {
   BarChart3,
   Box,
   Smartphone,
-  Power,
-  Play,
-  Pause,
   AlertTriangle,
   Search,
   Bell,
@@ -164,21 +161,6 @@ function DashboardShell() {
             </button>
 
           </nav>
-        </div>
-
-        {/* Bottom Sidebar Action: Sim Pause / Resume */}
-        <div className="flex md:flex-col items-center gap-3">
-          <button
-            onClick={togglePause}
-            title={isPaused ? "Resume Simulation" : "Pause Simulation"}
-            className={`p-3 rounded-2xl transition-all cursor-pointer ${
-              isPaused 
-                ? 'text-amber-400 bg-amber-950/40 ring-1 ring-amber-500/40' 
-                : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40'
-            }`}
-          >
-            {isPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
-          </button>
         </div>
 
       </aside>
