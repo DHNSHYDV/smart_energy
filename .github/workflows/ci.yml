@@ -1,0 +1,44 @@
+name: GridSense Enterprise EMS CI
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  backend-and-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Root Dependencies
+        run: npm ci || npm install
+
+      - name: Verify Backend Syntax & Core Engine
+        run: |
+          node -c backend/src/server.js
+          node -c backend/src/simulation/SimulationEngine.js
+          node -c backend/src/services/analyticsService.js
+          node -c backend/src/services/anomalyService.js
+          node -c backend/src/services/schedulerService.js
+
+      - name: Build Enterprise Vite Frontend
+        working-directory: frontend
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Validate Datasets & Schema Integrity
+        run: |
+          python3 -c "import json, csv; data=json.load(open('data/appliances_metadata.json')); assert len(data)==8; print('Appliances metadata valid')"
+          python3 -c "import json; data=json.load(open('data/tod_tariff_structure.json')); assert 'discom_profiles' in data; print('Tariff structures valid')"
+          python3 -c "import csv; rows=list(csv.reader(open('data/telemetry_sample_24h.csv'))); assert len(rows)==1441; print('24h CSV dataset valid')"

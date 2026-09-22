@@ -1,59 +1,63 @@
-# Smart Energy Tracker – Native Android Application (Java + Gradle)
+# GridSense Mobile EMS — Native Android Kotlin Application
 
-This is the native Android mobile application for the **Smart Energy Conservation Tracker – Environmental** academic project (22CSE74 Project Phase-II, Department of Computer Science and Engineering).
+<div align="center">
+
+[![Platform](https://img.shields.io/badge/Platform-Android%2014-3ddc84.svg?style=flat-square&logo=android)](https://www.android.com/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.22-7f52ff.svg?style=flat-square&logo=kotlin)](https://kotlinlang.org/)
+[![Target SDK](https://img.shields.io/badge/Target%20SDK-34-blue.svg?style=flat-square)](https://developer.android.com/)
+[![Min SDK](https://img.shields.io/badge/Min%20SDK-26-orange.svg?style=flat-square)](https://developer.android.com/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blueviolet.svg?style=flat-square)](../LICENSE)
+
+</div>
+
+This module provides the native Android client for **GridSense Enterprise EMS** (NHCE Major Project 22CSE74), engineered with clean Architecture (MVVM), Coroutines, Material Design 3, and sub-50ms Socket.IO WebSocket synchronization.
 
 ---
 
-## 1. Project Structure
+## 1. Architectural Highlights
+
+- **Single Source of Truth**: Centralized [`EnergyRepository`](app/src/main/java/com/gridsense/ems/network/EnergyRepository.kt) enforcing synchronous recalculation of system active load ($P = \sum P_i$), line current ($I = \frac{P}{V \cdot \text{PF}}$), and accumulated energy.
+- **Strict Functional Differentiation**:
+  - **Home**: Executive summary displaying the Primary Active Power Card (`211 W`), dedicated Monthly Usage Card (`124.6 kWh`, `₹996`, `4.15 kWh/day`), 3-KPI Status Strip, curated Live Loads, and Peak-Shifting insights.
+  - **Devices**: Full 8-circuit sub-metering catalog with live electrical metrics ($W, A, \text{PF}$), `ONLINE`/`STANDBY` badges, and haptic relay switches.
+  - **Analytics**: 6-part analytical breakdown including MPAndroidChart 24-hr diurnal load curve, weekly breakdown, TOU cost analysis, and CEA carbon accounting.
+  - **Automations & Settings**: 4 macro scenes (Night Mode, Eco Shift, Work Mode, Viva Full Load), actionable peak-shifting schedules, and gateway configuration.
+- **Resilient Connectivity**:
+  - Dynamic base URL switching targeting local Wi-Fi host (`192.168.1.42:5000`).
+  - Automatic reconnection backoff with optimistic relay actuation.
+
+---
+
+## 2. Directory Structure
 
 ```
 android/
-├── build.gradle                 # Top-level Gradle configuration
-├── settings.gradle              # Module includes & repository definitions
-├── gradle.properties            # JVM & AndroidX settings
-├── gradle/wrapper/              # Gradle 8.4 wrapper specification
+├── build.gradle                 # Top-level Gradle configuration (Kotlin 1.9.22)
+├── settings.gradle              # Module includes & repository declarations
+├── gradlew                      # Gradle build wrapper
 └── app/
-    ├── build.gradle             # App dependencies: Retrofit, Socket.IO, MPAndroidChart
+    ├── build.gradle             # Dependencies: Retrofit 2, Socket.IO 2.1, MPAndroidChart v3.1.0
     └── src/main/
-        ├── AndroidManifest.xml  # Cleartext HTTP & network permissions
-        ├── res/                 # Layouts (CardViews, MaterialSwitches), Colors, Themes
-        └── java/com/smartenergy/tracker/
-            ├── model/           # Appliance, SensorReading, Telemetry, AlertItem
-            ├── network/         # ApiClient, ApiService, SocketManager, PreferencesManager
-            ├── adapter/         # ApplianceAdapter, AlertAdapter
-            └── ui/              # MainActivity, DashboardFragment, AppliancesFragment, AlertsFragment
+        ├── AndroidManifest.xml  # Permissions & hardware acceleration flags
+        ├── res/                 # Vector drawables, layouts, and typography
+        └── java/com/gridsense/ems/
+            ├── model/           # Unified telemetry & circuit data classes
+            ├── network/         # EnergyRepository, ApiClient, SocketManager
+            ├── adapter/         # CircuitAdapter (DiffUtil, ListAdapter)
+            └── ui/              # MainActivity, HomeFragment, DevicesFragment, AnalyticsFragment, AutomationsFragment
 ```
 
 ---
 
-## 2. Opening in Android Studio
+## 3. Compilation & Installation
 
-1. Launch **Android Studio**.
-2. Click **File -> Open...** and select the directory:
-   ```
-   /home/dhnshydv/Smart_Energy/android
-   ```
-3. Let Gradle sync and download dependencies.
-4. Connect your Android phone via USB (with USB Debugging enabled) or start an Android Emulator.
-5. Click the green **Run (▶)** button to install and launch the app.
+### Build Debug APK:
+```bash
+./gradlew assembleDebug --no-daemon
+```
 
----
-
-## 3. Connecting to the Laptop Simulation Server
-
-1. Ensure the Node.js simulation server is running on the laptop:
-   ```bash
-   cd /home/dhnshydv/Smart_Energy
-   ./start.sh
-   ```
-2. When the Android app opens on your phone:
-   - Tap the **"IP Setup"** button in the top right corner of the toolbar.
-   - Enter your laptop's Wi-Fi IP address (e.g. `192.168.1.42:5000` or `192.168.43.1:5000` if using mobile hotspot).
-   - Tap **Connect**.
-3. The gateway status will change to:
-   ```
-   ● ESP32-SIM-001 (ONLINE)
-   ```
-4. **Live Synchronization**:
-   - The dashboard will stream real-time power (Watts), voltage, current, cost, and carbon emissions.
-   - Tapping any switch in the **Devices** tab will trip the virtual relay on the laptop in $<50\text{ ms}$ over WebSockets!
+### Install onto Device via ADB:
+```bash
+adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+*Pre-compiled production binary is available at repository root: [`GridSense-Android-v2.0.apk`](../GridSense-Android-v2.0.apk).*
