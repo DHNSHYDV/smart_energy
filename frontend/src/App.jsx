@@ -66,6 +66,7 @@ function DashboardShell() {
   const getTabTitle = () => {
     switch (activeTab) {
       case 'dashboard':
+      case 'overview':
         return { title: 'Operational Command Center', sub: 'Real-time building load profile, active circuits, and conservation KPIs' };
       case 'live':
         return { title: 'Live Incomer & CT Telemetry', sub: 'Waveform telemetry, RMS voltages, line currents, and 8-channel sub-metering' };
@@ -138,7 +139,7 @@ function DashboardShell() {
               onClick={() => setActiveTab('dashboard')}
               title="Overview Command Center"
               className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
-                activeTab === 'dashboard'
+                activeTab === 'dashboard' || activeTab === 'overview'
                   ? 'text-white bg-neutral-800/90 shadow-sm'
                   : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
               }`}
@@ -459,7 +460,7 @@ function DashboardShell() {
 
         {/* Canvas Body View */}
         <div className="flex-1 w-full">
-          {activeTab === 'dashboard' && <OverviewView />}
+          {(activeTab === 'dashboard' || activeTab === 'overview') && <OverviewView />}
           {activeTab === 'live' && <LiveEnergyView />}
           {(activeTab === 'devices' || activeTab === 'appliances') && <DevicesView />}
           {activeTab === 'analytics' && <AnalyticsView />}

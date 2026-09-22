@@ -6,7 +6,7 @@ const EnergyContext = createContext(null);
 export function EnergyProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'live' | 'devices' | 'analytics' | 'automations' | 'alerts' | 'reports' | 'network' | 'config'
+  const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'live' | 'devices' | 'analytics' | 'automations' | 'alerts' | 'reports' | 'network' | 'config'
 
   // Real-time telemetry state
   const [telemetry, setTelemetry] = useState({
