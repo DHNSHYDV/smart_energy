@@ -86,21 +86,37 @@ export function AnalyticsView() {
     cost: Number(((a.reading?.cumulativeEnergyKwh || 0.5) * telemetry.tariffRate).toFixed(2))
   }));
 
-  // Forecast points from backend or realistic fallback
-  const forecastPoints = forecast?.points || [
-    { time: '00:00', actual: 420, forecast: 430, isPeakHour: false },
-    { time: '03:00', actual: 350, forecast: 340, isPeakHour: false },
-    { time: '06:00', actual: 980, forecast: 950, isPeakHour: false },
-    { time: '09:00', actual: 1850, forecast: 1820, isPeakHour: false },
-    { time: '12:00', actual: 1100, forecast: 1150, isPeakHour: false },
-    { time: '15:00', actual: 920, forecast: 900, isPeakHour: false },
-    { time: '18:00', actual: 2450, forecast: 2400, isPeakHour: true },
-    { time: '21:00', actual: 2100, forecast: 2150, isPeakHour: true },
-    { time: '24:00', actual: null, forecast: 680, isPeakHour: false },
-    { time: '+3h', actual: null, forecast: 420, isPeakHour: false },
-    { time: '+6h', actual: null, forecast: 920, isPeakHour: false },
-    { time: '+9h', actual: null, forecast: 1800, isPeakHour: false }
-  ];
+  // Normalize forecast points safely from backend (support both actual/forecast in Watts and actualKw/forecastKw)
+  const rawPoints = forecast?.points || [];
+  const forecastPoints = rawPoints.length > 0
+    ? rawPoints.map(p => {
+        let act = p.actual;
+        if (act === undefined && p.actualKw !== undefined && p.actualKw !== null) {
+          act = Math.round(p.actualKw * 1000);
+        }
+        let fc = p.forecast;
+        if (fc === undefined && p.forecastKw !== undefined && p.forecastKw !== null) {
+          fc = Math.round(p.forecastKw * 1000);
+        }
+        return {
+          time: p.time,
+          hour: p.hour,
+          actual: act,
+          forecast: fc,
+          isPeakHour: p.isPeakHour || p.isPeakWindow || false
+        };
+      })
+    : [
+        { time: '00:00', actual: 420, forecast: 430, isPeakHour: false },
+        { time: '03:00', actual: 350, forecast: 340, isPeakHour: false },
+        { time: '06:00', actual: 980, forecast: 950, isPeakHour: false },
+        { time: '09:00', actual: 1850, forecast: 1820, isPeakHour: false },
+        { time: '12:00', actual: 1100, forecast: 1150, isPeakHour: false },
+        { time: '15:00', actual: 920, forecast: 900, isPeakHour: false },
+        { time: '18:00', actual: 2450, forecast: 2400, isPeakHour: true },
+        { time: '21:00', actual: 2100, forecast: 2150, isPeakHour: true },
+        { time: '23:00', actual: null, forecast: 680, isPeakHour: false }
+      ];
 
   return (
     <div className="space-y-6">
@@ -243,9 +259,15 @@ export function AnalyticsView() {
         {/* Forecast Line Chart */}
         <div className="h-64 sm:h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={forecastPoints} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <LineChart data={forecastPoints} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
               <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} />
-              <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+              <YAxis 
+                stroke="#94a3b8" 
+                fontSize={10} 
+                tickLine={false} 
+                axisLine={false} 
+                tickFormatter={(v) => `${v}W`}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: '#0f172a',
@@ -255,8 +277,12 @@ export function AnalyticsView() {
                   fontSize: '11px',
                   padding: '8px 12px'
                 }}
-                formatter={(val, name) => [`${val} W`, name === 'actual' ? 'Actual Load' : 'Predicted Load']}
+                formatter={(val, name) => [
+                  val !== null && val !== undefined ? `${val} W` : 'Pending (Future)', 
+                  name === 'actual' ? 'Actual Load' : 'Predicted Load'
+                ]}
               />
+              <ReferenceArea x1="18:00" x2="22:00" fill="#f43f5e" fillOpacity={0.08} />
               <Line
                 type="monotone"
                 dataKey="actual"
