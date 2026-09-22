@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, CheckCircle2, ArrowRight, ShieldCheck, Cpu, HardDrive, Smartphone } from 'lucide-react';
+import { X, CheckCircle2, ArrowRight, GraduationCap } from 'lucide-react';
 
 export function AcademicMappingModal({ isOpen, onClose }) {
   if (!isOpen) return null;
@@ -36,109 +36,67 @@ export function AcademicMappingModal({ isOpen, onClose }) {
       details: 'High-speed write throughput storing instantaneous telemetry records, daily analytics, anomaly alerts, and scheduled automations.'
     },
     {
-      physical: 'Android/iOS Native Mobile Application',
-      simulated: 'Responsive Mobile Web Application',
-      details: 'Mobile-first PWA-style web application accessible over local Wi-Fi at http://<laptop-ip>:5000 with sub-50ms WebSocket synchronization.'
+      physical: 'Android Native Mobile Application',
+      simulated: 'Native Android App + Web Client',
+      details: 'Android Java app with Retrofit 2 and Socket.IO client, synchronizing live telemetry and relay states under 50ms over local Wi-Fi.'
     }
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl p-6 text-slate-100 flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-white border border-neutral-200/90 rounded-[32px] shadow-2xl p-6 sm:p-8 text-neutral-900 flex flex-col overflow-hidden">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+          className="absolute top-5 right-5 p-2 rounded-full text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
         <div className="mb-4">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-2">
-            Academic Project Specification (22CSE74)
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 mb-2">
+            <GraduationCap className="w-3.5 h-3.5" />
+            <span>Academic Project Specification (22CSE74)</span>
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">
-            Physical IoT vs. Software Simulation Mapping
+          <h2 className="text-xl sm:text-2xl font-bold text-neutral-900 tracking-tight">
+            Physical Hardware vs. Software Simulation Mapping
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Department of Computer Science & Engineering | Major Project Phase-II
+          <p className="text-xs text-neutral-500 mt-1">
+            Department of CSE, New Horizon College of Engineering (NHCE) | Major Project Phase-II
           </p>
         </div>
 
-        {/* Content Body */}
-        <div className="flex-1 overflow-y-auto pr-1 space-y-4 text-xs">
-          
-          <div className="p-3.5 rounded-xl bg-slate-950/70 border border-slate-800 text-slate-300 leading-relaxed">
-            <strong className="text-emerald-400">Academic Project Concept:</strong> This system is a complete, software-based simulation of an IoT-driven Smart Energy Conservation Tracker. Instead of connecting hazardous 230V physical electrical circuits, the edge controllers, current sensors, and load behaviors are simulated mathematically with strict physics fidelity. The cloud API, MQTT topics, and mobile dashboard are designed so that <em>real ESP32 hardware and CT sensors can replace the virtual components seamlessly</em> without modifying the application layer.
-          </div>
-
-          {/* Mapping Table */}
-          <div className="border border-slate-800 rounded-xl overflow-hidden">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-800/80 text-slate-300 font-semibold border-b border-slate-700 text-[11px]">
-                  <th className="p-3 w-1/3">Physical Component</th>
-                  <th className="p-3 w-1/3">Simulated Software Equivalent</th>
-                  <th className="p-3 w-1/3 hidden sm:table-cell">Implementation Details</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60 font-sans">
-                {mapping.map((row, idx) => (
-                  <tr key={idx} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="p-3 font-medium text-slate-200">
-                      <div className="flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 flex-shrink-0"></span>
-                        <span>{row.physical}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 font-semibold text-emerald-400">
-                      <div className="flex items-center gap-2">
-                        <ArrowRight className="w-3.5 h-3.5 text-slate-500 flex-shrink-0" />
-                        <span>{row.simulated}</span>
-                      </div>
-                    </td>
-                    <td className="p-3 text-slate-400 hidden sm:table-cell text-[11px] leading-relaxed">
-                      {row.details}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Social Relevance & SDGs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-800">
-              <h4 className="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                United Nations SDG 7: Clean Energy
-              </h4>
-              <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                Empowers consumers with appliance-level attribution to eliminate phantom vampire loads and optimize residential energy consumption.
+        {/* Scrollable Mapping Table */}
+        <div className="flex-1 overflow-y-auto pr-1 space-y-3">
+          {mapping.map((m, idx) => (
+            <div key={idx} className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/70 hover:bg-neutral-100/50 transition-colors">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-blue-600"></span>
+                  <strong className="text-xs sm:text-sm font-bold text-neutral-900">{m.physical}</strong>
+                </div>
+                <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold bg-emerald-100/60 px-2.5 py-0.5 rounded-full self-start sm:self-auto">
+                  <ArrowRight className="w-3 h-3 text-emerald-600" />
+                  <span>{m.simulated}</span>
+                </div>
+              </div>
+              <p className="text-xs text-neutral-600 leading-relaxed pl-4">
+                {m.details}
               </p>
             </div>
-            <div className="p-3 rounded-xl bg-slate-800/30 border border-slate-800">
-              <h4 className="font-bold text-slate-200 flex items-center gap-1.5 text-xs">
-                <CheckCircle2 className="w-4 h-4 text-teal-400" />
-                United Nations SDG 13: Climate Action
-              </h4>
-              <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
-                Directly tracks carbon footprint using standard grid emission factors (0.82 kg CO₂/kWh), demonstrating tangible carbon reduction via automated scheduling.
-              </p>
-            </div>
-          </div>
-
+          ))}
         </div>
 
-        {/* Footer */}
-        <div className="mt-4 pt-3 border-t border-slate-800 flex justify-end">
+        {/* Modal Footer */}
+        <div className="mt-5 pt-4 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-400">
+          <span>Simulation Engine active on Port 5000</span>
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-colors"
+            className="px-5 py-2 rounded-full bg-neutral-900 hover:bg-neutral-800 text-white font-semibold cursor-pointer transition-colors"
           >
-            Acknowledge & Close
+            Close
           </button>
         </div>
 
