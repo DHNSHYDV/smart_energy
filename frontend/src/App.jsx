@@ -94,7 +94,7 @@ function DashboardShell() {
   const currentTabInfo = getTabTitle();
 
   return (
-    <div className="min-h-screen w-full bg-[#16171b] flex flex-col md:flex-row overflow-hidden select-none">
+    <div className="h-screen w-full bg-[#16171b] flex flex-col md:flex-row overflow-hidden select-none">
       
       {/* Toast Push Notification */}
       {toastAlert && (
@@ -116,8 +116,8 @@ function DashboardShell() {
         </div>
       )}
 
-      {/* LEFT DOCKED DARK SIDEBAR (Full Height) */}
-      <aside className="w-full md:w-20 md:min-h-screen bg-[#16171b] flex md:flex-col items-center justify-between p-3 md:py-6 md:px-2 shrink-0 border-b md:border-b-0 md:border-r border-neutral-800/80 z-20">
+      {/* LEFT DOCKED DARK SIDEBAR (Fixed Viewport Height) */}
+      <aside className="w-full md:w-20 md:h-screen md:sticky md:top-0 bg-[#16171b] flex md:flex-col items-center justify-between p-3 md:py-6 md:px-2 shrink-0 border-b md:border-b-0 md:border-r border-neutral-800/80 z-20">
         
         {/* Top Section: Logo + Main Nav */}
         <div className="flex md:flex-col items-center gap-4">
@@ -282,7 +282,7 @@ function DashboardShell() {
       </aside>
 
       {/* FULL-SCREEN INNER CANVAS */}
-      <main className="flex-1 bg-white md:m-3 md:rounded-[32px] p-5 sm:p-7 lg:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto min-h-screen md:min-h-[calc(100vh-1.5rem)] pb-20 md:pb-8">
+      <main className="flex-1 bg-white md:m-3 md:rounded-[32px] p-5 sm:p-7 lg:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto h-[calc(100vh-1rem)] md:h-[calc(100vh-1.5rem)] pb-20 md:pb-8">
         
         {/* Top Header Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-3 border-b border-neutral-100 gap-3">
