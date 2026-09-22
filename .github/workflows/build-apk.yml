@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -25,54 +25,43 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Make Gradlew Executable
-        run: chmod +x android/gradlew || true
+        run: chmod +x android/gradlew
 
       - name: Build Android Debug APK
         working-directory: android
-        run: |
-          if [ -f "gradlew" ]; then
-            ./gradlew assembleDebug --stacktrace
-          else
-            gradle assembleDebug --stacktrace
-          fi
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK Artifact
+      - name: Upload APK Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SmartEnergyTracker-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Create GitHub Release & Upload APK
+      - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         with:
           tag_name: v1.0.0
           name: "Smart Energy Tracker v1.0.0 - Android APK"
           body: |
-            ## Smart Energy Conservation Tracker - Environmental
+            ## Smart Energy Conservation Tracker – Environmental
             ### Android Mobile Application Release (v1.0.0)
 
             - **App Name**: Smart Energy Tracker
-            - **Package**: `com.smartenergy.tracker`
-            - **Platform**: Android (minSdk 24, targetSdk 34)
+            - **Platform**: Android Native (Java + Gradle)
             - **Features**:
-              - Real-time Socket.IO telemetry stream (Watts, kWh, Cost, Carbon)
-              - Sub-second remote appliance relay switching (ON/OFF)
-              - Virtual CT sensor readings (Voltage, Current, Power Factor)
-              - Dynamic anomaly alert feed and acknowledgments
-              - In-app laptop IP configuration dialog
+              - Real-time Socket.IO telemetry streaming
+              - Remote appliance relay actuation (ON/OFF)
+              - Virtual CT sensor monitoring
+              - Anomaly detection & alerts
+              - In-app IP configuration dialog
 
             ### Installation:
-            1. Download `SmartEnergyTracker.apk` below to your Android phone.
-            2. Tap the APK to install (enable "Install from unknown sources" if prompted).
-            3. Ensure your phone and laptop are on the same Wi-Fi or mobile hotspot.
-            4. Tap **"IP Setup"** in the app and enter your laptop IP (e.g. `192.168.1.42:5000` or `192.168.43.1:5000`).
+            1. Download `SmartEnergyTracker.apk` below to your Android device.
+            2. Tap the APK to install.
+            3. Open the app, tap **"IP Setup"**, and connect to your laptop simulation server!
           files: |
             android/app/build/outputs/apk/debug/app-debug.apk
-            android/app/build/outputs/apk/debug/app-debug.apk=>SmartEnergyTracker.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
