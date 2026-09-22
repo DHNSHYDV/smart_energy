@@ -46,6 +46,31 @@ export function createAnalyticsRouter(analyticsService, recommendationService, s
     });
   });
 
+  // GET /api/analytics/export/csv
+  router.get('/export/csv', (req, res) => {
+    const attribution = analyticsService.getDeviceAttribution();
+    const snapshot = simulationEngine.getSnapshot();
+    const esp32 = snapshot.esp32 || {};
+    const now = new Date().toISOString();
+
+    let csv = `Smart Energy Conservation Tracker - Energy & Carbon Report\n`;
+    csv += `Generated At,${now}\n`;
+    csv += `Gateway Device,${esp32.deviceId || 'ESP32-SIM-001'} (${esp32.chipModel || 'ESP32'})\n`;
+    csv += `Total Energy Today,${attribution.totalEnergyKwh} kWh\n`;
+    csv += `Total Cost Today,₹${attribution.totalCost}\n`;
+    csv += `Total Carbon Footprint,${attribution.totalCarbonKg} kg CO2\n`;
+    csv += `Current Tariff Rate,₹${snapshot.tariff || 8.0}/kWh\n\n`;
+
+    csv += `Appliance ID,Name,Location,Status,Power (W),Energy (kWh),Share (%),Cost (₹),Carbon (kg CO2)\n`;
+    for (const item of attribution.breakdown) {
+      csv += `${item.id},"${item.name}","${item.location || 'Home'}",${item.isOn ? 'ON' : 'OFF'},${item.currentPower || 0},${item.energyKwh},${item.percentage}%,${item.cost},${item.carbonKg}\n`;
+    }
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename="smart-energy-report-${new Date().toISOString().slice(0,10)}.csv"`);
+    res.send(csv);
+  });
+
   // GET /api/analytics/recommendations
   router.get('/recommendations', (req, res) => {
     const recommendations = recommendationService.generateRecommendations();

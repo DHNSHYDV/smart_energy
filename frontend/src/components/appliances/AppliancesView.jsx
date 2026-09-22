@@ -38,22 +38,22 @@ export function AppliancesView() {
       {/* Page Title */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-            <Zap className="w-5 h-5 text-emerald-400" />
-            Device-Level Energy Sensing & Control
+          <h2 className="text-xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+            <Zap className="w-5 h-5 text-amber-500" />
+            Device-Level Energy Sensing & Smart Relays
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Simulated CT sensors, voltage meters, and smart relays for individual load circuits
+          <p className="text-xs text-neutral-500 mt-0.5">
+            Simulated CT clamp sensors, RMS voltage calculations, and automated relays
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-slate-400 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <div className="flex items-center gap-2 text-xs text-neutral-600 bg-neutral-100 px-3 py-1.5 rounded-full border border-neutral-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span>Virtual CT Sensor Hub Active</span>
         </div>
       </div>
 
       {/* Grid of Detailed Appliance Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {appliances.map((app) => {
           const Icon = iconMap[app.id] || Zap;
           const reading = app.reading || {
@@ -78,36 +78,36 @@ export function AppliancesView() {
               className={`rounded-2xl p-5 border transition-all duration-200 ${
                 app.isOn
                   ? isAnomaly
-                    ? 'bg-rose-950/20 border-rose-500/40 shadow-xl shadow-rose-950/20'
-                    : 'bg-slate-900/90 border-slate-800 shadow-xl'
-                  : 'bg-slate-950/60 border-slate-800/80 opacity-80'
+                    ? 'bg-rose-50/50 border-rose-300 shadow-md'
+                    : 'bg-white border-neutral-200/90 shadow-xs hover:shadow-md'
+                  : 'bg-neutral-50/70 border-neutral-200/60 opacity-85'
               }`}
             >
               {/* Card Header */}
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl border ${
+                  <div className={`p-3 rounded-2xl border ${
                     app.isOn
                       ? isAnomaly
-                        ? 'bg-rose-500/20 text-rose-300 border-rose-500/30 animate-pulse'
-                        : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                      : 'bg-slate-800 text-slate-500 border-slate-700'
+                        ? 'bg-rose-100 text-rose-600 border-rose-200 animate-pulse'
+                        : 'bg-neutral-100 text-neutral-900 border-neutral-200'
+                      : 'bg-neutral-200 text-neutral-400 border-neutral-300'
                   }`}>
-                    <Icon className="w-6 h-6" />
+                    <Icon className="w-5 h-5" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-base text-white">{app.name}</h3>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${
+                      <h3 className="font-bold text-sm sm:text-base text-neutral-900">{app.name}</h3>
+                      <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
                         app.isOn 
-                          ? isAnomaly ? 'bg-rose-500/20 text-rose-300' : 'bg-emerald-500/20 text-emerald-300'
-                          : 'bg-slate-800 text-slate-400'
+                          ? isAnomaly ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700'
+                          : 'bg-neutral-200 text-neutral-500'
                       }`}>
                         {app.isOn ? '● ON' : '○ OFF'}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400">
-                      ID: <span className="font-mono text-slate-300">{app.id}</span> | {app.location} | Rated: {app.ratedPower}W
+                    <p className="text-xs text-neutral-400 mt-0.5">
+                      ID: <span className="font-mono text-neutral-600">{app.id}</span> · {app.location} · Rated: {app.ratedPower}W
                     </p>
                   </div>
                 </div>
@@ -115,115 +115,67 @@ export function AppliancesView() {
                 {/* Primary Remote Relay Switch Button */}
                 <button
                   onClick={() => toggleAppliance(app.id, !app.isOn)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 ${
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1.5 ${
                     app.isOn
-                      ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-950/40 active:scale-95'
-                      : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950/40 active:scale-95'
+                      ? 'bg-neutral-900 hover:bg-neutral-800 text-white'
+                      : 'bg-emerald-600 hover:bg-emerald-500 text-white'
                   }`}
                 >
-                  <Power className="w-3.5 h-3.5" />
-                  <span>{app.isOn ? 'TURN OFF' : 'TURN ON'}</span>
+                  <Power className="w-3 h-3" />
+                  <span>{app.isOn ? 'Turn OFF' : 'Turn ON'}</span>
                 </button>
               </div>
 
-              {/* Electrical Parameters Grid (Simulated CT & Voltage Sensor) */}
-              <div className="mt-4 pt-3 border-t border-slate-800/80">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 block flex items-center gap-1">
-                  <Activity className="w-3 h-3 text-emerald-400" />
-                  Virtual CT Clamp & Power Sensor Readings
-                </span>
-
-                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 text-center">
-                  
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Active Power</span>
-                    <span className={`text-sm font-mono font-bold ${
-                      app.isOn 
-                        ? isAnomaly ? 'text-rose-400' : 'text-emerald-400'
-                        : 'text-slate-400'
+              {/* Electrical Parameters Grid */}
+              <div className="mt-4 pt-3 border-t border-neutral-100">
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="p-2 rounded-xl bg-neutral-100/70 border border-neutral-200/50">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Power</span>
+                    <span className={`text-xs sm:text-sm font-mono font-bold ${
+                      app.isOn ? (isAnomaly ? 'text-rose-600' : 'text-neutral-900') : 'text-neutral-400'
                     }`}>
                       {app.isOn ? `${Math.round(reading.activePower)} W` : '0 W'}
                     </span>
                   </div>
 
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">RMS Current</span>
-                    <span className="text-sm font-mono font-bold text-cyan-400">
-                      {app.isOn ? `${reading.current} A` : '0.00 A'}
+                  <div className="p-2 rounded-xl bg-neutral-100/70 border border-neutral-200/50">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Current</span>
+                    <span className="text-xs sm:text-sm font-mono font-semibold text-neutral-800">
+                      {app.isOn ? `${reading.current} A` : '0.0 A'}
                     </span>
                   </div>
 
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">RMS Voltage</span>
-                    <span className="text-sm font-mono font-bold text-amber-400">
-                      {reading.voltage} V
-                    </span>
-                  </div>
-
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Power Factor</span>
-                    <span className="text-sm font-mono font-bold text-indigo-400">
-                      {reading.powerFactor}
-                    </span>
-                  </div>
-
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Energy Today</span>
-                    <span className="text-sm font-mono font-bold text-teal-400">
+                  <div className="p-2 rounded-xl bg-neutral-100/70 border border-neutral-200/50">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Energy</span>
+                    <span className="text-xs sm:text-sm font-mono font-semibold text-neutral-800">
                       {energyKwh.toFixed(2)} kWh
                     </span>
                   </div>
 
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Today's Cost</span>
-                    <span className="text-sm font-mono font-bold text-emerald-300">
+                  <div className="p-2 rounded-xl bg-neutral-100/70 border border-neutral-200/50">
+                    <span className="text-[10px] uppercase font-semibold text-neutral-400 block">Cost</span>
+                    <span className="text-xs sm:text-sm font-mono font-bold text-neutral-900">
                       ₹{cost}
                     </span>
                   </div>
-
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Carbon CO₂</span>
-                    <span className="text-sm font-mono font-bold text-slate-300">
-                      {carbon} kg
-                    </span>
-                  </div>
-
-                  <div className="bg-slate-950/70 p-2 rounded-xl border border-slate-800/60">
-                    <span className="text-[10px] text-slate-400 block">Apparent (S)</span>
-                    <span className="text-sm font-mono font-bold text-slate-400">
-                      {app.isOn ? `${Math.round(reading.apparentPower)} VA` : '0 VA'}
-                    </span>
-                  </div>
-
                 </div>
               </div>
 
-              {/* Anomaly & Control Footer */}
-              <div className="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-[11px] text-slate-400">
-                  {isAnomaly ? (
-                    <span className="text-rose-400 font-semibold flex items-center gap-1 animate-pulse">
-                      <AlertTriangle className="w-3.5 h-3.5" />
-                      Abnormal Current Surge Active
-                    </span>
-                  ) : (
-                    <span className="text-emerald-400/80 flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                      Normal Operating Range
-                    </span>
-                  )}
+              {/* Anomaly Control Bar */}
+              <div className="mt-3 pt-2 border-t border-neutral-100 flex items-center justify-between text-xs">
+                <span className="text-neutral-400">
+                  Power Factor: <strong className="font-mono text-neutral-700">{app.powerFactor}</strong>
                 </span>
 
-                {/* Inject Anomaly Button for Evaluator Demo */}
                 <button
                   onClick={() => injectAnomaly(app.id, !isAnomaly)}
-                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-colors ${
+                  className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-all ${
                     isAnomaly
-                      ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
-                      : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                      ? 'bg-rose-100 text-rose-700 border-rose-300'
+                      : 'bg-neutral-100 text-neutral-600 border-neutral-200 hover:bg-neutral-200'
                   }`}
                 >
-                  {isAnomaly ? 'Reset Anomaly' : 'Test Anomaly'}
+                  {isAnomaly ? 'Clear Anomaly' : '⚡ Simulate Anomaly'}
                 </button>
               </div>
 
