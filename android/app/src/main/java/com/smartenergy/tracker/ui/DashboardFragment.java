@@ -20,15 +20,25 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.smartenergy.tracker.R;
 import com.smartenergy.tracker.adapter.ApplianceAdapter;
 import com.smartenergy.tracker.model.Appliance;
 import com.smartenergy.tracker.model.Telemetry;
+import com.smartenergy.tracker.network.ApiClient;
 import com.smartenergy.tracker.network.SocketManager;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DashboardFragment extends Fragment {
 
@@ -60,9 +70,13 @@ public class DashboardFragment extends Fragment {
         setupRecyclerView();
 
         swipeRefresh.setOnRefreshListener(() -> {
+            loadInitialData();
             SocketManager.getInstance().connect(requireContext());
             swipeRefresh.setRefreshing(false);
         });
+
+        // Load initial data via REST immediately on view creation
+        loadInitialData();
 
         return view;
     }
@@ -119,6 +133,47 @@ public class DashboardFragment extends Fragment {
 
         rvQuickAppliances.setLayoutManager(new LinearLayoutManager(getContext()));
         rvQuickAppliances.setAdapter(adapter);
+    }
+
+    private void loadInitialData() {
+        if (!isAdded()) return;
+
+        ApiClient.getService(requireContext()).getAppliances().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        JsonArray arr = response.body().getAsJsonArray("data");
+                        Type type = new TypeToken<List<Appliance>>() {}.getType();
+                        List<Appliance> list = new Gson().fromJson(arr, type);
+                        if (list != null && !list.isEmpty()) {
+                            adapter.setAppliances(list);
+
+                            // Calculate instant sum
+                            double totalW = 0;
+                            double totalKwh = 0;
+                            for (Appliance a : list) {
+                                if (a.getReading() != null && a.isOn()) {
+                                    totalW += a.getReading().getActivePower();
+                                    totalKwh += a.getReading().getCumulativeEnergyKwh();
+                                }
+                            }
+                            tvTotalPower.setText(String.format(Locale.getDefault(), "%.0f W", totalW));
+                            tvTotalEnergy.setText(String.format(Locale.getDefault(), "%.2f kWh", totalKwh));
+                            tvEstimatedCost.setText(String.format(Locale.getDefault(), "₹%.2f", totalKwh * 8.0));
+                            tvCarbonFootprint.setText(String.format(Locale.getDefault(), "%.2f kg", totalKwh * 0.82));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                // If offline, will be handled by SocketEventListener or IP dialog
+            }
+        });
     }
 
     public void updateTelemetry(Telemetry telemetry) {

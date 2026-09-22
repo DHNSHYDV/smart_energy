@@ -58,7 +58,7 @@ public class SocketManager {
         try {
             IO.Options options = new IO.Options();
             options.reconnection = true;
-            options.reconnectionAttempts = 15;
+            options.reconnectionAttempts = 30;
             options.reconnectionDelay = 1000;
             options.timeout = 10000;
 
@@ -80,6 +80,28 @@ public class SocketManager {
                 }
             });
 
+            socket.on(Socket.EVENT_CONNECT_ERROR, args -> {
+                Log.e(TAG, "Socket.IO Connect Error: " + (args.length > 0 ? args[0] : "unknown"));
+                isConnected = false;
+                if (listener != null) {
+                    mainHandler.post(() -> listener.onDisconnected());
+                }
+            });
+
+            // Initial snapshot on connect
+            socket.on("init:snapshot", args -> {
+                if (args.length > 0 && listener != null) {
+                    try {
+                        String jsonString = args[0].toString();
+                        Telemetry telemetry = gson.fromJson(jsonString, Telemetry.class);
+                        mainHandler.post(() -> listener.onTelemetryUpdate(telemetry));
+                    } catch (Exception e) {
+                        Log.e(TAG, "Snapshot parse error: " + e.getMessage());
+                    }
+                }
+            });
+
+            // Continuous telemetry stream (1 Hz)
             socket.on("telemetry:update", args -> {
                 if (args.length > 0 && listener != null) {
                     try {

@@ -12,12 +12,22 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.smartenergy.tracker.R;
 import com.smartenergy.tracker.adapter.ApplianceAdapter;
 import com.smartenergy.tracker.model.Appliance;
+import com.smartenergy.tracker.network.ApiClient;
 import com.smartenergy.tracker.network.SocketManager;
 
+import java.lang.reflect.Type;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class AppliancesFragment extends Fragment {
 
@@ -48,11 +58,40 @@ public class AppliancesFragment extends Fragment {
         rvAppliances.setLayoutManager(new LinearLayoutManager(getContext()));
         rvAppliances.setAdapter(adapter);
 
-        swipeRefresh.setOnRefreshListener(() -> {
-            swipeRefresh.setRefreshing(false);
-        });
+        swipeRefresh.setOnRefreshListener(this::loadAppliances);
+
+        loadAppliances();
 
         return view;
+    }
+
+    private void loadAppliances() {
+        if (!isAdded()) return;
+
+        swipeRefresh.setRefreshing(true);
+        ApiClient.getService(requireContext()).getAppliances().enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                swipeRefresh.setRefreshing(false);
+                if (response.isSuccessful() && response.body() != null) {
+                    try {
+                        JsonArray arr = response.body().getAsJsonArray("data");
+                        Type type = new TypeToken<List<Appliance>>() {}.getType();
+                        List<Appliance> list = new Gson().fromJson(arr, type);
+                        if (list != null) {
+                            adapter.setAppliances(list);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+                swipeRefresh.setRefreshing(false);
+            }
+        });
     }
 
     public void updateAppliances(List<Appliance> appliances) {
