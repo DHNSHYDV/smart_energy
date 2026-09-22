@@ -12,4 +12,11 @@ echo "📡 Local Wi-Fi IP detected: $LOCAL_IP"
 echo "🌐 Starting Unified IoT Server on port 5000..."
 
 cd "$(dirname "$0")"
+
+# Build frontend if dist is missing
+if [ ! -d "frontend/dist" ]; then
+  echo "📦 Building frontend production bundle..."
+  (cd frontend && npm run build)
+fi
+
 node backend/src/server.js

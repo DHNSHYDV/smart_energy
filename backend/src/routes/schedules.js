@@ -39,6 +39,42 @@ export function createSchedulesRouter(schedulerService) {
     res.json({ success: true, message: 'Schedule status toggled.' });
   });
 
+  // GET /api/schedules/scenes
+  router.get('/scenes', (req, res) => {
+    res.json({
+      success: true,
+      data: schedulerService.getScenes()
+    });
+  });
+
+  // POST /api/schedules/scenes/:id/apply
+  router.post('/scenes/:id/apply', (req, res) => {
+    const { id } = req.params;
+    const result = schedulerService.applyScene(id);
+    if (!result) return res.status(404).json({ success: false, message: 'Scene not found.' });
+    res.json({
+      success: true,
+      message: `Scene '${result.scene.name}' executed successfully.`,
+      data: result
+    });
+  });
+
+  // GET /api/schedules/rules
+  router.get('/rules', (req, res) => {
+    res.json({
+      success: true,
+      data: schedulerService.getRules()
+    });
+  });
+
+  // GET /api/schedules/load-shifting
+  router.get('/load-shifting', (req, res) => {
+    res.json({
+      success: true,
+      data: schedulerService.getLoadShiftingAnalysis()
+    });
+  });
+
   // DELETE /api/schedules/:id
   router.delete('/:id', (req, res) => {
     const { id } = req.params;

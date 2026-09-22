@@ -111,4 +111,133 @@ export class SchedulerService {
       return false;
     }
   }
+
+  getScenes() {
+    return [
+      {
+        id: 'night_mode',
+        name: 'Night Mode',
+        description: 'Powers down entertainment, non-essential lighting, and keeps HVAC in low-power eco operation.',
+        actions: [
+          { applianceId: 'TV001', state: false, name: 'Smart Television' },
+          { applianceId: 'LT001', state: false, name: 'Living Room Lighting' },
+          { applianceId: 'WM001', state: false, name: 'Washing Machine' },
+          { applianceId: 'GH001', state: false, name: 'Water Heater / Geyser' }
+        ],
+        icon: 'Moon'
+      },
+      {
+        id: 'work_mode',
+        name: 'Work / Office Mode',
+        description: 'Energizes high-performance workstation and office task lighting while idling heavy utility loads.',
+        actions: [
+          { applianceId: 'PC001', state: true, name: 'Workstation PC' },
+          { applianceId: 'LT001', state: true, name: 'Living Room Lighting' },
+          { applianceId: 'FN001', state: true, name: 'Ceiling Fan' }
+        ],
+        icon: 'Briefcase'
+      },
+      {
+        id: 'eco_peak_shift',
+        name: 'Eco Peak Load Shedding',
+        description: 'Sheds flexible heavy resistive heating loads during high-tariff surcharge intervals (18:00 - 22:00).',
+        actions: [
+          { applianceId: 'GH001', state: false, name: 'Water Heater / Geyser' },
+          { applianceId: 'WM001', state: false, name: 'Washing Machine' }
+        ],
+        icon: 'ZapOff'
+      },
+      {
+        id: 'away_mode',
+        name: 'Away / Vacant Mode',
+        description: 'Turns off all non-critical loads, leaving only essential cold storage (Refrigerator) energized.',
+        actions: [
+          { applianceId: 'AC001', state: false, name: 'Air Conditioner' },
+          { applianceId: 'TV001', state: false, name: 'Smart Television' },
+          { applianceId: 'PC001', state: false, name: 'Workstation PC' },
+          { applianceId: 'LT001', state: false, name: 'Living Room Lighting' },
+          { applianceId: 'GH001', state: false, name: 'Water Heater / Geyser' }
+        ],
+        icon: 'Home'
+      }
+    ];
+  }
+
+  applyScene(sceneId) {
+    const scenes = this.getScenes();
+    const scene = scenes.find(s => s.id === sceneId);
+    if (!scene) return null;
+
+    const results = [];
+    for (const action of scene.actions) {
+      const res = this.simulationEngine.toggleAppliance(action.applianceId, action.state);
+      results.push({ id: action.applianceId, state: action.state, success: !!res });
+    }
+    console.log(`[SchedulerService] 🎬 Executed scene: ${scene.name} (${results.length} devices updated)`);
+    return { scene, results };
+  }
+
+  getRules() {
+    return [
+      {
+        id: 'rule_peak_demand',
+        name: 'Sanctioned Load Threshold Protection',
+        trigger: 'Total building demand exceeds 4.5 kW',
+        action: 'Dispatch critical warning alert & recommend shedding Water Heater',
+        isActive: true,
+        thresholdKw: 4.5,
+        type: 'DEMAND_LIMIT'
+      },
+      {
+        id: 'rule_water_heater_runtime',
+        name: 'Thermostat Loss Prevention',
+        trigger: 'Water Heater remains continuously active for > 45 minutes',
+        action: 'Issue prolonged runtime warning & prompt autonomous shutdown',
+        isActive: true,
+        thresholdMins: 45,
+        type: 'RUNTIME_LIMIT'
+      },
+      {
+        id: 'rule_peak_tariff_notification',
+        name: 'Time-of-Day Tariff Surcharge Sentinel',
+        trigger: 'System clock reaches 18:00 (Peak window begin)',
+        action: 'Alert dashboard to defer washing machine & geyser until 22:00',
+        isActive: true,
+        type: 'TARIFF_SHIFT'
+      }
+    ];
+  }
+
+  getLoadShiftingAnalysis() {
+    return {
+      peakWindow: '18:00 - 22:00',
+      standardRate: 8.0,
+      peakRate: 10.0,
+      surchargePerKwh: 2.0,
+      opportunities: [
+        {
+          applianceId: 'GH001',
+          name: 'Water Heater / Geyser',
+          typicalKwhPerCycle: 2.2,
+          currentSchedule: '19:00',
+          recommendedSchedule: '22:30 (Off-Peak)',
+          dailySavingsInr: 4.40,
+          monthlySavingsInr: 132.00,
+          carbonAvoidedKgMonth: 10.8
+        },
+        {
+          applianceId: 'WM001',
+          name: 'Washing Machine',
+          typicalKwhPerCycle: 1.6,
+          currentSchedule: '20:00',
+          recommendedSchedule: '14:00 (Solar / Off-Peak)',
+          dailySavingsInr: 3.20,
+          monthlySavingsInr: 96.00,
+          carbonAvoidedKgMonth: 7.9
+        }
+      ],
+      totalPotentialSavingsMonth: 228.00,
+      totalCarbonAvoidedMonth: 18.7
+    };
+  }
 }

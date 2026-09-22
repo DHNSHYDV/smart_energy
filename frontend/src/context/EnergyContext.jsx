@@ -6,7 +6,7 @@ const EnergyContext = createContext(null);
 export function EnergyProvider({ children }) {
   const [socket, setSocket] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'live' | 'devices' | 'analytics' | 'automations' | 'alerts' | 'reports' | 'network' | 'config'
 
   // Real-time telemetry state
   const [telemetry, setTelemetry] = useState({
@@ -28,26 +28,31 @@ export function EnergyProvider({ children }) {
   const [alerts, setAlerts] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   const [schedules, setSchedules] = useState([]);
+  const [scenes, setScenes] = useState([]);
+  const [rules, setRules] = useState([]);
+  const [loadShifting, setLoadShifting] = useState(null);
+  const [forecast, setForecast] = useState(null);
+  const [costInfo, setCostInfo] = useState(null);
+  const [carbonInfo, setCarbonInfo] = useState(null);
   const [gatewayStatus, setGatewayStatus] = useState(null);
   const [networkInfo, setNetworkInfo] = useState(null);
   const [isPaused, setIsPaused] = useState(false);
   const [speedMultiplier, setSpeedMultiplier] = useState(1);
   const [toastAlert, setToastAlert] = useState(null);
+  const [selectedDeviceForDetail, setSelectedDeviceForDetail] = useState(null);
 
-  // Determine backend URL dynamically based on current browser window
+  // Determine backend URL dynamically
   const getBackendUrl = () => {
     const host = window.location.hostname;
-    // If running under Vite dev on port 3000, target 5000
     if (window.location.port === '3000') {
       return `http://${host}:5000`;
     }
-    // If served by express directly or same port
     return window.location.origin;
   };
 
   const backendUrl = getBackendUrl();
 
-  // Initialize Socket.IO connection
+  // Socket.IO Connection
   useEffect(() => {
     const s = io(backendUrl, {
       transports: ['websocket', 'polling'],
@@ -56,16 +61,15 @@ export function EnergyProvider({ children }) {
     });
 
     s.on('connect', () => {
-      console.log('[Socket.IO] Connected to Simulation Server:', s.id);
+      console.log('[Socket.IO] Connected to GridSense Gateway:', s.id);
       setIsConnected(true);
     });
 
     s.on('disconnect', () => {
-      console.warn('[Socket.IO] Disconnected from Simulation Server');
+      console.warn('[Socket.IO] Disconnected from Gateway');
       setIsConnected(false);
     });
 
-    // Initial snapshot from server
     s.on('init:snapshot', (snapshot) => {
       if (snapshot.appliances) setAppliances(snapshot.appliances);
       if (snapshot.liveHistory) setLiveHistory(snapshot.liveHistory);
@@ -76,7 +80,6 @@ export function EnergyProvider({ children }) {
       if (snapshot.isPaused !== undefined) setIsPaused(snapshot.isPaused);
     });
 
-    // Real-time tick update (1-second interval)
     s.on('telemetry:update', (data) => {
       setTelemetry({
         deviceId: data.deviceId,
@@ -94,9 +97,10 @@ export function EnergyProvider({ children }) {
 
       if (data.appliances) {
         setAppliances(data.appliances);
+        // Keep selected device updated in drawer
+        setSelectedDeviceForDetail(prev => prev ? data.appliances.find(a => a.id === prev.id) || prev : null);
       }
 
-      // Append to live rolling chart
       const timeLabel = new Date(data.timestamp).toLocaleTimeString('en-US', { hour12: false });
       setLiveHistory(prev => {
         const next = [...prev, {
@@ -104,36 +108,36 @@ export function EnergyProvider({ children }) {
           totalPower: data.totalActivePower,
           voltage: data.gridVoltage,
           current: data.totalCurrent,
+          pf: data.systemPowerFactor,
           cost: data.estimatedCost
         }];
         return next.length > 30 ? next.slice(next.length - 30) : next;
       });
     });
 
-    // Appliance state changed confirmation
     s.on('appliance:state_changed', (updatedApp) => {
       setAppliances(prev => prev.map(a => a.id === updatedApp.id ? { ...a, ...updatedApp } : a));
+      setSelectedDeviceForDetail(prev => prev && prev.id === updatedApp.id ? { ...prev, ...updatedApp } : prev);
     });
 
-    // New anomaly alert push notification
     s.on('alert:new', (alert) => {
       setAlerts(prev => [alert, ...prev]);
       setToastAlert(alert);
-      // Auto-hide toast after 6 seconds
       setTimeout(() => setToastAlert(null), 6000);
     });
 
-    // Recommendations update
+    s.on('alert:updated', (updatedAlert) => {
+      setAlerts(prev => prev.map(a => a.id === updatedAlert.id ? { ...a, ...updatedAlert } : a));
+    });
+
     s.on('recommendations:update', (recs) => {
       setRecommendations(recs);
     });
 
-    // Speed changed
     s.on('simulation:speed_changed', (newSpeed) => {
       setSpeedMultiplier(newSpeed);
     });
 
-    // Reset done
     s.on('simulation:reset_done', () => {
       setLiveHistory([]);
       setAlerts([]);
@@ -146,14 +150,12 @@ export function EnergyProvider({ children }) {
     };
   }, [backendUrl]);
 
-  // Fetch initial REST data (network IP, QR code, schedules)
+  // REST API Fetchers
   const fetchNetworkInfo = useCallback(async () => {
     try {
       const res = await fetch(`${backendUrl}/api/system/network`);
       const data = await res.json();
-      if (data.success) {
-        setNetworkInfo(data.data);
-      }
+      if (data.success) setNetworkInfo(data.data);
     } catch (e) {
       console.warn('Network info fetch error:', e.message);
     }
@@ -163,9 +165,7 @@ export function EnergyProvider({ children }) {
     try {
       const res = await fetch(`${backendUrl}/api/system/gateway`);
       const data = await res.json();
-      if (data.success) {
-        setGatewayStatus(data.data);
-      }
+      if (data.success) setGatewayStatus(data.data);
     } catch (e) {
       console.warn('Gateway status fetch error:', e.message);
     }
@@ -175,11 +175,69 @@ export function EnergyProvider({ children }) {
     try {
       const res = await fetch(`${backendUrl}/api/schedules`);
       const data = await res.json();
-      if (data.success) {
-        setSchedules(data.data);
-      }
+      if (data.success) setSchedules(data.data);
     } catch (e) {
       console.warn('Schedules fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchScenes = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/schedules/scenes`);
+      const data = await res.json();
+      if (data.success) setScenes(data.data);
+    } catch (e) {
+      console.warn('Scenes fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchRules = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/schedules/rules`);
+      const data = await res.json();
+      if (data.success) setRules(data.data);
+    } catch (e) {
+      console.warn('Rules fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchLoadShifting = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/schedules/load-shifting`);
+      const data = await res.json();
+      if (data.success) setLoadShifting(data.data);
+    } catch (e) {
+      console.warn('Load shifting fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchForecast = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/analytics/forecast`);
+      const data = await res.json();
+      if (data.success) setForecast(data.data);
+    } catch (e) {
+      console.warn('Forecast fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchCostIntelligence = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/analytics/cost-intelligence`);
+      const data = await res.json();
+      if (data.success) setCostInfo(data.data);
+    } catch (e) {
+      console.warn('Cost intelligence fetch error:', e.message);
+    }
+  }, [backendUrl]);
+
+  const fetchCarbonIntelligence = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/analytics/carbon-intelligence`);
+      const data = await res.json();
+      if (data.success) setCarbonInfo(data.data);
+    } catch (e) {
+      console.warn('Carbon intelligence fetch error:', e.message);
     }
   }, [backendUrl]);
 
@@ -187,11 +245,26 @@ export function EnergyProvider({ children }) {
     fetchNetworkInfo();
     fetchGatewayStatus();
     fetchSchedules();
-  }, [fetchNetworkInfo, fetchGatewayStatus, fetchSchedules]);
+    fetchScenes();
+    fetchRules();
+    fetchLoadShifting();
+    fetchForecast();
+    fetchCostIntelligence();
+    fetchCarbonIntelligence();
+  }, [
+    fetchNetworkInfo,
+    fetchGatewayStatus,
+    fetchSchedules,
+    fetchScenes,
+    fetchRules,
+    fetchLoadShifting,
+    fetchForecast,
+    fetchCostIntelligence,
+    fetchCarbonIntelligence
+  ]);
 
   // Action methods:
   const toggleAppliance = (id, targetState = null) => {
-    // Optimistic UI update
     setAppliances(prev => prev.map(a => {
       if (a.id === id) {
         const nextState = targetState !== null ? targetState : !a.isOn;
@@ -203,13 +276,57 @@ export function EnergyProvider({ children }) {
     if (socket && isConnected) {
       socket.emit('appliance:toggle', { id, state: targetState });
     } else {
-      // Fallback to REST
       fetch(`${backendUrl}/api/appliances/${id}/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ state: targetState })
       });
     }
+  };
+
+  const applyScene = async (sceneId) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/schedules/scenes/${sceneId}/apply`, { method: 'POST' });
+      const data = await res.json();
+      return data.success;
+    } catch (e) {
+      console.error('Apply scene error:', e.message);
+      return false;
+    }
+  };
+
+  const applyScenario = async (scenarioName) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/simulation/scenario`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ scenario: scenarioName })
+      });
+      const data = await res.json();
+      return data.success;
+    } catch (e) {
+      console.error('Apply scenario error:', e.message);
+      return false;
+    }
+  };
+
+  const updateConfig = async (config) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/simulation/config`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(config)
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchCostIntelligence();
+        fetchCarbonIntelligence();
+        return true;
+      }
+    } catch (e) {
+      console.error('Update config error:', e.message);
+    }
+    return false;
   };
 
   const injectAnomaly = (id = 'AC001', isAnomaly = true) => {
@@ -307,13 +424,24 @@ export function EnergyProvider({ children }) {
     alerts,
     recommendations,
     schedules,
+    scenes,
+    rules,
+    loadShifting,
+    forecast,
+    costInfo,
+    carbonInfo,
     gatewayStatus,
     networkInfo,
     isPaused,
     speedMultiplier,
     toastAlert,
     setToastAlert,
+    selectedDeviceForDetail,
+    setSelectedDeviceForDetail,
     toggleAppliance,
+    applyScene,
+    applyScenario,
+    updateConfig,
     injectAnomaly,
     setSimSpeed,
     togglePause,
@@ -323,6 +451,8 @@ export function EnergyProvider({ children }) {
     toggleSchedule,
     deleteSchedule,
     refreshSchedules: fetchSchedules,
+    refreshForecast: fetchForecast,
+    refreshCostIntelligence: fetchCostIntelligence
   };
 
   return (

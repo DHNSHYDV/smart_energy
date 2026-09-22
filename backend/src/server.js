@@ -83,6 +83,8 @@ if (fs.existsSync(frontendDistPath)) {
     // If request does not start with /api, serve index.html
     if (!req.path.startsWith('/api')) {
       res.sendFile(path.join(frontendDistPath, 'index.html'));
+    } else {
+      res.status(404).json({ success: false, message: `API route not found: ${req.path}` });
     }
   });
   console.log(`[Frontend] Serving pre-built web client from ${frontendDistPath}`);

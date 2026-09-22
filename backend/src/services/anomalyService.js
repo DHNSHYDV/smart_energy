@@ -75,12 +75,43 @@ export class AnomalyService extends EventEmitter {
     const lastAlert = this.alertCooldowns.get(cooldownKey) || 0;
     const now = Date.now();
 
-    // 60-second cooldown per specific alert type to avoid alert storming
+    // 60-second cooldown per alert type broadcast
     if (now - lastAlert < 60000) return;
-
     this.alertCooldowns.set(cooldownKey, now);
 
     try {
+      // Deduplication: check if an UNRESOLVED alert of the same type already exists for this appliance
+      const existingAlert = db.prepare(`
+        SELECT id, message, value, timestamp 
+        FROM alerts 
+        WHERE appliance_id = ? AND alert_type = ? AND is_resolved = 0
+        ORDER BY id DESC LIMIT 1
+      `).get(applianceId, alertType);
+
+      if (existingAlert) {
+        // Update existing active alert timestamp and value rather than spamming duplicate records
+        db.prepare(`
+          UPDATE alerts 
+          SET message = ?, value = ?, timestamp = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `).run(message, value, existingAlert.id);
+
+        const updatedAlert = {
+          id: existingAlert.id,
+          applianceId,
+          alertType,
+          severity,
+          message,
+          value,
+          threshold,
+          isResolved: false,
+          timestamp: new Date().toISOString()
+        };
+        this.emit('alert:updated', updatedAlert);
+        return;
+      }
+
+      // If no unresolved alert exists, create a new one
       const stmt = db.prepare(`
         INSERT INTO alerts (appliance_id, alert_type, severity, message, value, threshold, is_resolved)
         VALUES (?, ?, ?, ?, ?, ?, 0)

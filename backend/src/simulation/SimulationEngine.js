@@ -163,6 +163,62 @@ export class SimulationEngine extends EventEmitter {
     return app.toJSON();
   }
 
+  applyScenario(scenarioName) {
+    console.log(`[SimulationEngine] 🔬 Applying scenario: ${scenarioName}`);
+    switch (scenarioName) {
+      case 'normal':
+        // Reset all anomalies, set standard residential baseline
+        for (const app of this.appliances.values()) {
+          app.isAnomaly = false;
+        }
+        this.toggleAppliance('AC001', true);
+        this.toggleAppliance('FR001', true);
+        this.toggleAppliance('TV001', true);
+        this.toggleAppliance('PC001', true);
+        this.toggleAppliance('LT001', true);
+        this.toggleAppliance('FN001', true);
+        this.toggleAppliance('WM001', false);
+        this.toggleAppliance('GH001', false);
+        return { scenario: 'normal', description: 'Standard Residential Baseline (Approx 1.8 kW)' };
+
+      case 'high_demand':
+        // Concurrent heavy loads: AC + Geyser + Washer + PC
+        for (const app of this.appliances.values()) {
+          app.isAnomaly = false;
+        }
+        this.toggleAppliance('AC001', true);
+        this.toggleAppliance('GH001', true);
+        this.toggleAppliance('WM001', true);
+        this.toggleAppliance('PC001', true);
+        this.toggleAppliance('FR001', true);
+        return { scenario: 'high_demand', description: 'High Concurrent Demand Surge (> 4.5 kW peak, nears sanctioned domestic limit)' };
+
+      case 'peak_hour':
+        // Evening peak window (18:00 - 22:00) with surcharge
+        this.toggleAppliance('AC001', true);
+        this.toggleAppliance('TV001', true);
+        this.toggleAppliance('LT001', true);
+        this.toggleAppliance('GH001', true);
+        return { scenario: 'peak_hour', description: 'Evening Peak Tariff Window (18:00 - 22:00, 1.25x tariff surcharge applied)' };
+
+      case 'anomaly':
+        // Air Conditioner compressor motor winding fault
+        this.toggleAppliance('AC001', true);
+        this.setApplianceAnomaly('AC001', true);
+        return { scenario: 'anomaly', description: 'AC Compressor Fault Anomaly Injected (Excessive power draw > 2.2 kW)' };
+
+      case 'eco_mode':
+        // Energy conservation mode: Geyser & Washer shed, AC on eco
+        this.toggleAppliance('GH001', false);
+        this.toggleAppliance('WM001', false);
+        this.toggleAppliance('TV001', false);
+        return { scenario: 'eco_mode', description: 'Eco Conservation Mode (Non-critical flexible loads shed)' };
+
+      default:
+        return { scenario: 'unknown', description: 'Unknown scenario' };
+    }
+  }
+
   reset() {
     for (const sensor of this.sensors.values()) {
       sensor.resetEnergy(0);

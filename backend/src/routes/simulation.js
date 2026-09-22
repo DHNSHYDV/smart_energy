@@ -4,6 +4,11 @@ import { db } from '../config/database.js';
 export function createSimulationRouter(simulationEngine) {
   const router = Router();
 
+  // GET /api/simulation/snapshot
+  router.get('/snapshot', (req, res) => {
+    res.json({ success: true, data: simulationEngine.getSnapshot() });
+  });
+
   // POST /api/simulation/speed
   router.post('/speed', (req, res) => {
     const { speed } = req.body;
@@ -31,6 +36,14 @@ export function createSimulationRouter(simulationEngine) {
   router.post('/reset', (req, res) => {
     simulationEngine.reset();
     res.json({ success: true, message: 'Simulation counters and energy accumulators reset.' });
+  });
+
+  // POST /api/simulation/scenario
+  router.post('/scenario', (req, res) => {
+    const { scenario } = req.body;
+    if (!scenario) return res.status(400).json({ success: false, message: 'Scenario name is required.' });
+    const result = simulationEngine.applyScenario(scenario);
+    res.json({ success: true, data: result });
   });
 
   // POST /api/simulation/anomaly

@@ -71,6 +71,33 @@ export function createAnalyticsRouter(analyticsService, recommendationService, s
     res.send(csv);
   });
 
+  // GET /api/analytics/forecast
+  router.get('/forecast', (req, res) => {
+    const forecast = analyticsService.getDemandForecast();
+    res.json({
+      success: true,
+      data: forecast
+    });
+  });
+
+  // GET /api/analytics/cost-intelligence & alias /cost
+  router.get(['/cost-intelligence', '/cost'], (req, res) => {
+    const costInfo = analyticsService.getCostIntelligence();
+    res.json({
+      success: true,
+      data: costInfo
+    });
+  });
+
+  // GET /api/analytics/carbon-intelligence & alias /carbon
+  router.get(['/carbon-intelligence', '/carbon'], (req, res) => {
+    const carbonInfo = analyticsService.getCarbonIntelligence();
+    res.json({
+      success: true,
+      data: carbonInfo
+    });
+  });
+
   // GET /api/analytics/recommendations
   router.get('/recommendations', (req, res) => {
     const recommendations = recommendationService.generateRecommendations();
