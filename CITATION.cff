@@ -1,6 +1,6 @@
 cff-version: 1.2.0
-message: "If you utilize GridSense Enterprise EMS in academic research or industrial implementations, please cite this repository as below."
-title: "GridSense Enterprise EMS: IoT-Driven Energy Sensing, Diurnal ML Forecasting & Demand-Side Conservation Platform"
+message: "If you utilize Smart Energy Converter in academic research or industrial implementations, please cite this repository as below."
+title: "Smart Energy Converter: IoT-Driven Energy Sensing, Diurnal ML Forecasting & Demand-Side Conservation Platform"
 version: 2.0.0
 date-released: 2026-03-23
 url: "https://github.com/DHNSHYDV/smart_energy"

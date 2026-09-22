@@ -3,9 +3,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { INITIAL_APPLIANCES, SYSTEM_CONFIG } from './constants.js';
 
+import fs from 'fs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const dbPath = path.resolve(__dirname, '../../tracker.db');
+const dbPath = process.env.DATABASE_PATH || path.resolve(__dirname, '../../tracker.db');
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+  fs.mkdirSync(dbDir, { recursive: true });
+}
 
 export const db = new Database(dbPath);
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Smart Energy Tracker</string>
+    <string name="app_name">Smart Energy Converter</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_appliances">Devices</string>
     <string name="title_analytics">Analytics</string>

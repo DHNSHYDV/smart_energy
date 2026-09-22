@@ -87,7 +87,7 @@ function DashboardShell() {
       case 'config':
         return { title: 'Tariff & Energy Configuration', sub: 'Time-of-Day billing parameters, CEA carbon factors, and sanctioned utility limits' };
       default:
-        return { title: 'GridSense Enterprise EMS', sub: 'Smart Energy Conservation Tracker' };
+        return { title: 'Smart Energy Converter', sub: 'IoT Edge Energy Sensing & Conservation System' };
     }
   };
 
@@ -123,7 +123,7 @@ function DashboardShell() {
         <div className="flex md:flex-col items-center gap-4">
           <button
             onClick={() => setActiveTab('dashboard')}
-            title="GridSense Enterprise EMS"
+            title="Smart Energy Converter"
             className="w-11 h-11 rounded-2xl bg-[#fdf3db] text-neutral-900 flex items-center justify-center font-black shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all"
           >
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none">

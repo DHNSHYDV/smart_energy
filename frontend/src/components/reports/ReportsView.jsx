@@ -112,7 +112,7 @@ export function ReportsView() {
                 DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING · 2026-27
               </span>
               <h1 className="text-xl font-bold text-neutral-900 mt-1">
-                SMART ENERGY CONSERVATION TRACKER — AUDIT REPORT
+                SMART ENERGY CONVERTER — AUDIT REPORT
               </h1>
               <p className="text-xs text-neutral-600 mt-0.5">
                 IoT-Enabled Non-Invasive Sub-Metering & Automated Demand-Side Optimization (Major Project 22CSE74)

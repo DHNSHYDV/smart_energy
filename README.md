@@ -1,4 +1,4 @@
-# GridSense Enterprise EMS
+# Smart Energy Converter
 
 <div align="center">
 
@@ -20,6 +20,7 @@
 [![Protocol](https://img.shields.io/badge/Protocol-MQTT%203.1.1-660066.svg?style=for-the-badge&logo=eclipse-mosquitto)](https://mqtt.org/)
 [![Standard](https://img.shields.io/badge/Standard-IEC%2062053--21-0284c7.svg?style=for-the-badge)](data/)
 [![Academic](https://img.shields.io/badge/NHCE-CSE%2022CSE74-dc2626.svg?style=for-the-badge)](https://newhorizonindia.edu/)
+[![Railway](https://img.shields.io/badge/Deploy-Railway.com-0B0D0E.svg?style=for-the-badge&logo=railway)](https://railway.app/)
 
 **Department of Computer Science and Engineering | Academic Year 2026-27**  
 **Course:** 22CSE74 – Project Phase-II | **Institution:** New Horizon College of Engineering (NHCE), Bangalore  
@@ -34,7 +35,7 @@
 
 Traditional residential and commercial energy meters operate as coarse, passive accumulators: they record gross consumption at the utility boundary while remaining blind to individual circuit behavior, diurnal load patterns, power factor distortion, and peak-tariff pricing penalties.
 
-**GridSense Enterprise EMS** is an industrial-grade Energy Management System designed to bridge the gap between low-cost IoT edge sensing and enterprise SCADA analytics. It provides:
+**Smart Energy Converter** is an industrial-grade Energy Management System designed to bridge the gap between low-cost IoT edge sensing and enterprise SCADA analytics. It provides:
 1. **Sub-Second Sub-Metering**: Real-time instrumentation across 8 distinct electrical branch circuits, computing True RMS voltage ($V_{\text{RMS}}$), branch current ($I_{\text{RMS}}$), active power ($P$), apparent power ($S$), reactive power ($Q$), and displacement power factor ($\cos\phi$).
 2. **Deterministic Physical-to-Virtual Emulation**: An asynchronous physics engine executing at $1.0\text{ Hz}$ that mirrors the exact electrical behavior of non-invasive split-core Current Transformers (SCT-013), 16-bit analog-to-digital converters (ADS1115), and a 240MHz ESP32 edge gateway.
 3. **Automated Demand-Side Management (DSM)**: Dynamic load-curtailment rules, Time-of-Day (TOD) peak shifting, and 4 macro-scene automation profiles with sub-50ms optimistic relay feedback.
@@ -226,7 +227,35 @@ smartenergy/
 
 ---
 
-## 9. Quickstart & Installation Guide
+
+---
+
+## 9. 🚀 Deploy on Railway.com (1-Click Cloud Deployment)
+
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new)
+
+The **Smart Energy Converter** is fully containerized and production-ready for instant deployment on **[Railway.com](https://railway.com)** via its native Docker engine and `railway.json` configuration.
+
+### Steps to Deploy:
+1. **Fork or Push** this repository to your GitHub account (`https://github.com/DHNSHYDV/smart_energy`).
+2. Log in to [Railway.com](https://railway.com) and click **"New Project"**.
+3. Select **"Deploy from GitHub repo"** and choose your `smart_energy` repository.
+4. Railway will automatically detect the root [`Dockerfile`](Dockerfile) and [`railway.json`](railway.json).
+5. *(Optional Persistent Storage)*:
+   - Click **Add Service / Volume** and mount a persistent volume at path `/data`.
+   - In the **Variables** tab, set:
+     ```env
+     DATABASE_PATH=/data/tracker.db
+     ```
+6. Railway will automatically:
+   - Build the frontend assets using Vite (`frontend/dist`).
+   - Install backend production dependencies with native SQLite bindings.
+   - Bind dynamically to `$PORT` on `0.0.0.0`.
+   - Run health checks against `/api/simulation/snapshot`.
+7. Once deployed, Railway provides an instant public HTTPS URL (e.g. `https://smart-energy-converter.up.railway.app`). Both the web client and WebSocket streams operate seamlessly over HTTPS/WSS!
+
+---
+## 10. Quickstart & Local Installation Guide
 
 ### Prerequisites
 - **Node.js**: `v20.x` or higher (LTS recommended)
@@ -256,7 +285,7 @@ adb install -r GridSense-Android-v2.0.apk
 
 ---
 
-## 10. Repository File Structure
+## 11. Repository File Structure
 
 ```
 .
@@ -299,7 +328,7 @@ adb install -r GridSense-Android-v2.0.apk
 
 ---
 
-## 11. Academic Authorship & Citation
+## 12. Academic Authorship & Citation
 
 This project was engineered as part of the Major Project Phase-II curriculum (**22CSE74**) under the Department of Computer Science and Engineering, **New Horizon College of Engineering (NHCE)**, Bangalore.
 

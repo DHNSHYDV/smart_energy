@@ -98,7 +98,7 @@ const PORT = SYSTEM_CONFIG.PORT;
 httpServer.listen(PORT, '0.0.0.0', () => {
   const localIp = simulationEngine.esp32.getLocalIP();
   console.log('\n===============================================================');
-  console.log('⚡ SMART ENERGY CONSERVATION TRACKER - SIMULATION SYSTEM ⚡');
+  console.log('⚡ SMART ENERGY CONVERTER - SIMULATION SYSTEM ⚡');
   console.log('===============================================================');
   console.log(`📡 IoT Edge Gateway:  ${SYSTEM_CONFIG.DEVICE_ID} (ONLINE)`);
   console.log(`🔌 MQTT Broker:       mqtt://localhost:${SYSTEM_CONFIG.MQTT_PORT}`);
@@ -109,7 +109,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\nShutting down Smart Energy Tracker Simulation...');
+  console.log('\nShutting down Smart Energy Converter Simulation...');
   simulationEngine.stop();
   schedulerService.stop();
   process.exit(0);
