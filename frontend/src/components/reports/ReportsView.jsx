@@ -20,7 +20,8 @@ export function ReportsView() {
     appliances,
     costInfo,
     carbonInfo,
-    alerts
+    alerts,
+    currentUser
   } = useEnergy();
 
   const [period, setPeriod] = useState('month'); // 'today' | 'week' | 'month'
@@ -123,6 +124,25 @@ export function ReportsView() {
             </div>
           </div>
         </div>
+
+        {/* Resident & Consumer Premises Card */}
+        {currentUser && (
+          <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+            <div>
+              <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider block">CONSUMER PREMISES</span>
+              <p className="font-bold text-neutral-900 text-sm mt-0.5">{currentUser.name}</p>
+              <p className="text-neutral-700 font-semibold">{currentUser.door_no}</p>
+              <p className="text-neutral-500 text-[11px]">{currentUser.address}</p>
+            </div>
+            <div className="sm:text-right font-mono">
+              <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider block">BESCOM CONSUMER NO.</span>
+              <span className="inline-block mt-0.5 px-2.5 py-1 rounded bg-white border border-neutral-300 font-bold text-emerald-700 text-xs">
+                {currentUser.consumer_id}
+              </span>
+              <p className="text-[10px] text-neutral-400 mt-1">Tariff Schedule: LT-2(a) Domestic</p>
+            </div>
+          </div>
+        )}
 
         {/* 4-COLUMN AUDIT EXECUTIVE METRICS */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 p-4 rounded-xl bg-neutral-50 border border-neutral-200">

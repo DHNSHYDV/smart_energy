@@ -73,7 +73,10 @@ export function OverviewView() {
     costInfo,
     carbonInfo,
     setActiveTab,
-    setSelectedDeviceForDetail
+    setSelectedDeviceForDetail,
+    currentUser,
+    setAuthModalMode,
+    setIsAuthModalOpen
   } = useEnergy();
 
   // Active devices sorted by power draw
@@ -103,6 +106,45 @@ export function OverviewView() {
 
   return (
     <div className="space-y-6">
+
+      {/* RESIDENT CONTEXT BANNER */}
+      {currentUser && (
+        <div className="p-3.5 px-4 rounded-2xl bg-white border border-neutral-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+              {currentUser.name ? currentUser.name[0] : 'R'}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-neutral-900">{currentUser.name}</span>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">
+                  {currentUser.door_no}
+                </span>
+                <span className="text-[10px] font-mono text-neutral-400 hidden sm:inline">
+                  • {currentUser.consumer_id}
+                </span>
+              </div>
+              <p className="text-[11px] text-neutral-500 mt-0.5 truncate max-w-md">
+                {currentUser.address}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] font-medium text-neutral-500 hidden sm:inline">
+              <strong className="text-neutral-800">{activeAppliances.length}</strong> of {appliances.length} circuits active
+            </span>
+            <button
+              onClick={() => {
+                setAuthModalMode('login');
+                setIsAuthModalOpen(true);
+              }}
+              className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 text-neutral-700 transition-colors cursor-pointer"
+            >
+              Switch Resident
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* COMPACT KPI ROW (5 CARDS) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">

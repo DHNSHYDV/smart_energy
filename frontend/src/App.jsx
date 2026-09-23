@@ -14,6 +14,7 @@ import { MobileConnectModal } from './components/system/MobileConnectModal';
 import { AcademicMappingModal } from './components/system/AcademicMappingModal';
 import { DeviceDetailDrawer } from './components/ui/DeviceDetailDrawer';
 import { BottomNav } from './components/common/BottomNav';
+import { AuthModal } from './components/auth/AuthModal';
 import {
   LayoutGrid,
   Activity,
@@ -32,7 +33,13 @@ import {
   ChevronDown,
   X,
   AlertOctagon,
-  Power
+  Power,
+  User,
+  UserCheck,
+  UserPlus,
+  LogOut,
+  MapPin,
+  Building
 } from 'lucide-react';
 
 function DashboardShell() {
@@ -49,7 +56,13 @@ function DashboardShell() {
     setToastAlert,
     selectedDeviceForDetail,
     setSelectedDeviceForDetail,
-    toggleAppliance
+    toggleAppliance,
+    currentUser,
+    allUsers,
+    switchUser,
+    logout,
+    setIsAuthModalOpen,
+    setAuthModalMode
   } = useEnergy();
 
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
@@ -61,6 +74,13 @@ function DashboardShell() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const unreadAlerts = alerts.filter(a => !a.is_resolved);
+
+  const getInitials = (name) => {
+    if (!name) return 'RE';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
 
   // Tab Title helper
   const getTabTitle = () => {
@@ -435,58 +455,161 @@ function DashboardShell() {
               )}
             </div>
 
-            {/* Academic User Profile Pill */}
+            {/* Resident Profile Pill */}
             <div className="relative">
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="bg-neutral-100 hover:bg-neutral-200/80 px-2.5 py-1.5 rounded-full flex items-center gap-2 cursor-pointer transition-colors"
+                className="bg-neutral-100 hover:bg-neutral-200/80 px-2.5 py-1.5 rounded-full flex items-center gap-2 cursor-pointer transition-colors border border-neutral-200/60 shadow-xs"
               >
-                <div className="w-6 h-6 rounded-full bg-neutral-900 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">
-                  22
+                <div className="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-[10px] shadow-xs">
+                  {getInitials(currentUser?.name)}
                 </div>
-                <span className="text-xs font-semibold text-neutral-800">
-                  Dhanush Y.
-                </span>
-                <ChevronDown className="w-3.5 h-3.5 text-neutral-400" />
+                <div className="flex flex-col text-left">
+                  <span className="text-xs font-semibold text-neutral-800 leading-tight">
+                    {currentUser ? currentUser.name.split(' ')[0] : 'Resident'}
+                  </span>
+                  <span className="text-[10px] text-neutral-500 font-mono leading-none">
+                    {currentUser ? currentUser.door_no.split(',')[0] : 'Sign In'}
+                  </span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-neutral-400 ml-0.5" />
               </button>
 
-              {/* Profile / Project Menu */}
+              {/* Profile / Resident Menu Popover */}
               {isProfileDropdownOpen && (
-                <div className="absolute right-0 top-12 z-30 w-56 bg-white rounded-2xl shadow-xl border border-neutral-200 p-2 text-xs">
-                  <div className="p-2 border-b border-neutral-100 mb-1">
-                    <p className="font-bold text-neutral-900">Dhanush Yadav</p>
-                    <p className="text-[11px] text-neutral-400">22CSE74 Major Project</p>
+                <div className="absolute right-0 top-12 z-30 w-80 bg-white rounded-2xl shadow-2xl border border-neutral-200 p-3 text-xs animate-scale-in">
+                  {/* Resident Header Info */}
+                  <div className="p-3 bg-neutral-50 rounded-xl border border-neutral-100 mb-2.5">
+                    <div className="flex items-center gap-2.5 mb-2">
+                      <div className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs shadow-xs">
+                        {getInitials(currentUser?.name)}
+                      </div>
+                      <div className="overflow-hidden flex-1">
+                        <p className="font-bold text-neutral-900 text-sm truncate">{currentUser?.name || 'Local Resident'}</p>
+                        <p className="text-[11px] text-blue-700 font-semibold truncate">{currentUser?.door_no}</p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 pt-2 border-t border-neutral-200/60 text-[11px]">
+                      <div className="flex items-start gap-1.5 text-neutral-600">
+                        <MapPin className="w-3.5 h-3.5 shrink-0 text-neutral-400 mt-0.5" />
+                        <span className="leading-snug">{currentUser?.address || 'Local Energy Residence'}</span>
+                      </div>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] font-mono text-neutral-500 font-semibold">CONSUMER ID:</span>
+                        <span className="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                          {currentUser?.consumer_id || 'PROVISIONED'}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setIsAcademicModalOpen(true);
-                      setIsProfileDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100 text-neutral-700 flex items-center gap-2 cursor-pointer"
-                  >
-                    <GraduationCap className="w-4 h-4 text-emerald-600" />
-                    Academic Project Details
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsConnectModalOpen(true);
-                      setIsProfileDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100 text-neutral-700 flex items-center gap-2 cursor-pointer"
-                  >
-                    <Smartphone className="w-4 h-4 text-blue-600" />
-                    Mobile App (APK) Setup
-                  </button>
-                  <button
-                    onClick={() => {
-                      setIsLabOpen(true);
-                      setIsProfileDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-3 py-2 rounded-xl hover:bg-amber-50 text-amber-800 flex items-center gap-2 cursor-pointer"
-                  >
-                    <FlaskConical className="w-4 h-4 text-amber-600" />
-                    Viva Sandbox & Stress Tests
-                  </button>
+
+                  {/* Switch Resident Account */}
+                  <div className="mb-2">
+                    <div className="flex items-center justify-between px-1 mb-1">
+                      <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                        Switch Resident
+                      </span>
+                      <button
+                        onClick={() => {
+                          setAuthModalMode('signup');
+                          setIsAuthModalOpen(true);
+                          setIsProfileDropdownOpen(false);
+                        }}
+                        className="text-[11px] font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
+                      >
+                        <UserPlus className="w-3 h-3" />
+                        New Resident
+                      </button>
+                    </div>
+
+                    <div className="space-y-1 max-h-32 overflow-y-auto pr-1">
+                      {allUsers.map((u) => {
+                        const isCurrent = currentUser?.id === u.id;
+                        return (
+                          <button
+                            key={u.id}
+                            onClick={() => {
+                              switchUser(u.id);
+                              setIsProfileDropdownOpen(false);
+                            }}
+                            className={`w-full p-2 rounded-xl text-left flex items-center justify-between transition-colors cursor-pointer ${
+                              isCurrent
+                                ? 'bg-blue-50 text-blue-900 font-semibold border border-blue-200/60'
+                                : 'hover:bg-neutral-100 text-neutral-700'
+                            }`}
+                          >
+                            <div className="overflow-hidden">
+                              <p className="text-xs truncate">{u.name}</p>
+                              <p className="text-[10px] text-neutral-400 truncate">{u.door_no}</p>
+                            </div>
+                            {isCurrent && (
+                              <span className="w-2 h-2 rounded-full bg-blue-600 shrink-0"></span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Auth Actions */}
+                  <div className="pt-2 border-t border-neutral-100 space-y-1">
+                    <button
+                      onClick={() => {
+                        setAuthModalMode('login');
+                        setIsAuthModalOpen(true);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-neutral-100 text-neutral-700 flex items-center gap-2 cursor-pointer font-medium"
+                    >
+                      <User className="w-4 h-4 text-blue-600" />
+                      Sign In with Another Account
+                    </button>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-2 rounded-xl hover:bg-rose-50 text-rose-600 flex items-center gap-2 cursor-pointer font-medium"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" />
+                      Sign Out
+                    </button>
+                  </div>
+
+                  {/* System & Academic Actions */}
+                  <div className="pt-2 border-t border-neutral-100 space-y-1">
+                    <button
+                      onClick={() => {
+                        setIsAcademicModalOpen(true);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-neutral-100 text-neutral-600 flex items-center gap-2 cursor-pointer text-[11px]"
+                    >
+                      <GraduationCap className="w-3.5 h-3.5 text-emerald-600" />
+                      Academic Project Details
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsConnectModalOpen(true);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-neutral-100 text-neutral-600 flex items-center gap-2 cursor-pointer text-[11px]"
+                    >
+                      <Smartphone className="w-3.5 h-3.5 text-blue-600" />
+                      Mobile App (APK) Setup
+                    </button>
+                    <button
+                      onClick={() => {
+                        setIsLabOpen(true);
+                        setIsProfileDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-amber-50 text-amber-800 flex items-center gap-2 cursor-pointer text-[11px]"
+                    >
+                      <FlaskConical className="w-3.5 h-3.5 text-amber-600" />
+                      Viva Sandbox & Stress Tests
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
@@ -540,6 +663,7 @@ function DashboardShell() {
         isOpen={isAcademicModalOpen} 
         onClose={() => setIsAcademicModalOpen(false)} 
       />
+      <AuthModal />
 
       {/* Mobile Bottom Navigation */}
       <BottomNav 

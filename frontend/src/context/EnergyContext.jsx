@@ -41,6 +41,19 @@ export function EnergyProvider({ children }) {
   const [toastAlert, setToastAlert] = useState(null);
   const [selectedDeviceForDetail, setSelectedDeviceForDetail] = useState(null);
 
+  // Local User Authentication & Profile state
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('smart_energy_user');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [allUsers, setAllUsers] = useState([]);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('login'); // 'login' | 'signup'
+
   // Determine backend URL dynamically
   const getBackendUrl = () => {
     const host = window.location.hostname;
@@ -242,7 +255,36 @@ export function EnergyProvider({ children }) {
     }
   }, [backendUrl]);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/users`);
+      const data = await res.json();
+      if (data.success && data.users) {
+        setAllUsers(data.users);
+        setCurrentUser(prev => {
+          if (prev) {
+            // Keep current user updated with DB
+            const updated = data.users.find(u => u.id === prev.id);
+            if (updated) {
+              localStorage.setItem('smart_energy_user', JSON.stringify(updated));
+              return updated;
+            }
+          }
+          const defaultUser = data.users.find(u => u.id === data.activeUserId) || data.users[0];
+          if (defaultUser) {
+            localStorage.setItem('smart_energy_user', JSON.stringify(defaultUser));
+            return defaultUser;
+          }
+          return prev;
+        });
+      }
+    } catch (e) {
+      console.warn('[EnergyContext] Error loading resident accounts:', e.message);
+    }
+  }, [backendUrl]);
+
   useEffect(() => {
+    fetchUsers();
     fetchNetworkInfo();
     fetchGatewayStatus();
     fetchSchedules();
@@ -253,6 +295,7 @@ export function EnergyProvider({ children }) {
     fetchCostIntelligence();
     fetchCarbonIntelligence();
   }, [
+    fetchUsers,
     fetchNetworkInfo,
     fetchGatewayStatus,
     fetchSchedules,
@@ -264,15 +307,93 @@ export function EnergyProvider({ children }) {
     fetchCarbonIntelligence
   ]);
 
+  // Auth action methods:
+  const login = async (email, password) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Login failed');
+      }
+      setCurrentUser(data.user);
+      localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
+      fetchUsers();
+      setIsAuthModalOpen(false);
+      return { success: true, user: data.user };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  };
+
+  const signup = async (userData) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData)
+      });
+      const data = await res.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Signup failed');
+      }
+      setCurrentUser(data.user);
+      localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
+      fetchUsers();
+      setIsAuthModalOpen(false);
+      return { success: true, user: data.user };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  };
+
+  const switchUser = async (userId) => {
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/switch`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId })
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
+        return { success: true, user: data.user };
+      }
+    } catch (e) {
+      console.error('Switch user error:', e.message);
+    }
+    return { success: false };
+  };
+
+  const logout = () => {
+    localStorage.removeItem('smart_energy_user');
+    setCurrentUser(null);
+    setAuthModalMode('login');
+    setIsAuthModalOpen(true);
+  };
+
   // Action methods:
   const toggleAppliance = (id, targetState = null) => {
+    let nextState;
     setAppliances(prev => prev.map(a => {
       if (a.id === id) {
-        const nextState = targetState !== null ? targetState : !a.isOn;
+        nextState = targetState !== null ? targetState : !a.isOn;
         return { ...a, isOn: nextState };
       }
       return a;
     }));
+
+    if (currentUser?.id) {
+      fetch(`${backendUrl}/api/auth/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: currentUser.id, applianceId: id, state: nextState })
+      }).catch(err => console.warn('Auth toggle sync error:', err.message));
+    }
 
     if (socket && isConnected) {
       socket.emit('appliance:toggle', { id, state: targetState });
@@ -450,7 +571,17 @@ export function EnergyProvider({ children }) {
     resolveAlert,
     addSchedule,
     toggleSchedule,
-    deleteSchedule,
+    currentUser,
+    allUsers,
+    isAuthModalOpen,
+    setIsAuthModalOpen,
+    authModalMode,
+    setAuthModalMode,
+    login,
+    signup,
+    switchUser,
+    logout,
+    refreshUsers: fetchUsers,
     refreshSchedules: fetchSchedules,
     refreshForecast: fetchForecast,
     refreshCostIntelligence: fetchCostIntelligence

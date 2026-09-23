@@ -24,6 +24,7 @@ import { createAlertsRouter } from './routes/alerts.js';
 import { createSchedulesRouter } from './routes/schedules.js';
 import { createSimulationRouter } from './routes/simulation.js';
 import { createSystemRouter } from './routes/system.js';
+import { createAuthRouter } from './routes/auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,6 +63,7 @@ const io = new SocketIOServer(httpServer, {
 initSocketHandler(io, simulationEngine, anomalyService, recommendationService, mqttService);
 
 // 7. Mount REST API Routes
+app.use('/api/auth', createAuthRouter(simulationEngine, mqttService));
 app.use('/api/appliances', createApplianceRouter(simulationEngine, mqttService));
 app.use('/api/analytics', createAnalyticsRouter(analyticsServiceInstance(analyticsServiceWrapper(simulationEngine)), recommendationService, simulationEngine));
 app.use('/api/alerts', createAlertsRouter(anomalyService));

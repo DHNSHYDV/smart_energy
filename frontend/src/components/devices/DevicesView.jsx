@@ -49,7 +49,8 @@ export function DevicesView() {
     toggleAppliance,
     setSelectedDeviceForDetail,
     injectAnomaly,
-    telemetry
+    telemetry,
+    currentUser
   } = useEnergy();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -83,6 +84,11 @@ export function DevicesView() {
             <SlidersHorizontal className="w-5 h-5 text-neutral-700" />
             Sub-Circuits
           </h2>
+          {currentUser && (
+            <p className="text-xs text-neutral-500 mt-0.5">
+              Premises: <strong className="text-neutral-800">{currentUser.door_no}</strong> · Resident: {currentUser.name}
+            </p>
+          )}
         </div>
 
         {/* Live Aggregates */}

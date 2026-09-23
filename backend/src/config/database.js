@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 import { INITIAL_APPLIANCES, SYSTEM_CONFIG } from './constants.js';
 
 import fs from 'fs';
@@ -105,7 +106,31 @@ export function initDatabase() {
       is_active INTEGER DEFAULT 1,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      name TEXT NOT NULL,
+      door_no TEXT NOT NULL,
+      address TEXT NOT NULL,
+      consumer_id TEXT NOT NULL UNIQUE,
+      email TEXT NOT NULL UNIQUE,
+      password_hash TEXT NOT NULL,
+      salt TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE IF NOT EXISTS user_appliance_states (
+      user_id TEXT NOT NULL,
+      appliance_id TEXT NOT NULL,
+      is_on INTEGER DEFAULT 1,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (user_id, appliance_id),
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    );
   `);
+
+  // Seed default users if empty
+  seedDefaultUsers();
 
   // Seed default settings if empty
   const getSetting = db.prepare('SELECT value FROM settings WHERE key = ?');
@@ -222,4 +247,85 @@ function seedDefaultSchedules() {
   insertSchedule.run('GH001', 'OFF', '07:30', JSON.stringify(['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN']), 1);
   insertSchedule.run('AC001', 'OFF', '07:00', JSON.stringify(['MON', 'TUE', 'WED', 'THU', 'FRI']), 1);
   console.log('[Database] Seeded default automated conservation schedules.');
+}
+
+export function generateSalt() {
+  return crypto.randomBytes(16).toString('hex');
+}
+
+export function hashPassword(password, salt) {
+  return crypto.pbkdf2Sync(password, salt, 10000, 64, 'sha512').toString('hex');
+}
+
+export function verifyPassword(password, salt, storedHash) {
+  const hash = hashPassword(password, salt);
+  return crypto.timingSafeEqual(Buffer.from(hash), Buffer.from(storedHash));
+}
+
+export function seedDefaultUsers() {
+  const count = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
+  if (count === 0) {
+    const insertUser = db.prepare(`
+      INSERT INTO users (id, name, door_no, address, consumer_id, email, password_hash, salt)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertState = db.prepare(`
+      INSERT OR REPLACE INTO user_appliance_states (user_id, appliance_id, is_on)
+      VALUES (?, ?, ?)
+    `);
+
+    const dhanushSalt = generateSalt();
+    const dhanushHash = hashPassword('password123', dhanushSalt);
+
+    const priyaSalt = generateSalt();
+    const priyaHash = hashPassword('password123', priyaSalt);
+
+    const seedTx = db.transaction(() => {
+      // 1. Dhanush Yadav (Primary Account)
+      insertUser.run(
+        'usr_dhanush',
+        'Dhanush Yadav',
+        'Flat 402, Block B',
+        'Green Glen Layout, Bellandur, Bengaluru - 560103',
+        'BESCOM-BLR-D402-A81',
+        'dhanush@smartenergy.in',
+        dhanushHash,
+        dhanushSalt
+      );
+
+      // Dhanush's appliances state: AC, Fridge, TV, PC, Light, Fan ON; Washer, Geyser OFF
+      const dhanushStates = {
+        'AC001': 1, 'FR001': 1, 'TV001': 1, 'PC001': 1,
+        'LT001': 1, 'FN001': 1, 'WM001': 0, 'GH001': 0
+      };
+      for (const [appId, isOn] of Object.entries(dhanushStates)) {
+        insertState.run('usr_dhanush', appId, isOn);
+      }
+
+      // 2. Priya Sharma (Secondary Demo Account)
+      insertUser.run(
+        'usr_priya',
+        'Priya Sharma',
+        'Villa 12',
+        'Prestige Ozone, Whitefield, Bengaluru - 560066',
+        'BESCOM-BLR-V012-C44',
+        'priya@smartenergy.in',
+        priyaHash,
+        priyaSalt
+      );
+
+      // Priya's appliances state: AC OFF, Fridge ON, TV OFF, PC OFF, Light ON, Fan ON, Washer ON, Geyser ON
+      const priyaStates = {
+        'AC001': 0, 'FR001': 1, 'TV001': 0, 'PC001': 0,
+        'LT001': 1, 'FN001': 1, 'WM001': 1, 'GH001': 1
+      };
+      for (const [appId, isOn] of Object.entries(priyaStates)) {
+        insertState.run('usr_priya', appId, isOn);
+      }
+    });
+
+    seedTx();
+    console.log('[Database] Seeded default resident accounts: Dhanush Yadav and Priya Sharma.');
+  }
 }
