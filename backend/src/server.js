@@ -80,6 +80,16 @@ function analyticsServiceWrapper(engine) {
   return new AnalyticsService(engine);
 }
 
+// Direct APK download route for mobile devices on local Wi-Fi
+app.get('/download/apk', (req, res) => {
+  const apkPath = path.resolve(__dirname, '../../GridSense-Android-v2.0.apk');
+  if (fs.existsSync(apkPath)) {
+    res.download(apkPath, 'GridSense-Android-v2.0.apk');
+  } else {
+    res.status(404).send('APK not found on server');
+  }
+});
+
 // 8. Serve Frontend Static Production Build (if present)
 const frontendDistPath = path.resolve(__dirname, '../../frontend/dist');
 if (fs.existsSync(frontendDistPath)) {
