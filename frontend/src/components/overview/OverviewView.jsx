@@ -21,8 +21,46 @@ import {
   Sparkles,
   Wifi,
   ShieldCheck,
-  Server
+  Server,
+  Snowflake,
+  Monitor,
+  Tv,
+  Flame,
+  Wind,
+  Disc,
+  Lightbulb,
+  Refrigerator
 } from 'lucide-react';
+
+function getApplianceIcon(app) {
+  const id = (app.id || '').toLowerCase();
+  const name = (app.name || '').toLowerCase();
+  if (id.includes('ac') || name.includes('ac') || name.includes('air')) {
+    return <Snowflake className="w-4 h-4 text-sky-600" />;
+  }
+  if (id.includes('pc') || name.includes('computer') || name.includes('pc')) {
+    return <Monitor className="w-4 h-4 text-indigo-600" />;
+  }
+  if (id.includes('tv') || name.includes('tv') || name.includes('television')) {
+    return <Tv className="w-4 h-4 text-purple-600" />;
+  }
+  if (id.includes('heater') || id.includes('geyser') || name.includes('heater')) {
+    return <Flame className="w-4 h-4 text-amber-600" />;
+  }
+  if (id.includes('fridge') || name.includes('fridge') || name.includes('refrigerator')) {
+    return <Refrigerator className="w-4 h-4 text-cyan-600" />;
+  }
+  if (id.includes('wash') || name.includes('washing')) {
+    return <Disc className="w-4 h-4 text-blue-600" />;
+  }
+  if (id.includes('fan') || name.includes('fan')) {
+    return <Wind className="w-4 h-4 text-teal-600" />;
+  }
+  if (id.includes('light') || name.includes('light')) {
+    return <Lightbulb className="w-4 h-4 text-amber-500" />;
+  }
+  return <Zap className="w-4 h-4 text-neutral-600" />;
+}
 
 export function OverviewView() {
   const { 
@@ -65,29 +103,6 @@ export function OverviewView() {
 
   return (
     <div className="space-y-6">
-
-      {/* TOP SYSTEM STATUS BAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-neutral-50 border border-neutral-200/80">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            All Systems Operational
-          </span>
-          <span className="text-xs text-neutral-500 hidden sm:inline">
-            IoT Gateway: <strong className="text-neutral-800 font-mono">ESP32-SIM-001</strong> · 8/8 Devices Active
-          </span>
-        </div>
-
-        <div className="flex items-center gap-4 text-xs text-neutral-500">
-          <span className="flex items-center gap-1">
-            <Wifi className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Telemetry: 1.0s stream</span>
-          </span>
-          <span className="font-mono text-neutral-700 font-medium">
-            Tariff: ₹{telemetry.tariffRate.toFixed(2)}/kWh {telemetry.isPeakHour ? '(Peak 1.25x)' : '(Standard)'}
-          </span>
-        </div>
-      </div>
 
       {/* COMPACT KPI ROW (5 CARDS) */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -192,9 +207,6 @@ export function OverviewView() {
                   <Activity className="w-4 h-4 text-blue-600" />
                   Live Building Load Profile
                 </h3>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  Sub-second RMS power curve streamed from Virtual CT Sensors
-                </p>
               </div>
 
               {/* Sub-metrics indicator pills */}
@@ -271,8 +283,8 @@ export function OverviewView() {
                       onClick={() => setSelectedDeviceForDetail(app)}
                       className="flex items-center gap-3 cursor-pointer flex-1"
                     >
-                      <div className="w-8 h-8 rounded-xl bg-neutral-900 text-white flex items-center justify-center font-bold text-xs">
-                        {app.id.slice(0, 2)}
+                      <div className="w-9 h-9 rounded-xl bg-neutral-100 border border-neutral-200/90 flex items-center justify-center shrink-0">
+                        {getApplianceIcon(app)}
                       </div>
                       <div>
                         <h4 className="font-bold text-xs text-neutral-900">{app.name}</h4>
@@ -360,7 +372,7 @@ export function OverviewView() {
 
           {/* MONTHLY ENERGY BUDGET & SAVINGS */}
           <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-xs">
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-bold text-neutral-900 tracking-tight">
                 Monthly Conservation Budget
               </h3>
@@ -368,10 +380,6 @@ export function OverviewView() {
                 ₹{telemetry.estimatedCost.toFixed(0)} / ₹2,500
               </span>
             </div>
-
-            <p className="text-xs text-neutral-500 mb-3">
-              Target monthly expenditure limit configured for domestic residence.
-            </p>
 
             {/* Progress bar */}
             <div className="w-full bg-neutral-100 rounded-full h-2.5 overflow-hidden mb-3">
@@ -399,7 +407,6 @@ export function OverviewView() {
               <Server className="w-4 h-4 text-neutral-600" />
               <div>
                 <span className="font-bold text-neutral-900 block">Simulation Node Health</span>
-                <span className="text-[11px] text-neutral-500">FreeRTOS ESP32 Core · SQLite WAL High-Throughput</span>
               </div>
             </div>
 

@@ -116,166 +116,206 @@ function DashboardShell() {
         </div>
       )}
 
-      {/* LEFT DOCKED DARK SIDEBAR (Fixed Viewport Height) */}
-      <aside className="w-full md:w-20 md:h-screen md:sticky md:top-0 bg-[#16171b] flex md:flex-col items-center justify-between p-3 md:py-6 md:px-2 shrink-0 border-b md:border-b-0 md:border-r border-neutral-800/80 z-20">
+      {/* LEFT DOCKED DARK SIDEBAR (Professional Enterprise Desktop Layout) */}
+      <aside className="w-full md:w-64 md:h-screen md:sticky md:top-0 bg-[#111215] flex md:flex-col justify-between p-3 md:p-4 shrink-0 border-b md:border-b-0 md:border-r border-neutral-800/80 z-20 text-neutral-300 select-none">
         
-        {/* Top Section: Logo + Main Nav */}
-        <div className="flex md:flex-col items-center gap-4">
-          <button
+        {/* Top: Logo + Nav Items */}
+        <div className="flex md:flex-col gap-4 w-full">
+          
+          {/* Logo Header */}
+          <div 
             onClick={() => setActiveTab('dashboard')}
-            title="Smart Energy Converter"
-            className="w-11 h-11 rounded-2xl bg-[#fdf3db] text-neutral-900 flex items-center justify-center font-black shadow-sm cursor-pointer hover:scale-105 active:scale-95 transition-all"
+            className="flex items-center gap-3 px-2 py-1.5 cursor-pointer group"
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M13 2L4 13h6l-1 9 9-11h-6l1-9z" fill="#16171b" />
-            </svg>
-          </button>
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center text-white shadow-lg shadow-emerald-950/40 ring-1 ring-white/10 group-hover:scale-105 transition-transform shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4 13h6l-1 9 9-11h-6l1-9z" fill="white" />
+              </svg>
+            </div>
+            <div className="hidden md:block leading-tight">
+              <div className="flex items-center gap-1.5">
+                <span className="font-bold text-white text-sm tracking-tight">Smart Energy</span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v2.0</span>
+              </div>
+              <span className="text-[10px] uppercase font-mono font-semibold tracking-wider text-neutral-400 block mt-0.5">
+                Enterprise Converter
+              </span>
+            </div>
+          </div>
 
-          {/* Vertical Primary Navigation Bar */}
-          <nav className="flex md:flex-col items-center gap-1.5 md:space-y-1.5 md:mt-6">
+          {/* Navigation Items */}
+          <nav className="flex md:flex-col gap-1 w-full overflow-x-auto md:overflow-visible">
             
+            <div className="hidden md:block text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-3 pt-2 pb-1">
+              Operations
+            </div>
+
             {/* 1. Overview */}
             <button
               onClick={() => setActiveTab('dashboard')}
-              title="Overview Command Center"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'dashboard' || activeTab === 'overview'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <LayoutGrid className="w-5 h-5" />
+              <LayoutGrid className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Overview</span>
             </button>
 
             {/* 2. Live Telemetry */}
             <button
               onClick={() => setActiveTab('live')}
-              title="Live Incomer & CT Telemetry"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'live'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Activity className="w-5 h-5" />
+              <Activity className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Live Telemetry</span>
             </button>
 
             {/* 3. Devices */}
             <button
               onClick={() => setActiveTab('devices')}
-              title="Appliance Catalog & Relays"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'devices' || activeTab === 'appliances'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Cpu className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <Cpu className="w-4 h-4 shrink-0" />
+                <span className="hidden md:inline">Sub-Circuits</span>
+              </div>
+              <span className="hidden md:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">
+                {appliances.length}
+              </span>
             </button>
 
             {/* 4. Analytics */}
             <button
               onClick={() => setActiveTab('analytics')}
-              title="Analytics & Demand Forecast"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'analytics'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <BarChart3 className="w-5 h-5" />
+              <BarChart3 className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Analytics</span>
             </button>
 
             {/* 5. Automations */}
             <button
               onClick={() => setActiveTab('automations')}
-              title="Automations, Scenes & Shifting"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'automations' || activeTab === 'schedules'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Automations</span>
             </button>
 
             {/* 6. Alerts */}
             <button
               onClick={() => setActiveTab('alerts')}
-              title="System Alerts & Incidents"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer relative ${
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'alerts'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <ShieldAlert className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <ShieldAlert className="w-4 h-4 shrink-0" />
+                <span className="hidden md:inline">Incidents</span>
+              </div>
               {unreadAlerts.length > 0 && (
-                <span className="w-2 h-2 rounded-full bg-rose-500 absolute top-2 right-2 ring-2 ring-[#16171b]"></span>
+                <span className="px-1.5 py-0.2 rounded-full text-[10px] font-bold bg-rose-500 text-white">
+                  {unreadAlerts.length}
+                </span>
               )}
             </button>
 
             {/* 7. Reports */}
             <button
               onClick={() => setActiveTab('reports')}
-              title="Audit Reports & CSV Export"
-              className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
                 activeTab === 'reports'
-                  ? 'text-white bg-neutral-800/90 shadow-sm'
-                  : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
               }`}
             >
-              <FileText className="w-5 h-5" />
+              <FileText className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Audit Reports</span>
+            </button>
+
+            <div className="hidden md:block text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-3 pt-3 pb-1">
+              System &amp; Testing
+            </div>
+
+            {/* 8. IoT Network */}
+            <button
+              onClick={() => setActiveTab('network')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
+                activeTab === 'network'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Radio className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">IoT Gateway</span>
+            </button>
+
+            {/* 9. Config */}
+            <button
+              onClick={() => setActiveTab('config')}
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
+                activeTab === 'config'
+                  ? 'text-white bg-white/10 shadow-sm ring-1 ring-white/10'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <Settings className="w-4 h-4 shrink-0" />
+              <span className="hidden md:inline">Tariff &amp; Config</span>
+            </button>
+
+            {/* 10. Viva Sandbox */}
+            <button
+              onClick={() => setIsLabOpen(true)}
+              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 transition-all cursor-pointer w-full text-left mt-1 border border-amber-400/20"
+            >
+              <div className="flex items-center gap-3">
+                <FlaskConical className="w-4 h-4 shrink-0" />
+                <span className="hidden md:inline">Viva Sandbox</span>
+              </div>
+              <span className="hidden md:inline text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300">
+                LAB
+              </span>
             </button>
 
           </nav>
         </div>
 
-        {/* Bottom Section: Admin / Hardware / Lab Tools */}
-        <div className="hidden md:flex flex-col items-center gap-1.5 space-y-1">
-          {/* IoT Network */}
-          <button
-            onClick={() => setActiveTab('network')}
-            title="IoT Gateway & Network Topology"
-            className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
-              activeTab === 'network'
-                ? 'text-white bg-neutral-800/90'
-                : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40'
-            }`}
-          >
-            <Radio className="w-5 h-5" />
-          </button>
+        {/* Bottom Section: Gateway Status & Mobile APK */}
+        <div className="hidden md:flex flex-col gap-2 pt-3 border-t border-neutral-800/80">
+          <div className="p-2.5 rounded-xl bg-neutral-900/90 border border-neutral-800 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-[11px] font-mono text-neutral-300">ESP32-SIM-001</span>
+            </div>
+            <span className="text-[10px] font-mono text-emerald-400 font-semibold">50.0 Hz</span>
+          </div>
 
-          {/* Energy Config */}
-          <button
-            onClick={() => setActiveTab('config')}
-            title="Tariff & Carbon Config"
-            className={`p-2.5 rounded-2xl transition-all cursor-pointer ${
-              activeTab === 'config'
-                ? 'text-white bg-neutral-800/90'
-                : 'text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40'
-            }`}
-          >
-            <Settings className="w-5 h-5" />
-          </button>
-
-          {/* System Lab (Viva Demonstration Sandbox) */}
-          <button
-            onClick={() => setIsLabOpen(true)}
-            title="Viva Simulation Sandbox & Stress Testing"
-            className="p-2.5 rounded-2xl text-amber-400 hover:text-amber-300 hover:bg-neutral-800/40 transition-all cursor-pointer relative"
-          >
-            <FlaskConical className="w-5 h-5" />
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 absolute top-2 right-2 animate-ping"></span>
-          </button>
-
-          {/* Mobile Connect Modal */}
           <button
             onClick={() => setIsConnectModalOpen(true)}
-            title="Mobile App (APK) Setup"
-            className="p-2.5 rounded-2xl text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800/40 transition-all cursor-pointer"
+            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-neutral-800/70 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-all cursor-pointer border border-neutral-700/50"
           >
-            <Smartphone className="w-5 h-5" />
+            <Smartphone className="w-3.5 h-3.5 text-neutral-400" />
+            <span>Connect Mobile App</span>
           </button>
         </div>
 
@@ -285,16 +325,13 @@ function DashboardShell() {
       <main className="flex-1 bg-white md:m-3 md:rounded-[32px] p-5 sm:p-7 lg:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto h-[calc(100vh-1rem)] md:h-[calc(100vh-1.5rem)] pb-20 md:pb-8">
         
         {/* Top Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-5 mb-3 border-b border-neutral-100 gap-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-neutral-100 gap-3">
           
-          {/* Title & Subtitle */}
+          {/* Bold Title Only (No AI Slop Subtitle) */}
           <div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
               {currentTabInfo.title}
             </h1>
-            <p className="text-xs text-neutral-500 mt-0.5">
-              {currentTabInfo.sub}
-            </p>
           </div>
 
           {/* Right Controls Bar */}

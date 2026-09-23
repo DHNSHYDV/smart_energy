@@ -59,9 +59,6 @@ export function AlertsView() {
             <ShieldAlert className="w-5 h-5 text-neutral-800" />
             Alerts & Anomaly Incident Log
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Deduplicated real-time detection of inrush currents, low power factors, and sustained peak demand
-          </p>
         </div>
 
         {/* Status Filters */}

@@ -59,9 +59,6 @@ export function EnergyConfigView() {
             <Settings className="w-5 h-5 text-neutral-800" />
             Energy Billing & Threshold Configuration
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Configure Time-of-Day (TOD) tariff slabs, statutory CEA carbon factors, and sanctioned utility limits
-          </p>
         </div>
 
         <button

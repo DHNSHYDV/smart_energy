@@ -46,9 +46,6 @@ export function ReportsView() {
             <FileText className="w-5 h-5 text-neutral-800" />
             Energy Audit & Compliance Reports
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Downloadable CSV audit logs, printable conservation statements, and academic evaluation records
-          </p>
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">

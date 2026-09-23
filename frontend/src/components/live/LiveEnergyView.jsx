@@ -101,9 +101,6 @@ export function LiveEnergyView() {
               1-Phase 230V AC · 50.0 Hz
             </span>
           </div>
-          <p className="text-xs text-neutral-400 mt-1">
-            Real-time True RMS integration via Non-invasive CT Sensor Clamp SCT-013 & ADS1115 ADC
-          </p>
         </div>
 
         {/* Sanctioned Demand Bar */}
@@ -285,9 +282,6 @@ export function LiveEnergyView() {
               <Radio className="w-4 h-4 text-emerald-600" />
               Sub-Circuit CT Clamp Channels (ADS1115 Multiplexer)
             </h3>
-            <p className="text-xs text-neutral-500 mt-0.5">
-              Individual channel telemetry derived from simulated non-invasive current transducers
-            </p>
           </div>
           <span className="text-xs font-mono text-neutral-400">
             Sampling Rate: 1000 Hz / ADC

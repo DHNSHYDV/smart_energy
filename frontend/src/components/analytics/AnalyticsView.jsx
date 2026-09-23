@@ -128,9 +128,6 @@ export function AnalyticsView() {
             <BarChart3 className="w-5 h-5 text-neutral-800" />
             Energy Intelligence & Predictive Forecasting
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Diurnal demand regression, Time-of-Day (TOD) tariff analysis, and device attribution
-          </p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -238,9 +235,6 @@ export function AnalyticsView() {
                 Holt-Winters Moving Trend ({forecast?.confidenceScore || 91.4}% Confidence)
               </span>
             </div>
-            <p className="text-xs text-neutral-500 mt-0.5">
-              Simulated time-series predictor modeling residential occupancy patterns and TOD tariff response
-            </p>
           </div>
 
           <div className="flex items-center gap-4 text-xs font-mono">
@@ -330,7 +324,6 @@ export function AnalyticsView() {
           <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
             <div>
               <h3 className="font-bold text-sm text-neutral-900">Daily Energy Consumption ({range})</h3>
-              <p className="text-xs text-neutral-500 mt-0.5">Aggregated kWh logged by SQLite WAL store</p>
             </div>
           </div>
 
@@ -372,7 +365,6 @@ export function AnalyticsView() {
           <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
             <div>
               <h3 className="font-bold text-sm text-neutral-900">Appliance Consumption Attribution</h3>
-              <p className="text-xs text-neutral-500 mt-0.5">Energy distribution across monitored circuits</p>
             </div>
           </div>
 

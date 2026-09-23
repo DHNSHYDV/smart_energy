@@ -69,9 +69,6 @@ export function DevicesView() {
             <SlidersHorizontal className="w-5 h-5 text-neutral-700" />
             Device Catalog & Relay Control
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Individual sub-metering points mapped to physical CT channels and smart relay contacts
-          </p>
         </div>
 
         {/* Live Aggregates */}

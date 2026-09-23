@@ -221,9 +221,6 @@ export function AutomationsView() {
             <Sparkles className="w-5 h-5 text-neutral-800" />
             Automations & Demand-Side Management (DSM)
           </h2>
-          <p className="text-xs text-neutral-500 mt-0.5">
-            Orchestrate one-touch scenes, cron schedules, automated demand rules, and peak load shifting
-          </p>
         </div>
 
         {/* SubTab Pills */}
@@ -444,9 +441,6 @@ export function AutomationsView() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-100">
               <div>
                 <h3 className="font-bold text-sm text-neutral-900">Time-of-Day (TOD) Peak Tariff Load Shifting</h3>
-                <p className="text-xs text-neutral-500 mt-0.5">
-                  Financial benefit analysis of shifting heavy resistive and inductive loads out of the evening peak surcharge window
-                </p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                 Peak Surcharge Window: {effectiveLoadShifting.peakWindow}
