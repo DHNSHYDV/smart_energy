@@ -67,27 +67,27 @@ function DashboardShell() {
     switch (activeTab) {
       case 'dashboard':
       case 'overview':
-        return { title: 'Operational Command Center', sub: 'Real-time building load profile, active circuits, and conservation KPIs' };
+        return { title: 'Overview' };
       case 'live':
-        return { title: 'Live Incomer & CT Telemetry', sub: 'Waveform telemetry, RMS voltages, line currents, and 8-channel sub-metering' };
+        return { title: 'Live Telemetry' };
       case 'appliances':
       case 'devices':
-        return { title: 'Device Catalog & Sub-Circuit Relays', sub: 'Individual appliance loads, power factors, and automated switching contacts' };
+        return { title: 'Sub-Circuits' };
       case 'analytics':
-        return { title: 'Analytics & Diurnal ML Forecasting', sub: '24-hour predictive demand regression, Time-of-Day tariff analysis, and device attribution' };
+        return { title: 'Analytics' };
       case 'schedules':
       case 'automations':
-        return { title: 'Automations & Demand-Side Management', sub: 'One-touch scenes, cron schedules, automated smart rules, and peak load shifting' };
+        return { title: 'Automations' };
       case 'alerts':
-        return { title: 'System Alerts & Anomaly Incidents', sub: 'Deduplicated detection of current surges, low power factor, and sustained peak demand' };
+        return { title: 'Incidents' };
       case 'reports':
-        return { title: 'Energy Audit & Compliance Reports', sub: 'Downloadable CSV audit statements, printable reports, and academic evaluation records' };
+        return { title: 'Audit Reports' };
       case 'network':
-        return { title: 'IoT Network & Microcontroller Gateway', sub: 'ESP32-SIM-001 hardware telemetry, Aedes MQTT broker stream, and physical-to-virtual topology' };
+        return { title: 'IoT Gateway' };
       case 'config':
-        return { title: 'Tariff & Energy Configuration', sub: 'Time-of-Day billing parameters, CEA carbon factors, and sanctioned utility limits' };
+        return { title: 'Configuration' };
       default:
-        return { title: 'Smart Energy Converter', sub: 'IoT Edge Energy Sensing & Conservation System' };
+        return { title: 'Smart Energy Converter' };
     }
   };
 
@@ -254,7 +254,7 @@ function DashboardShell() {
             </button>
 
             <div className="hidden md:block text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-3 pt-3 pb-1">
-              System &amp; Testing
+              System
             </div>
 
             {/* 8. IoT Network */}
@@ -280,7 +280,7 @@ function DashboardShell() {
               }`}
             >
               <Settings className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">Tariff &amp; Config</span>
+              <span className="hidden md:inline">Configuration</span>
             </button>
 
             {/* 10. Viva Sandbox */}

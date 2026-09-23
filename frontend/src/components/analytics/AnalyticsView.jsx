@@ -126,7 +126,7 @@ export function AnalyticsView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <BarChart3 className="w-5 h-5 text-neutral-800" />
-            Energy Intelligence & Predictive Forecasting
+            Predictive Analytics
           </h2>
         </div>
 

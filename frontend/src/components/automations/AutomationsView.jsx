@@ -219,7 +219,7 @@ export function AutomationsView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-neutral-800" />
-            Automations & Demand-Side Management (DSM)
+            Automations
           </h2>
         </div>
 

@@ -46,7 +46,7 @@ export function IoTNetworkView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <Radio className="w-5 h-5 text-neutral-800" />
-            IoT Gateway & Sensor Network Infrastructure
+            IoT Gateway
           </h2>
         </div>
 

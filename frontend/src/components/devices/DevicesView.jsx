@@ -67,7 +67,7 @@ export function DevicesView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <SlidersHorizontal className="w-5 h-5 text-neutral-700" />
-            Device Catalog & Relay Control
+            Sub-Circuits
           </h2>
         </div>
 

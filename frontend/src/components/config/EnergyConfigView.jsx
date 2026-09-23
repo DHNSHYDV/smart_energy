@@ -57,7 +57,7 @@ export function EnergyConfigView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <Settings className="w-5 h-5 text-neutral-800" />
-            Energy Billing & Threshold Configuration
+            Configuration
           </h2>
         </div>
 

@@ -259,7 +259,7 @@ export function OverviewView() {
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-base font-bold text-neutral-900 tracking-tight flex items-center gap-2">
                 <Power className="w-4 h-4 text-emerald-600" />
-                Active Loads & Quick Relay Controls
+                Active Loads
               </h3>
               <button 
                 onClick={() => setActiveTab('devices')}

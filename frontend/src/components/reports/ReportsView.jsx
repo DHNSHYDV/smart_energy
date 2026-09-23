@@ -44,7 +44,7 @@ export function ReportsView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <FileText className="w-5 h-5 text-neutral-800" />
-            Energy Audit & Compliance Reports
+            Audit Reports
           </h2>
         </div>
 
