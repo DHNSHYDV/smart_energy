@@ -91,12 +91,13 @@
                     android:focusable="true">
 
                     <TextView
+                        android:id="@+id/tvProfileInitials"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="22"
+                        android:text="DY"
                         android:textColor="@color/text_primary"
-                        android:textSize="14sp"
+                        android:textSize="13sp"
                         android:textStyle="bold" />
                 </FrameLayout>
             </LinearLayout>

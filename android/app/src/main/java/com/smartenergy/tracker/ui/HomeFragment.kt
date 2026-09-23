@@ -77,7 +77,18 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnProfile.setOnClickListener {
-            Toast.makeText(context, "GridSense EMS • Dhanush (Admin)", Toast.LENGTH_SHORT).show()
+            val residentLabels = arrayOf(
+                "Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo, est. ₹1,185)",
+                "Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo, est. ₹611)"
+            )
+            val residentIds = arrayOf("usr_dhanush", "usr_priya")
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Switch Resident Profile")
+                .setItems(residentLabels) { _, which ->
+                    repo.switchResident(residentIds[which])
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
 
         binding.btnVivaSandbox.setOnClickListener {
@@ -125,6 +136,21 @@ class HomeFragment : Fragment() {
         }
 
         repo.telemetry.observe(viewLifecycleOwner) { telem ->
+            // Resident Profile header updates
+            telem.resident?.let { res ->
+                val firstName = res.name.split(" ").firstOrNull() ?: res.name
+                binding.tvGreetingTitle.text = "Hello, $firstName"
+                binding.tvGreetingSubtitle.text = "${res.doorNo} · ${res.consumerId}"
+                val initials = res.name.split(" ")
+                    .filter { it.isNotEmpty() }
+                    .take(2)
+                    .map { it.first().uppercase() }
+                    .joinToString("")
+                if (initials.isNotEmpty()) {
+                    binding.tvProfileInitials.text = initials
+                }
+            }
+
             // Current Power (W)
             binding.tvTotalPowerValue.text = String.format(Locale.US, "%,.0f", telem.totalActivePower)
             binding.tvCardBottomMetrics.text = String.format(
@@ -148,7 +174,8 @@ class HomeFragment : Fragment() {
             binding.tvMonthlyKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
             binding.tvMonthlyBillEst.text = String.format(Locale.US, "Estimated Bill: ₹%.0f", monthly.estimatedBill)
             binding.tvDailyAverageKwh.text = String.format(Locale.US, "%.2f kWh", monthly.dailyAverageKwh)
-            binding.tvMonthComparisonBadge.text = String.format(Locale.US, "↓ %.1f%% vs last mo", Math.abs(monthly.comparisonPct))
+            val compSign = if (monthly.comparisonPct >= 0) "↑ +" else "↓ -"
+            binding.tvMonthComparisonBadge.text = String.format(Locale.US, "%s%.1f%% vs last mo", compSign, Math.abs(monthly.comparisonPct))
 
             // Quick Status
             binding.tvQuickTotalDevices.text = "${telem.totalDevicesCount}"

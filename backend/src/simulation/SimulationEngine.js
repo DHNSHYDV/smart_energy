@@ -16,6 +16,8 @@ export class SimulationEngine extends EventEmitter {
     this.liveHistory = []; // Rolling window for real-time charts (30 points)
     this.intervalId = null;
     this.tickCounter = 0;
+    this.activeUserId = 'usr_dhanush';
+    this.activeUser = null;
 
     // Load initial settings
     this.tariff = SYSTEM_CONFIG.DEFAULT_TARIFF;
@@ -85,6 +87,46 @@ export class SimulationEngine extends EventEmitter {
     }
 
     console.log(`[SimulationEngine] Initialized with ${this.appliances.size} virtual appliances and sensors.`);
+    this.loadActiveUser(this.activeUserId);
+  }
+
+  loadActiveUser(userId) {
+    this.activeUserId = userId;
+    try {
+      const user = db.prepare('SELECT * FROM users WHERE id = ?').get(userId);
+      if (user) {
+        this.activeUser = user;
+      } else {
+        this.activeUser = {
+          id: userId,
+          name: 'Resident',
+          door_no: 'Domestic',
+          consumer_id: 'BESCOM-RES',
+          base_monthly_kwh: 120.0,
+          daily_avg_kwh: 4.0,
+          comparison_pct: -8.4
+        };
+      }
+
+      // Restore user-specific relay states and cumulative energy for each sensor
+      const states = db.prepare('SELECT * FROM user_appliance_states WHERE user_id = ?').all(userId);
+      for (const st of states) {
+        const app = this.appliances.get(st.appliance_id);
+        if (app) {
+          app.isOn = Boolean(st.is_on);
+          app.runtimeSeconds = st.runtime_seconds || 0;
+        }
+        const sensor = this.sensors.get(st.appliance_id);
+        if (sensor) {
+          sensor.cumulativeEnergyKwh = Number(st.cumulative_energy_kwh || 0);
+        }
+      }
+
+      console.log(`[SimulationEngine] 👤 Active resident: ${this.activeUser.name} (${this.activeUser.door_no}) - Base Monthly: ${this.activeUser.base_monthly_kwh} kWh`);
+      this.emit('user:switched', { user: this.activeUser });
+    } catch (e) {
+      console.warn('[SimulationEngine] Error loading active user:', e.message);
+    }
   }
 
   start() {
@@ -293,19 +335,28 @@ export class SimulationEngine extends EventEmitter {
 
     const activeCount = applianceReadings.filter(a => a.isOn).length;
     const totalCount = applianceReadings.length;
-    const monthlyKwh = Number((totalEnergyTodayKwh + 124.6).toFixed(1));
+    const baseMonthly = this.activeUser?.base_monthly_kwh || 120.0;
+    const monthlyKwh = Number((totalEnergyTodayKwh + baseMonthly).toFixed(1));
     const estimatedBill = Number((monthlyKwh * effectiveTariff).toFixed(0));
+    const dailyAverageKwh = this.activeUser?.daily_avg_kwh || Number((monthlyKwh / 23).toFixed(2));
+    const comparisonPct = this.activeUser?.comparison_pct !== undefined ? this.activeUser.comparison_pct : -8.4;
     const monthlyUsage = {
       kwh: monthlyKwh,
       estimatedBill: estimatedBill,
-      dailyAverageKwh: Number((monthlyKwh / 23).toFixed(2)),
-      comparisonPct: -8.4,
+      dailyAverageKwh: dailyAverageKwh,
+      comparisonPct: comparisonPct,
       projectedBill: Number((monthlyKwh / 23 * 30 * effectiveTariff).toFixed(0))
     };
 
     const telemetry = {
       deviceId: this.esp32.deviceId,
       timestamp: new Date().toISOString(),
+      resident: {
+        userId: this.activeUserId,
+        name: this.activeUser?.name || 'Dhanush Yadav',
+        doorNo: this.activeUser?.door_no || 'Flat 402, Block B',
+        consumerId: this.activeUser?.consumer_id || 'BESCOM-BLR-D402-A81'
+      },
       gridVoltage: Number(gridVoltage.toFixed(1)),
       totalActivePower: Number(totalActivePower.toFixed(1)),
       totalCurrent: Number((totalActivePower / (gridVoltage * systemPowerFactor)).toFixed(2)),
@@ -352,6 +403,12 @@ export class SimulationEngine extends EventEmitter {
         WHERE id = ?
       `);
 
+      const updateUserApp = db.prepare(`
+        UPDATE user_appliance_states
+        SET cumulative_energy_kwh = ?, runtime_seconds = ?, updated_at = CURRENT_TIMESTAMP
+        WHERE user_id = ? AND appliance_id = ?
+      `);
+
       const insertReading = db.prepare(`
         INSERT INTO sensor_readings (device_id, appliance_id, voltage, current, power_factor, active_power, apparent_power, energy_delta_kwh, status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -360,6 +417,9 @@ export class SimulationEngine extends EventEmitter {
       const tx = db.transaction(() => {
         for (const item of applianceReadings) {
           updateApp.run(item.reading.cumulativeEnergyKwh, item.runtimeSeconds, item.id);
+          if (this.activeUserId) {
+            updateUserApp.run(item.reading.cumulativeEnergyKwh, item.runtimeSeconds, this.activeUserId, item.id);
+          }
           insertReading.run(
             this.esp32.deviceId,
             item.id,
@@ -381,6 +441,12 @@ export class SimulationEngine extends EventEmitter {
 
   getSnapshot() {
     return {
+      resident: {
+        userId: this.activeUserId,
+        name: this.activeUser?.name || 'Dhanush Yadav',
+        doorNo: this.activeUser?.door_no || 'Flat 402, Block B',
+        consumerId: this.activeUser?.consumer_id || 'BESCOM-BLR-D402-A81'
+      },
       esp32: this.esp32.getStatus(),
       speedMultiplier: this.speedMultiplier,
       isPaused: this.isPaused,

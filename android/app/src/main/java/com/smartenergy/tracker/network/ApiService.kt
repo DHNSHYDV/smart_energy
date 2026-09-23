@@ -46,4 +46,7 @@ interface ApiService {
 
     @POST("api/simulation/reset")
     suspend fun resetSimulation(): Response<ApiResponse<Any>>
+
+    @POST("api/auth/switch")
+    suspend fun switchUser(@Body body: Map<String, String>): Response<ApiResponse<Any>>
 }

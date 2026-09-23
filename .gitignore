@@ -14,6 +14,10 @@ backend/tracker.db
 backend/tracker.db-journal
 backend/tracker.db-wal
 backend/tracker.db-shm
+tracker.db
+tracker.db-journal
+tracker.db-wal
+tracker.db-shm
 .env
 
 # Android

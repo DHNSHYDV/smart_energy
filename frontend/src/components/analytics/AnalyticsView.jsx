@@ -38,7 +38,8 @@ export function AnalyticsView() {
     forecast, 
     costInfo, 
     carbonInfo,
-    appliances 
+    appliances,
+    currentUser
   } = useEnergy();
 
   const [range, setRange] = useState('7d');
@@ -51,9 +52,10 @@ export function AnalyticsView() {
     async function loadData() {
       setIsLoading(true);
       try {
+        const userParam = currentUser?.id ? `&userId=${currentUser.id}` : '';
         const [attrRes, histRes, peakRes] = await Promise.all([
           fetch(`${backendUrl}/api/analytics/attribution`),
-          fetch(`${backendUrl}/api/analytics/historical?range=${range}`),
+          fetch(`${backendUrl}/api/analytics/historical?range=${range}${userParam}`),
           fetch(`${backendUrl}/api/analytics/peak-hours`)
         ]);
 
@@ -72,7 +74,7 @@ export function AnalyticsView() {
     }
 
     loadData();
-  }, [backendUrl, range]);
+  }, [backendUrl, range, currentUser?.id]);
 
   // Fallback attribution data if empty
   const pieData = attribution?.breakdown?.filter(b => b.energyKwh > 0).map(b => ({

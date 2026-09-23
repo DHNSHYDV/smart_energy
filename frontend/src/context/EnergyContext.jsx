@@ -94,19 +94,10 @@ export function EnergyProvider({ children }) {
     });
 
     s.on('telemetry:update', (data) => {
-      setTelemetry({
-        deviceId: data.deviceId,
-        gridVoltage: data.gridVoltage,
-        totalActivePower: data.totalActivePower,
-        totalCurrent: data.totalCurrent,
-        systemPowerFactor: data.systemPowerFactor,
-        totalEnergyTodayKwh: data.totalEnergyTodayKwh,
-        estimatedCost: data.estimatedCost,
-        carbonKg: data.carbonKg,
-        isPeakHour: data.isPeakHour,
-        tariffRate: data.tariffRate,
-        speedMultiplier: data.speedMultiplier,
-      });
+      setTelemetry(prev => ({
+        ...prev,
+        ...data
+      }));
 
       if (data.appliances) {
         setAppliances(data.appliances);

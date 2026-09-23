@@ -21,10 +21,10 @@ export function createAuthRouter(simulationEngine, mqttService) {
   // Helper to sync simulation engine with a user's states
   function syncEngineToUser(userId) {
     activeUserId = userId;
-    const states = getUserApplianceStates(userId);
-    for (const [appId, isOn] of Object.entries(states)) {
-      simulationEngine.toggleAppliance(appId, isOn);
-      if (mqttService) {
+    simulationEngine.loadActiveUser(userId);
+    if (mqttService) {
+      const states = getUserApplianceStates(userId);
+      for (const [appId, isOn] of Object.entries(states)) {
         mqttService.publishRelayCommand(appId, isOn);
       }
     }
@@ -34,7 +34,7 @@ export function createAuthRouter(simulationEngine, mqttService) {
   router.get('/users', (req, res) => {
     try {
       const users = db.prepare(`
-        SELECT id, name, door_no, address, consumer_id, email, created_at
+        SELECT id, name, door_no, address, consumer_id, email, base_monthly_kwh, daily_avg_kwh, comparison_pct, created_at
         FROM users
         ORDER BY created_at ASC
       `).all();
@@ -55,7 +55,7 @@ export function createAuthRouter(simulationEngine, mqttService) {
     try {
       const userId = req.query.userId || activeUserId;
       const user = db.prepare(`
-        SELECT id, name, door_no, address, consumer_id, email, created_at
+        SELECT id, name, door_no, address, consumer_id, email, base_monthly_kwh, daily_avg_kwh, comparison_pct, created_at
         FROM users
         WHERE id = ?
       `).get(userId);
@@ -237,7 +237,7 @@ export function createAuthRouter(simulationEngine, mqttService) {
       const { userId } = req.body;
 
       const user = db.prepare(`
-        SELECT id, name, door_no, address, consumer_id, email, created_at
+        SELECT id, name, door_no, address, consumer_id, email, base_monthly_kwh, daily_avg_kwh, comparison_pct, created_at
         FROM users
         WHERE id = ?
       `).get(userId);

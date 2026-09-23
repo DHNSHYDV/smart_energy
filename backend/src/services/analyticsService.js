@@ -52,9 +52,11 @@ export class AnalyticsService {
     }
   }
 
-  getHistoricalData(range = '7d', clientHour = null) {
+  getHistoricalData(range = '7d', clientHour = null, targetUserId = null) {
     const tariff = this.simulationEngine.tariff || SYSTEM_CONFIG.DEFAULT_TARIFF;
     const carbonFactor = this.simulationEngine.carbonFactor || SYSTEM_CONFIG.DEFAULT_CARBON_FACTOR;
+    const userId = targetUserId || this.simulationEngine.activeUserId || 'usr_dhanush';
+    const isPriya = userId === 'usr_priya';
 
     if (range === 'today' || range === 'yesterday') {
       // Build 24-hour load curve
@@ -62,19 +64,29 @@ export class AnalyticsService {
       const currentHour = this.resolveCurrentHour(clientHour);
       const isToday = range === 'today';
 
-      // Base simulated diurnal consumption pattern (kW) for residential household
-      const diurnalCurve = [
-        0.35, 0.32, 0.30, 0.28, 0.31, 0.45, // 00:00 - 05:00 (Night base load)
-        0.85, 1.65, 2.10, 1.80, 1.10, 0.95, // 06:00 - 11:00 (Morning peak: geyser, breakfast, lights)
-        0.90, 0.85, 0.80, 0.75, 0.90, 1.20, // 12:00 - 17:00 (Afternoon moderate)
-        2.40, 2.85, 2.70, 2.20, 1.40, 0.65  // 18:00 - 23:00 (Evening peak: AC, cooking, TV, lighting)
+      // Dhanush: Heavy evening cooling & workstation curve (peaks at 2.85 kW)
+      const dhanushCurve = [
+        0.35, 0.32, 0.30, 0.28, 0.31, 0.45, // 00:00 - 05:00
+        0.85, 1.65, 2.10, 1.80, 1.10, 0.95, // 06:00 - 11:00
+        0.90, 0.85, 0.80, 0.75, 0.90, 1.20, // 12:00 - 17:00
+        2.40, 2.85, 2.70, 2.20, 1.40, 0.65  // 18:00 - 23:00 (AC + PC)
       ];
+
+      // Priya: Eco-conscious solar villa curve (morning geyser/washer peak, lower night load)
+      const priyaCurve = [
+        0.18, 0.16, 0.15, 0.14, 0.15, 0.22, // 00:00 - 05:00
+        0.55, 1.45, 2.45, 1.10, 0.45, 0.40, // 06:00 - 11:00 (Geyser + Washer)
+        0.38, 0.35, 0.32, 0.35, 0.42, 0.65, // 12:00 - 17:00
+        0.95, 1.20, 1.15, 0.85, 0.45, 0.25  // 18:00 - 23:00 (No AC)
+      ];
+
+      const diurnalCurve = isPriya ? priyaCurve : dhanushCurve;
 
       for (let h = 0; h < 24; h++) {
         if (isToday && h > currentHour) break; // Don't show future hours for today
 
         const hourStr = `${String(h).padStart(2, '0')}:00`;
-        const baseKw = diurnalCurve[h] * (0.9 + Math.random() * 0.2);
+        const baseKw = diurnalCurve[h] * (0.92 + Math.random() * 0.16);
         const kwh = Number(baseKw.toFixed(2));
         const cost = Number((kwh * tariff).toFixed(2));
         const carbon = Number((kwh * carbonFactor).toFixed(2));
@@ -92,16 +104,17 @@ export class AnalyticsService {
 
       return {
         range,
+        userId,
         data: hours,
         totalKwh: Number(hours.reduce((s, h) => s + h.energyKwh, 0).toFixed(2)),
         totalCost: Number(hours.reduce((s, h) => s + h.cost, 0).toFixed(2))
       };
     }
 
-    // Past 7 days or 30 days query from SQLite
+    // Past 7 days or 30 days query from SQLite with per-user filtering
     try {
       const daysCount = range === '30d' ? 30 : 7;
-      const rows = db.prepare(`
+      let rows = db.prepare(`
         SELECT 
           date, 
           ROUND(SUM(total_energy_kwh), 2) as total_kwh,
@@ -110,15 +123,33 @@ export class AnalyticsService {
           ROUND(AVG(avg_power_w), 0) as avg_power_w,
           MAX(peak_power_w) as peak_power_w
         FROM daily_analytics
+        WHERE user_id = ?
         GROUP BY date
         ORDER BY date DESC
         LIMIT ?
-      `).all(daysCount);
+      `).all(userId, daysCount);
+
+      if (rows.length === 0) {
+        rows = db.prepare(`
+          SELECT 
+            date, 
+            ROUND(SUM(total_energy_kwh), 2) as total_kwh,
+            ROUND(SUM(cost), 2) as total_cost,
+            ROUND(SUM(carbon_kg), 2) as total_carbon,
+            ROUND(AVG(avg_power_w), 0) as avg_power_w,
+            MAX(peak_power_w) as peak_power_w
+          FROM daily_analytics
+          GROUP BY date
+          ORDER BY date DESC
+          LIMIT ?
+        `).all(daysCount);
+      }
 
       const sortedRows = rows.reverse();
 
       return {
         range,
+        userId,
         data: sortedRows.map(r => ({
           date: r.date,
           day: new Date(r.date).toLocaleDateString('en-US', { weekday: 'short' }),
@@ -133,7 +164,7 @@ export class AnalyticsService {
       };
     } catch (e) {
       console.error('[AnalyticsService] Error reading daily analytics:', e.message);
-      return { range, data: [], totalKwh: 0, totalCost: 0 };
+      return { range, userId, data: [], totalKwh: 0, totalCost: 0 };
     }
   }
 

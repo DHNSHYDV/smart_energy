@@ -22,7 +22,8 @@ export function createAnalyticsRouter(analyticsService, recommendationService, s
   router.get('/historical', (req, res) => {
     const range = req.query.range || '7d';
     const clientHour = req.query.clientHour;
-    const result = analyticsService.getHistoricalData(range, clientHour);
+    const userId = req.query.userId || req.query.user_id;
+    const result = analyticsService.getHistoricalData(range, clientHour, userId);
     res.json({
       success: true,
       data: result

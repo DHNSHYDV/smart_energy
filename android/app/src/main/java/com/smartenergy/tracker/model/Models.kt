@@ -17,9 +17,17 @@ data class MonthlyUsage(
     @SerializedName("projectedBill") var projectedBill: Double = 1240.0
 )
 
+data class ResidentInfo(
+    @SerializedName("userId") val userId: String = "usr_dhanush",
+    @SerializedName("name") val name: String = "Dhanush Yadav",
+    @SerializedName("doorNo") val doorNo: String = "Flat 402, Block B",
+    @SerializedName("consumerId") val consumerId: String = "BESCOM-BLR-D402-A81"
+)
+
 data class Telemetry(
     @SerializedName("deviceId") val deviceId: String? = "ESP32-SIM-001",
     @SerializedName("timestamp") val timestamp: String? = null,
+    @SerializedName("resident") var resident: ResidentInfo? = ResidentInfo(),
     @SerializedName("gridVoltage") var gridVoltage: Double = 229.4,
     @SerializedName("totalActivePower") var totalActivePower: Double = 211.0,
     @SerializedName("totalCurrent") var totalCurrent: Double = 0.98,

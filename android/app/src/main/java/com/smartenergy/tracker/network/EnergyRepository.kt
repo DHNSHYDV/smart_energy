@@ -337,12 +337,12 @@ class EnergyRepository private constructor(private val context: Context) {
             totalPower / (baseVoltage * systemPf)
         } else 0.0
 
-        // Realistic energy tracking:
-        // Monthly baseline: 124.6 kWh; bill at ₹8.00/kWh = ₹996
+        // Dynamic energy tracking from server telemetry
         val currentTelem = _telemetry.value ?: Telemetry()
-        val monthlyKwh = 124.6 + (currentTelem.totalEnergyTodayKwh * 0.05)
-        val monthlyBill = monthlyKwh * 8.0
-        val carbon = monthlyKwh * 0.82
+        val currentMonthly = currentTelem.monthlyUsage
+        val baseMonthly = currentMonthly.kwh
+        val monthlyBill = baseMonthly * (currentTelem.tariffRate.takeIf { it > 0 } ?: 8.0)
+        val carbon = baseMonthly * 0.82
 
         val updated = currentTelem.copy(
             gridVoltage = baseVoltage,
@@ -352,19 +352,30 @@ class EnergyRepository private constructor(private val context: Context) {
             frequency = 50.0,
             activeDevicesCount = activeCount,
             totalDevicesCount = totalCount,
-            totalEnergyTodayKwh = 4.20,
-            estimatedCost = 33.60,
+            totalEnergyTodayKwh = currentTelem.totalEnergyTodayKwh,
+            estimatedCost = currentTelem.estimatedCost,
             carbonKg = String.format(Locale.US, "%.2f", carbon).toDouble(),
-            monthlyUsage = MonthlyUsage(
-                kwh = String.format(Locale.US, "%.1f", monthlyKwh).toDouble(),
-                estimatedBill = String.format(Locale.US, "%.0f", monthlyBill).toDouble(),
-                dailyAverageKwh = 4.15,
-                comparisonPct = -8.4,
-                projectedBill = 1240.0
+            monthlyUsage = currentMonthly.copy(
+                estimatedBill = String.format(Locale.US, "%.0f", monthlyBill).toDouble()
             )
         )
 
         _telemetry.postValue(updated)
+    }
+
+    fun switchResident(userId: String) {
+        scope.launch {
+            try {
+                val api = ApiClient.getService(context)
+                val resp = api.switchUser(mapOf("userId" to userId))
+                if (resp.isSuccessful) {
+                    showToastNotice("✓ Switched resident profile")
+                    fetchInitialData()
+                }
+            } catch (e: Exception) {
+                Log.w(TAG, "Switch user error: ${e.message}")
+            }
+        }
     }
 
     fun toggleAppliance(id: String, state: Boolean) {

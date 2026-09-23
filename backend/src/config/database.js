@@ -74,6 +74,7 @@ export function initDatabase() {
 
     CREATE TABLE IF NOT EXISTS daily_analytics (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT DEFAULT 'usr_dhanush',
       date TEXT NOT NULL, -- 'YYYY-MM-DD'
       appliance_id TEXT NOT NULL,
       total_energy_kwh REAL DEFAULT 0,
@@ -82,7 +83,7 @@ export function initDatabase() {
       total_runtime_minutes INTEGER DEFAULT 0,
       cost REAL DEFAULT 0,
       carbon_kg REAL DEFAULT 0,
-      UNIQUE(date, appliance_id)
+      UNIQUE(user_id, date, appliance_id)
     );
 
     CREATE TABLE IF NOT EXISTS alerts (
@@ -116,6 +117,9 @@ export function initDatabase() {
       email TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
       salt TEXT NOT NULL,
+      base_monthly_kwh REAL DEFAULT 120.0,
+      daily_avg_kwh REAL DEFAULT 4.0,
+      comparison_pct REAL DEFAULT -8.4,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
@@ -123,13 +127,52 @@ export function initDatabase() {
       user_id TEXT NOT NULL,
       appliance_id TEXT NOT NULL,
       is_on INTEGER DEFAULT 1,
+      cumulative_energy_kwh REAL DEFAULT 0,
+      runtime_seconds INTEGER DEFAULT 0,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       PRIMARY KEY (user_id, appliance_id),
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
 
-  // Seed default users if empty
+  // Perform backward-compatible migrations for existing SQLite stores
+  try { db.prepare('ALTER TABLE users ADD COLUMN base_monthly_kwh REAL DEFAULT 120.0').run(); } catch (_) {}
+  try { db.prepare('ALTER TABLE users ADD COLUMN daily_avg_kwh REAL DEFAULT 4.0').run(); } catch (_) {}
+  try { db.prepare('ALTER TABLE users ADD COLUMN comparison_pct REAL DEFAULT -8.4').run(); } catch (_) {}
+  try { db.prepare('ALTER TABLE user_appliance_states ADD COLUMN cumulative_energy_kwh REAL DEFAULT 0').run(); } catch (_) {}
+  try { db.prepare('ALTER TABLE user_appliance_states ADD COLUMN runtime_seconds INTEGER DEFAULT 0').run(); } catch (_) {}
+  try { db.prepare('ALTER TABLE daily_analytics ADD COLUMN user_id TEXT DEFAULT "usr_dhanush"').run(); } catch (_) {}
+  try {
+    const tableInfo = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='daily_analytics'").get();
+    if (tableInfo && tableInfo.sql.includes('UNIQUE(date, appliance_id)')) {
+      db.exec(`
+        CREATE TABLE daily_analytics_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id TEXT DEFAULT 'usr_dhanush',
+          date TEXT NOT NULL,
+          appliance_id TEXT NOT NULL,
+          total_energy_kwh REAL DEFAULT 0,
+          avg_power_w REAL DEFAULT 0,
+          peak_power_w REAL DEFAULT 0,
+          total_runtime_minutes INTEGER DEFAULT 0,
+          cost REAL DEFAULT 0,
+          carbon_kg REAL DEFAULT 0,
+          UNIQUE(user_id, date, appliance_id)
+        );
+        INSERT OR IGNORE INTO daily_analytics_new (user_id, date, appliance_id, total_energy_kwh, avg_power_w, peak_power_w, total_runtime_minutes, cost, carbon_kg)
+        SELECT COALESCE(user_id, 'usr_dhanush'), date, appliance_id, total_energy_kwh, avg_power_w, peak_power_w, total_runtime_minutes, cost, carbon_kg
+        FROM daily_analytics;
+        DROP TABLE daily_analytics;
+        ALTER TABLE daily_analytics_new RENAME TO daily_analytics;
+      `);
+      console.log('[Database] Migrated daily_analytics table to composite unique constraint (user_id, date, appliance_id)');
+      seedHistoricalAnalytics();
+    }
+  } catch (err) {
+    console.warn('[Database] daily_analytics migration warning:', err.message);
+  }
+
+  // Seed default users & per-user usage profiles
   seedDefaultUsers();
 
   // Seed default settings if empty
@@ -192,49 +235,73 @@ export function initDatabase() {
 
 function seedHistoricalAnalytics() {
   const insertDaily = db.prepare(`
-    INSERT OR IGNORE INTO daily_analytics (date, appliance_id, total_energy_kwh, avg_power_w, peak_power_w, total_runtime_minutes, cost, carbon_kg)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT OR REPLACE INTO daily_analytics (user_id, date, appliance_id, total_energy_kwh, avg_power_w, peak_power_w, total_runtime_minutes, cost, carbon_kg)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const today = new Date();
   const tariff = SYSTEM_CONFIG.DEFAULT_TARIFF;
   const carbonFactor = SYSTEM_CONFIG.DEFAULT_CARBON_FACTOR;
 
-  const baseConsumptions = {
-    'AC001': { kwh: 5.6, avgW: 1100, peakW: 1750, mins: 310 },
+  // Dhanush's consumption profile (Heavy urban load with AC, PC workstation, TV)
+  const dhanushConsumptions = {
+    'AC001': { kwh: 7.2, avgW: 1100, peakW: 1750, mins: 390 },
     'FR001': { kwh: 2.1, avgW: 88, peakW: 210, mins: 1440 },
-    'TV001': { kwh: 0.95, avgW: 115, peakW: 135, mins: 490 },
-    'PC001': { kwh: 1.85, avgW: 180, peakW: 300, mins: 620 },
-    'LT001': { kwh: 0.22, avgW: 18, peakW: 20, mins: 720 },
-    'FN001': { kwh: 0.65, avgW: 65, peakW: 75, mins: 600 },
-    'WM001': { kwh: 0.90, avgW: 450, peakW: 1650, mins: 120 },
-    'GH001': { kwh: 2.40, avgW: 2200, peakW: 2250, mins: 65 }
+    'TV001': { kwh: 1.15, avgW: 115, peakW: 135, mins: 600 },
+    'PC001': { kwh: 2.45, avgW: 180, peakW: 300, mins: 820 },
+    'LT001': { kwh: 0.28, avgW: 18, peakW: 20, mins: 900 },
+    'FN001': { kwh: 0.75, avgW: 65, peakW: 75, mins: 700 },
+    'WM001': { kwh: 0.60, avgW: 450, peakW: 1650, mins: 80 },
+    'GH001': { kwh: 1.80, avgW: 2200, peakW: 2250, mins: 50 }
+  };
+
+  // Priya's consumption profile (Eco-conscious villa, solar hybrid, off-peak shifting)
+  const priyaConsumptions = {
+    'AC001': { kwh: 0.0, avgW: 0, peakW: 0, mins: 0 },
+    'FR001': { kwh: 1.45, avgW: 65, peakW: 150, mins: 1440 },
+    'TV001': { kwh: 0.25, avgW: 75, peakW: 90, mins: 120 },
+    'PC001': { kwh: 0.0, avgW: 0, peakW: 0, mins: 0 },
+    'LT001': { kwh: 0.18, avgW: 15, peakW: 18, mins: 720 },
+    'FN001': { kwh: 0.45, avgW: 55, peakW: 65, mins: 480 },
+    'WM001': { kwh: 1.85, avgW: 420, peakW: 1550, mins: 260 },
+    'GH001': { kwh: 2.80, avgW: 2100, peakW: 2200, mins: 80 }
   };
 
   const seedTx = db.transaction(() => {
-    // Generate data for past 7 days
+    // Generate data for past 7 days for both users
     for (let i = 7; i >= 1; i--) {
       const d = new Date(today);
       d.setDate(d.getDate() - i);
       const dateStr = d.toISOString().split('T')[0];
 
-      for (const [appId, stats] of Object.entries(baseConsumptions)) {
-        // Add random natural variance (+/- 10%)
-        const factor = 0.9 + Math.random() * 0.2;
+      // 1. Seed Dhanush
+      for (const [appId, stats] of Object.entries(dhanushConsumptions)) {
+        const factor = 0.92 + Math.random() * 0.16;
         const kwh = Number((stats.kwh * factor).toFixed(2));
         const cost = Number((kwh * tariff).toFixed(2));
         const carbon = Number((kwh * carbonFactor).toFixed(2));
         const peakW = Math.round(stats.peakW * (0.95 + Math.random() * 0.1));
         const avgW = Math.round(stats.avgW * factor);
         const mins = Math.round(stats.mins * factor);
+        insertDaily.run('usr_dhanush', dateStr, appId, kwh, avgW, peakW, mins, cost, carbon);
+      }
 
-        insertDaily.run(dateStr, appId, kwh, avgW, peakW, mins, cost, carbon);
+      // 2. Seed Priya
+      for (const [appId, stats] of Object.entries(priyaConsumptions)) {
+        const factor = 0.90 + Math.random() * 0.20;
+        const kwh = Number((stats.kwh * factor).toFixed(2));
+        const cost = Number((kwh * tariff).toFixed(2));
+        const carbon = Number((kwh * carbonFactor).toFixed(2));
+        const peakW = Math.round(stats.peakW * (0.95 + Math.random() * 0.1));
+        const avgW = Math.round(stats.avgW * factor);
+        const mins = Math.round(stats.mins * factor);
+        insertDaily.run('usr_priya', dateStr, appId, kwh, avgW, peakW, mins, cost, carbon);
       }
     }
   });
 
   seedTx();
-  console.log('[Database] Seeded 7 days of realistic historical analytics for demonstration.');
+  console.log('[Database] Seeded 7 days of distinct historical analytics for Dhanush and Priya.');
 }
 
 function seedDefaultSchedules() {
@@ -263,69 +330,89 @@ export function verifyPassword(password, salt, storedHash) {
 }
 
 export function seedDefaultUsers() {
-  const count = db.prepare('SELECT COUNT(*) as count FROM users').get().count;
-  if (count === 0) {
-    const insertUser = db.prepare(`
-      INSERT INTO users (id, name, door_no, address, consumer_id, email, password_hash, salt)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    `);
+  const upsertUser = db.prepare(`
+    INSERT INTO users (id, name, door_no, address, consumer_id, email, password_hash, salt, base_monthly_kwh, daily_avg_kwh, comparison_pct)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      base_monthly_kwh = excluded.base_monthly_kwh,
+      daily_avg_kwh = excluded.daily_avg_kwh,
+      comparison_pct = excluded.comparison_pct
+  `);
 
-    const insertState = db.prepare(`
-      INSERT OR REPLACE INTO user_appliance_states (user_id, appliance_id, is_on)
-      VALUES (?, ?, ?)
-    `);
+  const insertState = db.prepare(`
+    INSERT OR REPLACE INTO user_appliance_states (user_id, appliance_id, is_on, cumulative_energy_kwh, runtime_seconds)
+    VALUES (?, ?, ?, ?, ?)
+  `);
 
-    const dhanushSalt = generateSalt();
-    const dhanushHash = hashPassword('password123', dhanushSalt);
+  const dhanushSalt = generateSalt();
+  const dhanushHash = hashPassword('password123', dhanushSalt);
 
-    const priyaSalt = generateSalt();
-    const priyaHash = hashPassword('password123', priyaSalt);
+  const priyaSalt = generateSalt();
+  const priyaHash = hashPassword('password123', priyaSalt);
 
-    const seedTx = db.transaction(() => {
-      // 1. Dhanush Yadav (Primary Account)
-      insertUser.run(
-        'usr_dhanush',
-        'Dhanush Yadav',
-        'Flat 402, Block B',
-        'Green Glen Layout, Bellandur, Bengaluru - 560103',
-        'BESCOM-BLR-D402-A81',
-        'dhanush@smartenergy.in',
-        dhanushHash,
-        dhanushSalt
-      );
+  const seedTx = db.transaction(() => {
+    // 1. Dhanush Yadav (High Urban Domestic Load: 148.2 kWh baseline, 11.45 kWh today)
+    upsertUser.run(
+      'usr_dhanush',
+      'Dhanush Yadav',
+      'Flat 402, Block B',
+      'Green Glen Layout, Bellandur, Bengaluru - 560103',
+      'BESCOM-BLR-D402-A81',
+      'dhanush@smartenergy.in',
+      dhanushHash,
+      dhanushSalt,
+      148.2, // base_monthly_kwh
+      4.94,  // daily_avg_kwh
+      4.2    // comparison_pct (+4.2% vs last month)
+    );
 
-      // Dhanush's appliances state: AC, Fridge, TV, PC, Light, Fan ON; Washer, Geyser OFF
-      const dhanushStates = {
-        'AC001': 1, 'FR001': 1, 'TV001': 1, 'PC001': 1,
-        'LT001': 1, 'FN001': 1, 'WM001': 0, 'GH001': 0
-      };
-      for (const [appId, isOn] of Object.entries(dhanushStates)) {
-        insertState.run('usr_dhanush', appId, isOn);
-      }
+    // Dhanush's appliances state: AC, Fridge, TV, PC, Light, Fan ON (11.45 kWh total today)
+    const dhanushStates = {
+      'AC001': { isOn: 1, kwh: 5.40, runtime: 14400 },
+      'FR001': { isOn: 1, kwh: 1.85, runtime: 43200 },
+      'TV001': { isOn: 1, kwh: 0.95, runtime: 18000 },
+      'PC001': { isOn: 1, kwh: 1.60, runtime: 28800 },
+      'LT001': { isOn: 1, kwh: 0.25, runtime: 36000 },
+      'FN001': { isOn: 1, kwh: 0.55, runtime: 28800 },
+      'WM001': { isOn: 0, kwh: 0.00, runtime: 0 },
+      'GH001': { isOn: 0, kwh: 0.85, runtime: 1800 }
+    };
+    for (const [appId, s] of Object.entries(dhanushStates)) {
+      insertState.run('usr_dhanush', appId, s.isOn, s.kwh, s.runtime);
+    }
 
-      // 2. Priya Sharma (Secondary Demo Account)
-      insertUser.run(
-        'usr_priya',
-        'Priya Sharma',
-        'Villa 12',
-        'Prestige Ozone, Whitefield, Bengaluru - 560066',
-        'BESCOM-BLR-V012-C44',
-        'priya@smartenergy.in',
-        priyaHash,
-        priyaSalt
-      );
+    // 2. Priya Sharma (Eco Solar Hybrid Villa: 76.4 kWh baseline, 5.85 kWh today)
+    upsertUser.run(
+      'usr_priya',
+      'Priya Sharma',
+      'Villa 12',
+      'Prestige Ozone, Whitefield, Bengaluru - 560066',
+      'BESCOM-BLR-V012-C44',
+      'priya@smartenergy.in',
+      priyaHash,
+      priyaSalt,
+      76.4,  // base_monthly_kwh
+      2.55,  // daily_avg_kwh
+      -18.5  // comparison_pct (-18.5% vs last month - Eco savings!)
+    );
 
-      // Priya's appliances state: AC OFF, Fridge ON, TV OFF, PC OFF, Light ON, Fan ON, Washer ON, Geyser ON
-      const priyaStates = {
-        'AC001': 0, 'FR001': 1, 'TV001': 0, 'PC001': 0,
-        'LT001': 1, 'FN001': 1, 'WM001': 1, 'GH001': 1
-      };
-      for (const [appId, isOn] of Object.entries(priyaStates)) {
-        insertState.run('usr_priya', appId, isOn);
-      }
-    });
+    // Priya's appliances state: AC OFF, Fridge ON, TV OFF, PC OFF, Light ON, Fan ON, Washer ON, Geyser ON (5.85 kWh total today)
+    const priyaStates = {
+      'AC001': { isOn: 0, kwh: 0.00, runtime: 0 },
+      'FR001': { isOn: 1, kwh: 1.15, runtime: 43200 },
+      'TV001': { isOn: 0, kwh: 0.12, runtime: 3600 },
+      'PC001': { isOn: 0, kwh: 0.00, runtime: 0 },
+      'LT001': { isOn: 1, kwh: 0.18, runtime: 32400 },
+      'FN001': { isOn: 1, kwh: 0.35, runtime: 21600 },
+      'WM001': { isOn: 1, kwh: 1.65, runtime: 7200 },
+      'GH001': { isOn: 1, kwh: 2.40, runtime: 3900 }
+    };
+    for (const [appId, s] of Object.entries(priyaStates)) {
+      insertState.run('usr_priya', appId, s.isOn, s.kwh, s.runtime);
+    }
+  });
 
-    seedTx();
-    console.log('[Database] Seeded default resident accounts: Dhanush Yadav and Priya Sharma.');
-  }
+  seedTx();
+  console.log('[Database] Seeded distinct user profiles & usages for Dhanush Yadav and Priya Sharma.');
+  seedHistoricalAnalytics();
 }
