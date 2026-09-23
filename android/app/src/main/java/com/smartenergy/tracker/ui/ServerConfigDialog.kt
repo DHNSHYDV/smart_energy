@@ -31,6 +31,13 @@ class ServerConfigDialog : DialogFragment() {
 
         binding.btnCancelIp.setOnClickListener { dismiss() }
 
+        binding.btnCheckOtaUpdate.setOnClickListener {
+            dismiss()
+            activity?.let { act ->
+                UpdateManager.checkForUpdates(act, silent = false)
+            }
+        }
+
         binding.btnSaveIp.setOnClickListener {
             val input = binding.etServerIp.text.toString().trim()
             if (input.isNotEmpty()) {

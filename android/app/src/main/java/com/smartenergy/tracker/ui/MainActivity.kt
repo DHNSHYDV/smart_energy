@@ -44,6 +44,9 @@ class MainActivity : AppCompatActivity() {
 
         setupDockNavigation()
         setupToastObserver()
+
+        // Check for In-App Over-The-Air (OTA) Updates from backend
+        UpdateManager.checkForUpdates(this, silent = true)
     }
 
     private fun setupDockNavigation() {

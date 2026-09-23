@@ -25,6 +25,7 @@ import { createSchedulesRouter } from './routes/schedules.js';
 import { createSimulationRouter } from './routes/simulation.js';
 import { createSystemRouter } from './routes/system.js';
 import { createAuthRouter } from './routes/auth.js';
+import { createAppUpdateRouter } from './routes/appUpdate.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +71,7 @@ app.use('/api/alerts', createAlertsRouter(anomalyService));
 app.use('/api/schedules', createSchedulesRouter(schedulerService));
 app.use('/api/simulation', createSimulationRouter(simulationEngine));
 app.use('/api/system', createSystemRouter(simulationEngine, mqttService));
+app.use('/api/app/update', createAppUpdateRouter());
 
 // Helper for AnalyticsService import cleanly
 import { AnalyticsService } from './services/analyticsService.js';

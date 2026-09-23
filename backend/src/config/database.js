@@ -187,6 +187,24 @@ export function initDatabase() {
     db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run('sim_speed', '1');
   }
 
+  // Seed default OTA Update settings
+  const defaultOtaSettings = {
+    'ota_is_active': '1',
+    'ota_version_name': '2.1.0',
+    'ota_version_code': '3',
+    'ota_min_version_code': '1',
+    'ota_title': 'GridSense v2.1.0 Update Available',
+    'ota_release_notes': '• Multi-tenant resident switching (Dhanush Yadav & Priya Sharma)\n• User-specific diurnal energy curves & billing breakdown\n• Real-time sub-metering telemetry sync\n• In-app Over-The-Air (OTA) auto-updating',
+    'ota_apk_url': '/download/apk',
+    'ota_file_size': '8.1 MB',
+    'ota_is_mandatory': '0'
+  };
+  for (const [key, val] of Object.entries(defaultOtaSettings)) {
+    if (!getSetting.get(key)) {
+      db.prepare('INSERT INTO settings (key, value) VALUES (?, ?)').run(key, val);
+    }
+  }
+
   // Seed appliances if empty
   const countAppliances = db.prepare('SELECT COUNT(*) as count FROM appliances').get().count;
   if (countAppliances === 0) {

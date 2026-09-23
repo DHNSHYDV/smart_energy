@@ -138,3 +138,16 @@ data class ToggleResponse(
     @SerializedName("message") val message: String?,
     @SerializedName("data") val data: Appliance?
 )
+
+data class AppUpdateResponse(
+    @SerializedName("success") val success: Boolean,
+    @SerializedName("hasUpdate") val hasUpdate: Boolean = false,
+    @SerializedName("latestVersion") val latestVersion: String? = null,
+    @SerializedName("versionCode") val versionCode: Int = 0,
+    @SerializedName("title") val title: String? = null,
+    @SerializedName("releaseNotes") val releaseNotes: String? = null,
+    @SerializedName("apkUrl") val apkUrl: String? = null,
+    @SerializedName("fileSizeFormatted") val fileSizeFormatted: String? = null,
+    @SerializedName("isMandatory") val isMandatory: Boolean = false,
+    @SerializedName("message") val message: String? = null
+)

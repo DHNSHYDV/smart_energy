@@ -49,4 +49,15 @@ interface ApiService {
 
     @POST("api/auth/switch")
     suspend fun switchUser(@Body body: Map<String, String>): Response<ApiResponse<Any>>
+
+    @GET("api/app/update")
+    suspend fun checkAppUpdate(
+        @Query("currentVersionCode") currentVersionCode: Int
+    ): Response<AppUpdateResponse>
+
+    @Streaming
+    @GET
+    suspend fun downloadApkFile(
+        @Url fileUrl: String
+    ): Response<okhttp3.ResponseBody>
 }
