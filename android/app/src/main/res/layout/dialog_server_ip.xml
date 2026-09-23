@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Laptop Server Connection"
+        android:text="Server &amp; Cloud Connection"
         android:textColor="@color/text_white"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -18,24 +18,60 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
-        android:text="Enter the IP address of your laptop running the simulation engine:"
+        android:text="Connect to Railway cloud or your local laptop backend:"
         android:textColor="@color/text_slate_400"
         android:textSize="12sp" />
+
+    <!-- 1-Click Quick Preset Chips -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnPresetRailway"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="🌐 Railway Cloud"
+            android:textColor="@color/emerald_400"
+            android:textSize="11sp" />
+
+        <Button
+            android:id="@+id/btnPresetLocal"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="38dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            android:text="💻 Local Laptop"
+            android:textColor="@color/text_slate_300"
+            android:textSize="11sp" />
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:textColorHint="@color/text_slate_400">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etServerIp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="e.g. 192.168.1.42:5000"
+            android:hint="Server URL / Host"
             android:inputType="textUri"
             android:textColor="@color/text_white"
-            android:textSize="14sp" />
+            android:textSize="13sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout

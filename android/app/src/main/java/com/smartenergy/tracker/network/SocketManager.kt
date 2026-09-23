@@ -11,6 +11,8 @@ import com.smartenergy.tracker.model.Telemetry
 import io.socket.client.IO
 import io.socket.client.Socket
 import org.json.JSONObject
+import io.socket.engineio.client.transports.Polling
+import io.socket.engineio.client.transports.WebSocket
 import java.net.URI
 
 class SocketManager private constructor(private val context: Context) {
@@ -55,6 +57,7 @@ class SocketManager private constructor(private val context: Context) {
                 reconnectionDelay = 2000
                 timeout = 10000
                 forceNew = true
+                transports = arrayOf(WebSocket.NAME, Polling.NAME)
             }
 
             socket = IO.socket(URI.create(url), opts)

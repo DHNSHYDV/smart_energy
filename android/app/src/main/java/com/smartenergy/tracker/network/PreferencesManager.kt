@@ -8,10 +8,11 @@ class PreferencesManager(context: Context) {
 
     companion object {
         private const val PREF_NAME = "smart_energy_prefs"
+        private const val KEY_SERVER_URL = "server_url"
         private const val KEY_SERVER_IP = "server_ip"
         private const val KEY_SERVER_PORT = "server_port"
-        private const val DEFAULT_IP = "192.168.1.42"
-        private const val DEFAULT_PORT = 5000
+        const val DEFAULT_RAILWAY_URL = "https://web-production-29e8e.up.railway.app"
+        const val DEFAULT_LOCAL_URL = "http://192.168.1.42:5000"
 
         @Volatile
         private var INSTANCE: PreferencesManager? = null
@@ -23,17 +24,45 @@ class PreferencesManager(context: Context) {
         }
     }
 
-    var serverIp: String
-        get() = prefs.getString(KEY_SERVER_IP, DEFAULT_IP) ?: DEFAULT_IP
-        set(value) = prefs.edit().putString(KEY_SERVER_IP, value.trim()).apply()
-
-    var serverPort: Int
-        get() = prefs.getInt(KEY_SERVER_PORT, DEFAULT_PORT)
-        set(value) = prefs.edit().putInt(KEY_SERVER_PORT, value).apply()
+    var serverUrl: String
+        get() = prefs.getString(KEY_SERVER_URL, DEFAULT_RAILWAY_URL) ?: DEFAULT_RAILWAY_URL
+        set(value) {
+            val normalized = normalizeUrl(value)
+            prefs.edit().putString(KEY_SERVER_URL, normalized).apply()
+        }
 
     val baseUrl: String
-        get() = "http://$serverIp:$serverPort/"
+        get() {
+            val url = serverUrl.trim()
+            return if (url.endsWith("/")) url else "$url/"
+        }
 
     val socketUrl: String
-        get() = "http://$serverIp:$serverPort"
+        get() {
+            val url = serverUrl.trim()
+            return if (url.endsWith("/")) url.substring(0, url.length - 1) else url
+        }
+
+    fun normalizeUrl(raw: String): String {
+        var clean = raw.trim()
+        if (clean.isEmpty()) return DEFAULT_RAILWAY_URL
+
+        while (clean.endsWith("/")) {
+            clean = clean.substring(0, clean.length - 1)
+        }
+
+        if (clean.startsWith("http://") || clean.startsWith("https://")) {
+            return clean
+        }
+
+        return if (clean.contains(".railway.app") || clean.contains(".up.railway.app") || clean.contains(".com") || clean.contains(".app") || clean.contains(".org")) {
+            "https://$clean"
+        } else {
+            if (!clean.contains(":")) {
+                "http://$clean:5000"
+            } else {
+                "http://$clean"
+            }
+        }
+    }
 }

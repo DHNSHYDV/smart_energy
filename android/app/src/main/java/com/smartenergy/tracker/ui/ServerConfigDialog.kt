@@ -1,7 +1,6 @@
 package com.smartenergy.tracker.ui
 
 import android.app.Dialog
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Toast
@@ -20,23 +19,26 @@ class ServerConfigDialog : DialogFragment() {
         _binding = DialogServerIpBinding.inflate(LayoutInflater.from(context))
         val prefs = PreferencesManager.getInstance(requireContext())
 
-        binding.etServerIp.setText("${prefs.serverIp}:${prefs.serverPort}")
+        binding.etServerIp.setText(prefs.serverUrl)
+
+        binding.btnPresetRailway.setOnClickListener {
+            binding.etServerIp.setText(PreferencesManager.DEFAULT_RAILWAY_URL)
+        }
+
+        binding.btnPresetLocal.setOnClickListener {
+            binding.etServerIp.setText(PreferencesManager.DEFAULT_LOCAL_URL)
+        }
 
         binding.btnCancelIp.setOnClickListener { dismiss() }
 
         binding.btnSaveIp.setOnClickListener {
             val input = binding.etServerIp.text.toString().trim()
             if (input.isNotEmpty()) {
-                val parts = input.split(":")
-                val ip = parts[0]
-                val port = if (parts.size > 1) parts[1].toIntOrNull() ?: 5000 else 5000
-
-                prefs.serverIp = ip
-                prefs.serverPort = port
+                prefs.serverUrl = input
                 ApiClient.invalidate()
                 EnergyRepository.getInstance(requireContext()).reconnect()
 
-                Toast.makeText(context, "Target set to $ip:$port", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Target set: ${prefs.serverUrl}", Toast.LENGTH_SHORT).show()
                 dismiss()
             }
         }
