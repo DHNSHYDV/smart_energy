@@ -44,18 +44,21 @@ jobs:
           files: |
             android/app/build/outputs/apk/debug/app-debug.apk
             GridSense-Android-v2.0.apk
-          name: "GridSense Enterprise EMS ${{ github.ref_name }} - Production Release"
+          name: "Smart Energy Converter ${{ github.ref_name }} - Production Release"
           body: |
-            ## GridSense Enterprise EMS (Release ${{ github.ref_name }})
-            ### Production-Grade IoT Energy Management System & Android Mobile Application
+            ## Smart Energy Converter (Release ${{ github.ref_name }})
+            ### Production-Grade IoT Energy Management System & Native Android Kotlin App
+
+            - **🌐 Live Railway Cloud Web App**: [https://web-production-29e8e.up.railway.app](https://web-production-29e8e.up.railway.app)
+            - **📱 Native Android APK**: Download `GridSense-Android-v2.0.apk` below (defaults to live Railway cloud with 1-tap local fallback).
 
             #### Key Capabilities:
-            - **High-Fidelity Telemetry Engine**: True RMS electrical modeling, instantaneous active power, current, voltage, and power factor.
-            - **Native Android Kotlin App**: Dual-curved card stack, 4 functionally differentiated tabs, MPAndroidChart diurnal curves, sub-50ms haptic relay switches.
-            - **Demand-Side Management (DSM)**: 4 automated scenes, peak load shifting analytics, and dynamic load curtailment.
-            - **Deduplicated Anomaly Detection**: IEC-standard fault recognition without notification spamming.
+            - **True RMS Telemetry Engine**: Computes instantaneous active power ($P$), current ($I_{\text{RMS}}$), voltage ($V$), and power factor ($\cos\phi$).
+            - **Native Android Kotlin App**: 4 functionally differentiated tabs, MPAndroidChart diurnal curves, sub-50ms haptic relay switches.
+            - **Railway.com 1-Click Deployment**: Multi-stage Docker container with embedded SQLite WAL mode and Socket.IO.
+            - **Research Datasets**: 1,440-minute diurnal 24h CSV/JSON load profile conforming to IEC 62053-21 standards.
 
-            #### Installation:
+            #### Android Installation:
             ```bash
             adb install -r GridSense-Android-v2.0.apk
             ```
