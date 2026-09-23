@@ -87,9 +87,9 @@ export function OverviewView({ onOpenConnectModal, onOpenAcademicModal }) {
   const fridgePowerKw = fridgeApp.reading ? (fridgeApp.reading.activePower / 1000).toFixed(2) : '0.19';
   const geyserPowerKw = geyserApp.reading ? (geyserApp.reading.activePower / 1000).toFixed(2) : '2.00';
 
-  const acCost = acApp.reading ? (acApp.reading.cumulativeEnergyKwh * telemetry.tariffRate).toFixed(2) : '348.04';
-  const fridgeCost = fridgeApp.reading ? (fridgeApp.reading.cumulativeEnergyKwh * telemetry.tariffRate).toFixed(2) : '48.04';
-  const geyserCost = geyserApp.reading ? (geyserApp.reading.cumulativeEnergyKwh * telemetry.tariffRate).toFixed(2) : '198.50';
+  const acCost = acApp.reading ? (acApp.reading.cumulativeEnergyKwh * (telemetry.tariffRate || 8)).toFixed(2) : '0.00';
+  const fridgeCost = fridgeApp.reading ? (fridgeApp.reading.cumulativeEnergyKwh * (telemetry.tariffRate || 8)).toFixed(2) : '0.00';
+  const geyserCost = geyserApp.reading ? (geyserApp.reading.cumulativeEnergyKwh * (telemetry.tariffRate || 8)).toFixed(2) : '0.00';
 
   // Sort appliances for table
   const sortedAppliances = [...appliances].sort((a, b) => {
@@ -115,7 +115,7 @@ export function OverviewView({ onOpenConnectModal, onOpenAcademicModal }) {
             <div className="flex items-start justify-between">
               <div>
                 <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 tracking-tight">
-                  ₹ {(telemetry.estimatedCost > 0 ? telemetry.estimatedCost : 1643.41).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  ₹ {Number(telemetry.estimatedCost || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </h2>
                 <p className="text-xs font-medium text-neutral-500 mt-0.5">
                   Today's Cumulative Cost · <strong className="text-neutral-800 font-semibold">{telemetry.totalActivePower.toLocaleString()} W</strong> Live

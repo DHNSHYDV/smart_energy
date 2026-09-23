@@ -291,6 +291,18 @@ export class SimulationEngine extends EventEmitter {
     const estimatedCost = totalEnergyTodayKwh * effectiveTariff;
     const carbonKg = totalEnergyTodayKwh * this.carbonFactor;
 
+    const activeCount = applianceReadings.filter(a => a.isOn).length;
+    const totalCount = applianceReadings.length;
+    const monthlyKwh = Number((totalEnergyTodayKwh + 124.6).toFixed(1));
+    const estimatedBill = Number((monthlyKwh * effectiveTariff).toFixed(0));
+    const monthlyUsage = {
+      kwh: monthlyKwh,
+      estimatedBill: estimatedBill,
+      dailyAverageKwh: Number((monthlyKwh / 23).toFixed(2)),
+      comparisonPct: -8.4,
+      projectedBill: Number((monthlyKwh / 23 * 30 * effectiveTariff).toFixed(0))
+    };
+
     const telemetry = {
       deviceId: this.esp32.deviceId,
       timestamp: new Date().toISOString(),
@@ -304,6 +316,9 @@ export class SimulationEngine extends EventEmitter {
       isPeakHour,
       tariffRate: effectiveTariff,
       speedMultiplier: this.speedMultiplier,
+      activeDevicesCount: activeCount,
+      totalDevicesCount: totalCount,
+      monthlyUsage,
       appliances: applianceReadings
     };
 
