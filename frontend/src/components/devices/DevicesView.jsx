@@ -26,8 +26,21 @@ const iconMap = {
   'PC001': Monitor,
   'LT001': Lightbulb,
   'FN001': Fan,
-  'WM001': Zap,
+  'WM001': WashingMachine,
   'GH001': Flame,
+  'WH001': Flame,
+};
+
+const applianceImageMap = {
+  'AC001': '/appliances/AC001.png',
+  'FR001': '/appliances/FR001.png',
+  'TV001': '/appliances/TV001.png',
+  'PC001': '/appliances/PC001.png',
+  'LT001': '/appliances/LT001.png',
+  'FN001': '/appliances/FN001.png',
+  'WM001': '/appliances/WM001.png',
+  'GH001': '/appliances/WH001.png',
+  'WH001': '/appliances/WH001.png',
 };
 
 export function DevicesView() {
@@ -41,6 +54,7 @@ export function DevicesView() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [imageErrors, setImageErrors] = useState({});
 
   // Filter categories
   const categories = ['ALL', 'Living Room', 'Kitchen', 'Bedroom', 'Office', 'Utility', 'Bathroom'];
@@ -140,75 +154,95 @@ export function DevicesView() {
                   : 'border-neutral-200/50 opacity-80 hover:opacity-100'
               }`}
             >
-              {/* Card Header */}
               <div>
-                <div className="flex items-start justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
-                      app.isOn 
-                        ? 'bg-neutral-900 text-white shadow-xs' 
-                        : 'bg-neutral-100 text-neutral-400'
-                    }`}>
-                      <Icon className="w-4 h-4" />
+                {/* 1. Top Product Image Showcase */}
+                <div className="bg-neutral-50/70 rounded-xl relative p-3 h-32 flex items-center justify-center overflow-hidden mb-3 border border-neutral-100/80 group-hover:bg-neutral-50 transition-colors">
+                  {!imageErrors[app.id] && applianceImageMap[app.id] ? (
+                    <img
+                      src={applianceImageMap[app.id]}
+                      alt={app.name}
+                      onError={() => setImageErrors(prev => ({ ...prev, [app.id]: true }))}
+                      className={`h-28 w-auto max-w-[85%] object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105 ${
+                        app.isOn ? 'opacity-100' : 'opacity-60 grayscale-[35%]'
+                      }`}
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-2xl bg-neutral-100 flex items-center justify-center text-neutral-400">
+                      <Icon className="w-8 h-8 stroke-[1.5]" />
                     </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-neutral-900 group-hover:text-blue-600 transition-colors">
-                        {app.name}
-                      </h4>
-                      <span className="text-[11px] text-neutral-400 font-sans block">
-                        {app.location}
-                      </span>
-                    </div>
-                  </div>
+                  )}
 
-                  {/* Smart Relay Toggle */}
+                  {/* Floating Round Smart Relay Toggle Button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleAppliance(app.id);
                     }}
-                    title={`Relay: ${app.isOn ? 'Click to open' : 'Click to close'}`}
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all cursor-pointer ${
+                    title={`Relay: ${app.isOn ? 'Turn OFF' : 'Turn ON'}`}
+                    className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer z-10 ${
                       app.isOn
-                        ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200 ring-2 ring-emerald-500/20'
-                        : 'bg-neutral-100 text-neutral-400 hover:bg-neutral-200'
+                        ? 'bg-emerald-50 border-emerald-300 text-emerald-600 ring-2 ring-emerald-500/20 hover:bg-emerald-100 shadow-xs'
+                        : 'bg-white border-neutral-200 text-neutral-400 hover:bg-neutral-100'
                     }`}
                   >
-                    <Power className="w-4 h-4" />
+                    <Power className="w-3.5 h-3.5" />
                   </button>
                 </div>
 
-                {/* Technical Node Badging */}
-                <div className="flex items-center gap-2 text-[10px] font-mono text-neutral-400 mb-3 pb-2 border-b border-neutral-100">
-                  <span className="bg-neutral-100 px-1.5 py-0.5 rounded text-neutral-600">CH0{idx + 1}</span>
-                  <span>SCT-013</span>
-                  <span className="ml-auto font-sans font-semibold">
+                {/* 2. Device Title & Status Row */}
+                <div className="flex items-start justify-between gap-2 mb-1.5">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      app.isOn ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-500'
+                    }`}>
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-xs text-neutral-900 group-hover:text-blue-600 transition-colors leading-tight">
+                        {app.name}
+                      </h4>
+                      <span className="text-[10px] text-neutral-400 font-sans block leading-tight">
+                        {app.location}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="shrink-0 text-right">
                     {app.isOn ? (
-                      <span className="text-emerald-600 flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                         ACTIVE
                       </span>
                     ) : (
-                      <span className="text-neutral-400">STANDBY</span>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
+                        STANDBY
+                      </span>
                     )}
-                  </span>
+                  </div>
                 </div>
 
-                {/* Primary Metric: Power */}
-                <div className="mb-3">
-                  <span className="text-[10px] uppercase font-bold text-neutral-400 tracking-wider block">
+                {/* 3. Technical Node Badging */}
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-neutral-400 mb-2.5">
+                  <span className="bg-neutral-100 px-1.5 py-0.2 rounded text-neutral-600 font-semibold">CH0{idx + 1}</span>
+                  <span>SCT-013</span>
+                </div>
+
+                {/* 4. Primary Metric: Power */}
+                <div className="mb-2.5">
+                  <span className="text-[9px] uppercase font-bold text-neutral-400 tracking-wider block">
                     Active Power
                   </span>
                   <div className="flex items-baseline gap-1 mt-0.5">
                     <span className="text-2xl font-mono font-bold text-neutral-900">
-                      {power}
+                      {power.toFixed(1)}
                     </span>
                     <span className="text-xs text-neutral-400 font-mono">W</span>
                   </div>
                 </div>
 
-                {/* Metric Strip (Current, PF, Energy) */}
-                <div className="grid grid-cols-3 gap-1.5 p-2 rounded-xl bg-neutral-50 text-[11px] font-mono mb-3">
+                {/* 5. Metric Strip (Current, PF, Energy) */}
+                <div className="grid grid-cols-3 gap-1 p-2 rounded-xl bg-neutral-50 border border-neutral-100 text-[10px] font-mono mb-2.5">
                   <div>
                     <span className="text-[9px] text-neutral-400 block">CURRENT</span>
                     <span className="font-bold text-neutral-700">{(app.isOn ? reading.current : 0).toFixed(1)}A</span>
@@ -226,10 +260,10 @@ export function DevicesView() {
                 </div>
               </div>
 
-              {/* Bottom Card Actions */}
+              {/* 6. Bottom Card Actions */}
               <div className="pt-2 border-t border-neutral-100 flex items-center justify-between text-xs text-neutral-500">
                 <span className="font-mono text-[11px]">₹{estCostToday} today</span>
-                <span className="flex items-center gap-1 text-blue-600 font-medium group-hover:translate-x-0.5 transition-transform text-[11px]">
+                <span className="flex items-center gap-0.5 text-blue-600 font-semibold group-hover:translate-x-0.5 transition-transform text-[11px]">
                   Details <ChevronRight className="w-3.5 h-3.5" />
                 </span>
               </div>
