@@ -40,14 +40,26 @@ export class AnalyticsService {
     };
   }
 
-  getHistoricalData(range = '7d') {
+  resolveCurrentHour(clientHour = null) {
+    if (clientHour !== null && clientHour !== undefined && !isNaN(Number(clientHour))) {
+      return Math.max(0, Math.min(23, parseInt(clientHour, 10)));
+    }
+    try {
+      const istStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' });
+      return new Date(istStr).getHours();
+    } catch (e) {
+      return new Date().getHours();
+    }
+  }
+
+  getHistoricalData(range = '7d', clientHour = null) {
     const tariff = this.simulationEngine.tariff || SYSTEM_CONFIG.DEFAULT_TARIFF;
     const carbonFactor = this.simulationEngine.carbonFactor || SYSTEM_CONFIG.DEFAULT_CARBON_FACTOR;
 
     if (range === 'today' || range === 'yesterday') {
       // Build 24-hour load curve
       const hours = [];
-      const currentHour = new Date().getHours();
+      const currentHour = this.resolveCurrentHour(clientHour);
       const isToday = range === 'today';
 
       // Base simulated diurnal consumption pattern (kW) for residential household
@@ -143,9 +155,9 @@ export class AnalyticsService {
     };
   }
 
-  getDemandForecast() {
+  getDemandForecast(clientHour = null) {
     const snapshot = this.simulationEngine.getSnapshot();
-    const currentHour = new Date().getHours();
+    const currentHour = this.resolveCurrentHour(clientHour);
     const currentPowerW = snapshot.telemetry ? snapshot.telemetry.totalActivePower : 1600;
 
     // Standard residential diurnal load model base (kW)

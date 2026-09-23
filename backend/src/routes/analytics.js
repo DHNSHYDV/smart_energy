@@ -21,7 +21,8 @@ export function createAnalyticsRouter(analyticsService, recommendationService, s
   // GET /api/analytics/historical?range=today|yesterday|7d|30d
   router.get('/historical', (req, res) => {
     const range = req.query.range || '7d';
-    const result = analyticsService.getHistoricalData(range);
+    const clientHour = req.query.clientHour;
+    const result = analyticsService.getHistoricalData(range, clientHour);
     res.json({
       success: true,
       data: result
@@ -73,7 +74,8 @@ export function createAnalyticsRouter(analyticsService, recommendationService, s
 
   // GET /api/analytics/forecast
   router.get('/forecast', (req, res) => {
-    const forecast = analyticsService.getDemandForecast();
+    const clientHour = req.query.clientHour;
+    const forecast = analyticsService.getDemandForecast(clientHour);
     res.json({
       success: true,
       data: forecast

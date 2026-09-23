@@ -1,3 +1,6 @@
+// Force Indian Standard Time (IST) timezone for residential energy model & Time-of-Day tariff compliance
+process.env.TZ = process.env.TZ || 'Asia/Kolkata';
+
 import express from 'express';
 import { createServer } from 'http';
 import { Server as SocketIOServer } from 'socket.io';

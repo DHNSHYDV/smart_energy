@@ -213,7 +213,8 @@ export function EnergyProvider({ children }) {
 
   const fetchForecast = useCallback(async () => {
     try {
-      const res = await fetch(`${backendUrl}/api/analytics/forecast`);
+      const clientHour = new Date().getHours();
+      const res = await fetch(`${backendUrl}/api/analytics/forecast?clientHour=${clientHour}`);
       const data = await res.json();
       if (data.success) setForecast(data.data);
     } catch (e) {
