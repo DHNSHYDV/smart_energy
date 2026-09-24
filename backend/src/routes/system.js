@@ -23,19 +23,45 @@ export function createSystemRouter(simulationEngine, mqttService) {
   // GET /api/system/network - Local Wi-Fi IP and generated QR code for mobile pairing
   router.get('/network', async (req, res) => {
     let localIp = '127.0.0.1';
+    let isWifiConnected = false;
     const interfaces = os.networkInterfaces();
 
-    // Prioritize wlan/wi-fi or eth interfaces over virtual/docker ones
-    for (const name of Object.keys(interfaces)) {
-      for (const iface of interfaces[name]) {
-        if (iface.family === 'IPv4' && !iface.internal) {
-          // Prefer 192.168.x.x or 10.x.x.x
-          if (iface.address.startsWith('192.168.') || iface.address.startsWith('10.')) {
-            localIp = iface.address;
-            break;
-          } else if (localIp === '127.0.0.1') {
-            localIp = iface.address;
-          }
+    // Gather non-internal IPv4 candidates
+    const candidates = [];
+    for (const [name, ifaceList] of Object.entries(interfaces)) {
+      const lowerName = name.toLowerCase();
+      // Skip docker/virtual interfaces
+      if (lowerName.includes('docker') || lowerName.includes('veth') || lowerName.includes('br-') || lowerName.includes('virbr')) {
+        continue;
+      }
+      for (const iface of ifaceList) {
+        if (iface.family === 'IPv4' && !iface.internal && iface.address !== '127.0.0.1') {
+          const isWifi = lowerName.startsWith('wl') || lowerName.includes('wifi') || lowerName.includes('wlan');
+          const isEth = lowerName.startsWith('en') || lowerName.startsWith('eth');
+          const isStandardPrivate = iface.address.startsWith('192.168.') || iface.address.startsWith('10.') || /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(iface.address);
+          
+          let score = 0;
+          if (isWifi) score += 20;
+          if (isEth) score += 10;
+          if (isStandardPrivate) score += 5;
+
+          candidates.push({ name, address: iface.address, score });
+        }
+      }
+    }
+
+    candidates.sort((a, b) => b.score - a.score);
+
+    if (candidates.length > 0) {
+      localIp = candidates[0].address;
+      isWifiConnected = true;
+    } else {
+      const hostHeader = req.headers.host;
+      if (hostHeader) {
+        const hostIp = hostHeader.split(':')[0];
+        if (hostIp && hostIp !== 'localhost' && hostIp !== '127.0.0.1') {
+          localIp = hostIp;
+          isWifiConnected = true;
         }
       }
     }
@@ -60,6 +86,7 @@ export function createSystemRouter(simulationEngine, mqttService) {
           port,
           mobileUrl,
           qrCode: qrDataUrl,
+          isLoopback: localIp === '127.0.0.1' || localIp === 'localhost',
           instructions: [
             'Ensure your mobile phone is connected to the SAME Wi-Fi network as this laptop.',
             `Open your phone camera or browser and navigate to: ${mobileUrl}`,

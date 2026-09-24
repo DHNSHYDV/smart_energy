@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 
 export function IoTNetworkView() {
-  const { telemetry, backendUrl } = useEnergy();
+  const { telemetry, backendUrl, networkInfo } = useEnergy();
   const [mqttPackets, setMqttPackets] = useState([]);
 
   // Generate packet logs based on live telemetry updates
@@ -115,7 +115,7 @@ export function IoTNetworkView() {
               </div>
               <div>
                 <h3 className="font-bold text-sm text-neutral-900">Aedes MQTT Telemetry Broker</h3>
-                <span className="text-xs text-neutral-400 font-mono">Broker: Localhost</span>
+                <span className="text-xs text-neutral-400 font-mono">Broker: {networkInfo?.localIp || '192.168.1.42'}:1883</span>
               </div>
             </div>
             <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-100 text-blue-800">
