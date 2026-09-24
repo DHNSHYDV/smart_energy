@@ -250,7 +250,7 @@ export function AnalyticsView() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs font-mono">
             <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
               Actual Usage ({Math.round(telemetry?.totalActivePower || 0)} W Live)
@@ -265,9 +265,9 @@ export function AnalyticsView() {
         </div>
 
         {/* Forecast Line Chart */}
-        <div className="h-64 sm:h-72 w-full">
+        <div className="h-64 sm:h-72 w-full pt-1">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={forecastPoints} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+            <LineChart data={forecastPoints} margin={{ top: 28, right: 20, left: 10, bottom: 0 }}>
               <XAxis dataKey="time" stroke="#94a3b8" fontSize={10} tickLine={false} />
               <YAxis 
                 stroke="#94a3b8" 
@@ -275,12 +275,21 @@ export function AnalyticsView() {
                 tickLine={false} 
                 axisLine={false} 
                 tickFormatter={(v) => `${v}W`}
+                width={50}
               />
               <ReferenceLine 
                 x={`${String(currentHour).padStart(2, '0')}:00`} 
                 stroke="#2563eb" 
                 strokeDasharray="3 3" 
-                label={{ value: 'Now (Live)', fill: '#2563eb', fontSize: 10, position: 'top' }} 
+                strokeWidth={1.5}
+                label={{ 
+                  value: '● Now (Live)', 
+                  fill: '#2563eb', 
+                  fontSize: 11, 
+                  fontWeight: 600, 
+                  position: 'insideTop', 
+                  dy: 6 
+                }} 
               />
               <Tooltip
                 contentStyle={{
@@ -363,10 +372,10 @@ export function AnalyticsView() {
                   { date: 'Sat', energyKwh: 21.0, cost: 168.0 },
                   { date: 'Sun', energyKwh: 19.3, cost: 154.4 }
                 ]}
-                margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                margin={{ top: 15, right: 15, left: 0, bottom: 0 }}
               >
                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} tickLine={false} />
-                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} />
+                <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} width={38} />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: '#0f172a',

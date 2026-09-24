@@ -139,7 +139,7 @@ export function OverviewView({ onOpenConnectModal, onOpenAcademicModal }) {
               {/* Area sparkline */}
               <div className="h-full w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 12, right: 0, left: 0, bottom: 0 }}>
+                  <AreaChart data={chartData} margin={{ top: 14, right: 6, left: 6, bottom: 4 }}>
                     <defs>
                       <linearGradient id="pastelBlueGrad" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
