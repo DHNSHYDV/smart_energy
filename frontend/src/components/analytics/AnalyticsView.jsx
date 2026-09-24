@@ -31,6 +31,32 @@ import {
 
 const PALETTE = ['#0284c7', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#64748b', '#f43f5e'];
 
+const CustomPieTooltip = ({ active, payload }) => {
+  if (active && payload && payload.length) {
+    const data = payload[0];
+    const itemColor = data.payload?.color || data.payload?.fill || data.color || PALETTE[0];
+    return (
+      <div className="bg-white border border-neutral-200/90 shadow-xl rounded-xl p-2.5 text-xs text-neutral-900 pointer-events-none min-w-[130px]">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs" style={{ backgroundColor: itemColor }}></span>
+          <span className="font-bold text-neutral-900 text-xs truncate">{data.name}</span>
+        </div>
+        <div className="flex items-center justify-between gap-3 text-neutral-600 font-mono text-[11px]">
+          <span>Usage:</span>
+          <span className="font-bold text-neutral-900">{data.value} kWh</span>
+        </div>
+        {data.payload?.percentage !== undefined && (
+          <div className="flex items-center justify-between gap-3 text-neutral-500 font-mono text-[10px] mt-1 pt-1 border-t border-neutral-100">
+            <span>Share:</span>
+            <span className="font-bold text-blue-600">{data.payload.percentage}%</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+
 export function AnalyticsView() {
   const { 
     backendUrl, 
@@ -77,16 +103,18 @@ export function AnalyticsView() {
   }, [backendUrl, range, currentUser?.id]);
 
   // Fallback attribution data if empty
-  const pieData = attribution?.breakdown?.filter(b => b.energyKwh > 0).map(b => ({
+  const pieData = attribution?.breakdown?.filter(b => b.energyKwh > 0).map((b, idx) => ({
     name: b.name,
     value: b.energyKwh,
     percentage: b.percentage,
-    cost: b.cost
-  })) || appliances.map(a => ({
+    cost: b.cost,
+    color: PALETTE[idx % PALETTE.length]
+  })) || appliances.map((a, idx) => ({
     name: a.name,
     value: Number((a.reading?.cumulativeEnergyKwh || 0.5).toFixed(2)),
     percentage: 12.5,
-    cost: Number(((a.reading?.cumulativeEnergyKwh || 0.5) * telemetry.tariffRate).toFixed(2))
+    cost: Number(((a.reading?.cumulativeEnergyKwh || 0.5) * telemetry.tariffRate).toFixed(2)),
+    color: PALETTE[idx % PALETTE.length]
   }));
 
   // Build 24-hour diurnal dataset binding directly to client current hour and live telemetry
@@ -293,13 +321,16 @@ export function AnalyticsView() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: '#0f172a',
+                  backgroundColor: '#ffffff',
                   borderRadius: '12px',
-                  border: 'none',
-                  color: '#fff',
+                  border: '1px solid #e2e8f0',
+                  color: '#0f172a',
                   fontSize: '11px',
-                  padding: '8px 12px'
+                  padding: '8px 12px',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.08)'
                 }}
+                itemStyle={{ fontWeight: 600 }}
+                labelStyle={{ color: '#64748b', marginBottom: '4px', fontWeight: 600 }}
                 formatter={(val, name, item) => {
                   if (name === 'actual') {
                     if (val === null || val === undefined) return ['Pending (Future)', 'Actual Load'];
@@ -378,13 +409,16 @@ export function AnalyticsView() {
                 <YAxis stroke="#94a3b8" fontSize={10} tickLine={false} axisLine={false} width={38} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
+                    backgroundColor: '#ffffff',
                     borderRadius: '12px',
-                    border: 'none',
-                    color: '#fff',
+                    border: '1px solid #e2e8f0',
+                    color: '#0f172a',
                     fontSize: '11px',
-                    padding: '8px 12px'
+                    padding: '8px 12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.08)'
                   }}
+                  itemStyle={{ color: '#0f172a', fontWeight: 600 }}
+                  labelStyle={{ color: '#64748b', marginBottom: '2px', fontWeight: 500 }}
                   formatter={(val) => [`${val} kWh`, 'Energy']}
                 />
                 <Bar dataKey="energyKwh" fill="#0f172a" radius={[6, 6, 0, 0]} />
@@ -413,22 +447,14 @@ export function AnalyticsView() {
                     outerRadius={75}
                     paddingAngle={3}
                     dataKey="value"
+                    stroke="#ffffff"
+                    strokeWidth={2}
                   >
                     {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={PALETTE[index % PALETTE.length]} />
+                      <Cell key={`cell-${index}`} fill={entry.color || PALETTE[index % PALETTE.length]} />
                     ))}
                   </Pie>
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: '#0f172a',
-                      borderRadius: '12px',
-                      border: 'none',
-                      color: '#fff',
-                      fontSize: '11px',
-                      padding: '8px 12px'
-                    }}
-                    formatter={(val) => [`${val} kWh`, 'Energy']}
-                  />
+                  <Tooltip content={<CustomPieTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -439,8 +465,8 @@ export function AnalyticsView() {
                 <div key={item.name} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span
-                      className="w-2.5 h-2.5 rounded-full shrink-0"
-                      style={{ backgroundColor: PALETTE[idx % PALETTE.length] }}
+                      className="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                      style={{ backgroundColor: item.color || PALETTE[idx % PALETTE.length] }}
                     ></span>
                     <span className="text-neutral-800 font-medium truncate max-w-[130px]">
                       {item.name}

@@ -223,20 +223,12 @@ export function AutomationsView() {
   return (
     <div className="space-y-6">
 
-      {/* TOP HEADER */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-neutral-200/80 shadow-xs">
-        <div>
-          <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-neutral-800" />
-            Automations
-          </h2>
-        </div>
-
-        {/* SubTab Pills */}
-        <div className="flex items-center gap-1 p-1 bg-neutral-100 rounded-xl overflow-x-auto">
+      {/* TOP SUBTAB BAR */}
+      <div className="flex items-center justify-center p-3 rounded-2xl bg-white border border-neutral-200/80 shadow-xs">
+        <div className="flex items-center justify-center gap-1.5 p-1 bg-neutral-100 rounded-xl overflow-x-auto max-w-full">
           <button
             onClick={() => setSubTab('scenes')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               subTab === 'scenes' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-800'
             }`}
           >
@@ -244,7 +236,7 @@ export function AutomationsView() {
           </button>
           <button
             onClick={() => setSubTab('schedules')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               subTab === 'schedules' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-800'
             }`}
           >
@@ -252,7 +244,7 @@ export function AutomationsView() {
           </button>
           <button
             onClick={() => setSubTab('rules')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               subTab === 'rules' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-800'
             }`}
           >
@@ -260,7 +252,7 @@ export function AutomationsView() {
           </button>
           <button
             onClick={() => setSubTab('shifting')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+            className={`px-4 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
               subTab === 'shifting' ? 'bg-white text-neutral-900 shadow-xs' : 'text-neutral-500 hover:text-neutral-800'
             }`}
           >
