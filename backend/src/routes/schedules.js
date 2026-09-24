@@ -47,8 +47,8 @@ export function createSchedulesRouter(schedulerService) {
     });
   });
 
-  // POST /api/schedules/scenes/:id/apply
-  router.post('/scenes/:id/apply', (req, res) => {
+  // POST /api/schedules/scenes/:id/apply (or activate)
+  const handleApplyScene = (req, res) => {
     const { id } = req.params;
     const result = schedulerService.applyScene(id);
     if (!result) return res.status(404).json({ success: false, message: 'Scene not found.' });
@@ -57,7 +57,9 @@ export function createSchedulesRouter(schedulerService) {
       message: `Scene '${result.scene.name}' executed successfully.`,
       data: result
     });
-  });
+  };
+  router.post('/scenes/:id/apply', handleApplyScene);
+  router.post('/scenes/:id/activate', handleApplyScene);
 
   // GET /api/schedules/rules
   router.get('/rules', (req, res) => {

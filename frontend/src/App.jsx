@@ -9,7 +9,6 @@ import { AlertsView } from './components/alerts/AlertsView';
 import { ReportsView } from './components/reports/ReportsView';
 import { IoTNetworkView } from './components/network/IoTNetworkView';
 import { EnergyConfigView } from './components/config/EnergyConfigView';
-import { SystemLabModal } from './components/lab/SystemLabModal';
 import { MobileConnectModal } from './components/system/MobileConnectModal';
 import { AcademicMappingModal } from './components/system/AcademicMappingModal';
 import { DeviceDetailDrawer } from './components/ui/DeviceDetailDrawer';
@@ -25,7 +24,6 @@ import {
   FileText,
   Radio,
   Settings,
-  FlaskConical,
   Smartphone,
   GraduationCap,
   Search,
@@ -67,7 +65,6 @@ function DashboardShell() {
 
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isAcademicModalOpen, setIsAcademicModalOpen] = useState(false);
-  const [isLabOpen, setIsLabOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAlertsDropdownOpen, setIsAlertsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
@@ -89,17 +86,17 @@ function DashboardShell() {
       case 'overview':
         return { title: 'Overview' };
       case 'live':
-        return { title: 'Live Telemetry' };
+        return { title: 'Live Energy' };
       case 'appliances':
       case 'devices':
-        return { title: 'Sub-Circuits' };
+        return { title: 'Appliances' };
       case 'analytics':
         return { title: 'Analytics' };
       case 'schedules':
       case 'automations':
         return { title: 'Automations' };
       case 'alerts':
-        return { title: 'Incidents' };
+        return { title: 'Alerts' };
       case 'reports':
         return { title: 'Audit Reports' };
       case 'network':
@@ -183,7 +180,7 @@ function DashboardShell() {
               <span className="hidden md:inline">Overview</span>
             </button>
 
-            {/* 2. Live Telemetry */}
+            {/* 2. Live Energy */}
             <button
               onClick={() => setActiveTab('live')}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
@@ -193,7 +190,7 @@ function DashboardShell() {
               }`}
             >
               <Activity className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">Live Telemetry</span>
+              <span className="hidden md:inline">Live Energy</span>
             </button>
 
             {/* 3. Devices */}
@@ -207,7 +204,7 @@ function DashboardShell() {
             >
               <div className="flex items-center gap-3">
                 <Cpu className="w-4 h-4 shrink-0" />
-                <span className="hidden md:inline">Sub-Circuits</span>
+                <span className="hidden md:inline">Appliances</span>
               </div>
               <span className="hidden md:inline text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400">
                 {appliances.length}
@@ -302,21 +299,6 @@ function DashboardShell() {
               <Settings className="w-4 h-4 shrink-0" />
               <span className="hidden md:inline">Configuration</span>
             </button>
-
-            {/* 10. Viva Sandbox */}
-            <button
-              onClick={() => setIsLabOpen(true)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold text-amber-400 hover:text-amber-300 hover:bg-amber-400/10 transition-all cursor-pointer w-full text-left mt-1 border border-amber-400/20"
-            >
-              <div className="flex items-center gap-3">
-                <FlaskConical className="w-4 h-4 shrink-0" />
-                <span className="hidden md:inline">Viva Sandbox</span>
-              </div>
-              <span className="hidden md:inline text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300">
-                LAB
-              </span>
-            </button>
-
           </nav>
         </div>
 
@@ -356,16 +338,6 @@ function DashboardShell() {
 
           {/* Right Controls Bar */}
           <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
-            
-            {/* Quick Viva Sandbox Trigger Button */}
-            <button
-              onClick={() => setIsLabOpen(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 hover:bg-amber-100 border border-amber-200/80 text-amber-900 text-xs font-semibold transition-all cursor-pointer shadow-xs"
-            >
-              <FlaskConical className="w-3.5 h-3.5 text-amber-600" />
-              <span>Viva Sandbox</span>
-            </button>
-
             {/* Search Button */}
             <div className="relative">
               <button
@@ -427,11 +399,11 @@ function DashboardShell() {
               {isAlertsDropdownOpen && (
                 <div className="absolute right-0 top-12 z-30 w-80 bg-white rounded-2xl shadow-xl border border-neutral-200 p-4">
                   <div className="flex items-center justify-between pb-2 border-b border-neutral-100 mb-2">
-                    <h4 className="text-xs font-bold text-neutral-900">Telemetry Alerts</h4>
+                    <h4 className="text-xs font-bold text-neutral-900">System Alerts</h4>
                     <span className="text-[10px] text-neutral-400 font-medium">{unreadAlerts.length} Active</span>
                   </div>
                   {alerts.length === 0 ? (
-                    <p className="text-xs text-neutral-400 py-3 text-center">No active anomalies detected.</p>
+                    <p className="text-xs text-neutral-400 py-3 text-center">No active alerts.</p>
                   ) : (
                     <div className="max-h-56 overflow-y-auto space-y-2 text-xs">
                       {alerts.slice(0, 5).map(a => (
@@ -599,16 +571,6 @@ function DashboardShell() {
                       <Smartphone className="w-3.5 h-3.5 text-blue-600" />
                       Mobile App (APK) Setup
                     </button>
-                    <button
-                      onClick={() => {
-                        setIsLabOpen(true);
-                        setIsProfileDropdownOpen(false);
-                      }}
-                      className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-amber-50 text-amber-800 flex items-center gap-2 cursor-pointer text-[11px]"
-                    >
-                      <FlaskConical className="w-3.5 h-3.5 text-amber-600" />
-                      Viva Sandbox & Stress Tests
-                    </button>
                   </div>
                 </div>
               )}
@@ -651,10 +613,6 @@ function DashboardShell() {
         tariffRate={telemetry.tariffRate}
         schedules={schedules}
       />
-      <SystemLabModal
-        isOpen={isLabOpen}
-        onClose={() => setIsLabOpen(false)}
-      />
       <MobileConnectModal 
         isOpen={isConnectModalOpen} 
         onClose={() => setIsConnectModalOpen(false)} 
@@ -667,7 +625,6 @@ function DashboardShell() {
 
       {/* Mobile Bottom Navigation */}
       <BottomNav 
-        onOpenLab={() => setIsLabOpen(true)}
         onOpenAcademic={() => setIsAcademicModalOpen(true)}
         onOpenConnect={() => setIsConnectModalOpen(true)}
       />

@@ -369,10 +369,11 @@ export function EnergyProvider({ children }) {
 
   // Action methods:
   const toggleAppliance = (id, targetState = null) => {
-    let nextState;
+    const currentApp = appliances.find(a => a.id === id);
+    const nextState = targetState !== null ? targetState : (currentApp ? !currentApp.isOn : true);
+
     setAppliances(prev => prev.map(a => {
       if (a.id === id) {
-        nextState = targetState !== null ? targetState : !a.isOn;
         return { ...a, isOn: nextState };
       }
       return a;
@@ -387,12 +388,12 @@ export function EnergyProvider({ children }) {
     }
 
     if (socket && isConnected) {
-      socket.emit('appliance:toggle', { id, state: targetState });
+      socket.emit('appliance:toggle', { id, state: nextState });
     } else {
       fetch(`${backendUrl}/api/appliances/${id}/toggle`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ state: targetState })
+        body: JSON.stringify({ state: nextState })
       });
     }
   };

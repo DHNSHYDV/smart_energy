@@ -171,14 +171,14 @@ export function ReportsView() {
           </div>
         </div>
 
-        {/* SUB-CIRCUIT AUDIT BREAKDOWN TABLE */}
+        {/* APPLIANCE AUDIT BREAKDOWN TABLE */}
         <div className="space-y-2">
-          <h3 className="font-bold text-sm text-neutral-900">Sub-Circuit Disaggregation & Attribution</h3>
+          <h3 className="font-bold text-sm text-neutral-900">Appliance Energy Breakdown</h3>
           
           <table className="w-full text-left text-xs border border-neutral-200 rounded-xl overflow-hidden">
             <thead className="bg-neutral-100 text-neutral-600 font-semibold uppercase text-[10px] tracking-wider border-b border-neutral-200">
               <tr>
-                <th className="py-2.5 px-3">Circuit</th>
+                <th className="py-2.5 px-3">ID</th>
                 <th className="py-2.5 px-3">Appliance Name</th>
                 <th className="py-2.5 px-3">Location</th>
                 <th className="py-2.5 px-3 text-right">Energy (kWh)</th>

@@ -101,12 +101,12 @@ export function DeviceDetailDrawer({ device, onClose, onToggle, tariffRate = 8.0
           {/* TAB 1: OVERVIEW */}
           {activeTab === 'overview' && (
             <div className="space-y-4">
-              {/* Quick Relay Control Card */}
+              {/* Quick Power Control Card */}
               <div className="p-4 rounded-2xl bg-neutral-50 border border-neutral-200/80 flex items-center justify-between">
                 <div>
-                  <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">Relay State</span>
+                  <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block">Power Status</span>
                   <span className="text-sm font-bold text-neutral-900 font-mono">
-                    {device.isOn ? 'CIRCUIT CLOSED (ENERGIZED)' : 'CIRCUIT OPEN (DE-ENERGIZED)'}
+                    {device.isOn ? 'ON (RUNNING)' : 'OFF (STANDBY)'}
                   </span>
                 </div>
                 <button
@@ -118,7 +118,7 @@ export function DeviceDetailDrawer({ device, onClose, onToggle, tariffRate = 8.0
                   }`}
                 >
                   <Power className="w-3.5 h-3.5" />
-                  <span>{device.isOn ? 'DISCONNECT' : 'ENERGIZED'}</span>
+                  <span>{device.isOn ? 'TURN OFF' : 'TURN ON'}</span>
                 </button>
               </div>
 
@@ -262,24 +262,24 @@ export function DeviceDetailDrawer({ device, onClose, onToggle, tariffRate = 8.0
                 <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-100 flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1 shrink-0"></div>
                   <div>
-                    <span className="font-semibold text-neutral-900 block">Telemetry Stream Nominal</span>
-                    <span className="text-[11px] text-neutral-500">Sensor packet delivered via MQTT (sensors/ESP32-SIM-001/telemetry)</span>
+                    <span className="font-semibold text-neutral-900 block">Sensor Reading Updated</span>
+                    <span className="text-[11px] text-neutral-500">Live energy data received from sensor</span>
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-100 flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-blue-500 mt-1 shrink-0"></div>
                   <div>
-                    <span className="font-semibold text-neutral-900 block">Relay Command Processed</span>
-                    <span className="text-[11px] text-neutral-500">Relay actuator state synchronized to {device.isOn ? 'CLOSED' : 'OPEN'}</span>
+                    <span className="font-semibold text-neutral-900 block">Switch Command Processed</span>
+                    <span className="text-[11px] text-neutral-500">Appliance power switched to {device.isOn ? 'ON' : 'OFF'}</span>
                   </div>
                 </div>
 
                 <div className="p-3 rounded-xl bg-neutral-50 border border-neutral-100 flex items-start gap-2.5">
                   <div className="w-2 h-2 rounded-full bg-neutral-400 mt-1 shrink-0"></div>
                   <div>
-                    <span className="font-semibold text-neutral-900 block">Database Sync (WAL Mode)</span>
-                    <span className="text-[11px] text-neutral-500">Instantaneous record committed to sensor_readings table</span>
+                    <span className="font-semibold text-neutral-900 block">Data Saved Successfully</span>
+                    <span className="text-[11px] text-neutral-500">Latest reading saved to history database</span>
                   </div>
                 </div>
               </div>

@@ -131,7 +131,7 @@ export function OverviewView() {
           </div>
           <div className="flex items-center gap-2.5">
             <span className="text-[11px] font-medium text-neutral-500 hidden sm:inline">
-              <strong className="text-neutral-800">{activeAppliances.length}</strong> of {appliances.length} circuits active
+              <strong className="text-neutral-800">{activeAppliances.length}</strong> of {appliances.length} appliances on
             </span>
             <button
               onClick={() => {
@@ -344,7 +344,7 @@ export function OverviewView() {
 
                       <button
                         onClick={() => toggleAppliance(app.id, false)}
-                        title="Turn OFF Relay"
+                        title="Turn OFF"
                         className="p-1.5 rounded-lg bg-neutral-200 hover:bg-rose-100 text-neutral-600 hover:text-rose-700 transition-colors cursor-pointer"
                       >
                         <Power className="w-3.5 h-3.5" />

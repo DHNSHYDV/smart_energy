@@ -32,7 +32,7 @@ export function QuickApplianceGrid() {
       <div className="flex items-center justify-between mb-3">
         <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
           <Power className="w-4 h-4 text-emerald-400" />
-          Virtual Appliances & Smart Relays
+          Appliances & Smart Switches
         </h3>
         <span className="text-xs text-slate-400">
           {appliances.filter(a => a.isOn).length} of {appliances.length} Active

@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react';
 
-export function BottomNav({ onOpenLab, onOpenAcademic, onOpenConnect }) {
+export function BottomNav({ onOpenAcademic, onOpenConnect }) {
   const { activeTab, setActiveTab, alerts } = useEnergy();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const unreadAlerts = alerts.filter(a => !a.is_resolved).length;
@@ -41,7 +41,7 @@ export function BottomNav({ onOpenLab, onOpenAcademic, onOpenConnect }) {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="grid grid-cols-1 gap-2 text-xs">
               <button
                 onClick={() => { setActiveTab('reports'); setIsMoreOpen(false); }}
                 className="p-3 rounded-2xl bg-neutral-50 hover:bg-neutral-100 text-left border border-neutral-100 flex items-center gap-2.5 font-semibold text-neutral-800"
@@ -62,13 +62,6 @@ export function BottomNav({ onOpenLab, onOpenAcademic, onOpenConnect }) {
               >
                 <Settings className="w-4 h-4 text-neutral-700" />
                 Tariff Config
-              </button>
-              <button
-                onClick={() => { onOpenLab(); setIsMoreOpen(false); }}
-                className="p-3 rounded-2xl bg-amber-50 hover:bg-amber-100 text-left border border-amber-200/60 flex items-center gap-2.5 font-semibold text-amber-900"
-              >
-                <span className="text-sm">🧪</span>
-                Viva Sandbox
               </button>
             </div>
           </div>

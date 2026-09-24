@@ -96,7 +96,7 @@ export function LiveEnergyView() {
         <div>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <h2 className="text-lg font-bold tracking-tight">Main Incomer Telemetry — ESP32 Node 001</h2>
+            <h2 className="text-lg font-bold tracking-tight">Main Power Meter — ESP32 Node 001</h2>
             <span className="text-xs font-mono bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded-md border border-neutral-700">
               1-Phase 230V AC · 50.0 Hz
             </span>
@@ -107,7 +107,7 @@ export function LiveEnergyView() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 bg-neutral-800/80 p-3 rounded-xl border border-neutral-700/80">
           <div>
             <div className="flex items-center justify-between gap-4 text-xs">
-              <span className="text-neutral-400">Sanctioned Load (5.0 kW)</span>
+              <span className="text-neutral-400">Power Limit (5.0 kW)</span>
               <span className={`font-mono font-bold ${loadPercentage > 85 ? 'text-rose-400' : 'text-emerald-400'}`}>
                 {loadPercentage}% Utilized ({telemetry.totalActivePower} W)
               </span>
@@ -280,7 +280,7 @@ export function LiveEnergyView() {
           <div>
             <h3 className="font-bold text-sm text-neutral-900 flex items-center gap-2">
               <Radio className="w-4 h-4 text-emerald-600" />
-              Sub-Circuit CT Clamp Channels (ADS1115 Multiplexer)
+              Connected Appliances & Energy Monitors
             </h3>
           </div>
           <span className="text-xs font-mono text-neutral-400">
@@ -292,13 +292,13 @@ export function LiveEnergyView() {
           <table className="w-full text-left text-xs">
             <thead>
               <tr className="border-b border-neutral-200/80 text-neutral-400 font-semibold uppercase tracking-wider text-[10px]">
-                <th className="py-2.5 px-3">Channel / CT</th>
-                <th className="py-2.5 px-3">Device & Location</th>
-                <th className="py-2.5 px-3">Active Load</th>
+                <th className="py-2.5 px-3">Sensor Channel</th>
+                <th className="py-2.5 px-3">Appliance & Location</th>
+                <th className="py-2.5 px-3">Power</th>
                 <th className="py-2.5 px-3">Current</th>
-                <th className="py-2.5 px-3">PF</th>
+                <th className="py-2.5 px-3">Power Factor</th>
                 <th className="py-2.5 px-3">Today</th>
-                <th className="py-2.5 px-3">Relay</th>
+                <th className="py-2.5 px-3">Status</th>
                 <th className="py-2.5 px-3 text-right">Actions</th>
               </tr>
             </thead>
@@ -326,7 +326,7 @@ export function LiveEnergyView() {
                         <span className={`w-1.5 h-1.5 rounded-full ${app.isOn ? 'bg-emerald-500' : 'bg-neutral-300'}`}></span>
                         <span className="font-bold text-neutral-800">{channelId}</span>
                       </div>
-                      <span className="text-[10px] text-neutral-400 font-sans block">SCT-013-030</span>
+                      <span className="text-[10px] text-neutral-400 font-sans block">Sensor Clamp</span>
                     </td>
 
                     {/* Device & Location */}
@@ -361,7 +361,7 @@ export function LiveEnergyView() {
                       {(reading.cumulativeEnergyKwh || 0).toFixed(2)} kWh
                     </td>
 
-                    {/* Relay State & Toggle */}
+                    {/* Power State & Toggle */}
                     <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
                       <button
                         onClick={() => toggleAppliance(app.id)}
@@ -372,7 +372,7 @@ export function LiveEnergyView() {
                         }`}
                       >
                         <Power className="w-3 h-3" />
-                        {app.isOn ? 'CLOSED' : 'OPEN'}
+                        {app.isOn ? 'ON' : 'OFF'}
                       </button>
                     </td>
 

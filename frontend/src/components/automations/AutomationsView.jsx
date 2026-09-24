@@ -75,34 +75,34 @@ const DEFAULT_SCENES = [
 const DEFAULT_RULES = [
   {
     id: 'rule_peak_demand',
-    name: 'Sanctioned Load Threshold Protection',
-    description: 'Automatically curtails high-draw water heating if aggregate building demand breaches 3.5 kW for > 2 mins.',
-    condition: 'Total Active Power > 3500 W for > 120s',
-    action: 'Temporarily open Water Heater Relay GH001',
+    name: 'Power Limit Overload Protection',
+    description: 'Automatically pauses water heater if total home power exceeds 3.5 kW for > 2 mins.',
+    condition: 'Total Power > 3500 W for > 2 mins',
+    action: 'Temporarily turn off Water Heater',
     type: 'DEMAND GUARD'
   },
   {
     id: 'rule_vampire_cutoff',
-    name: 'Vampire / Standby Load Isolator',
-    description: 'Isolates workstation and television circuits if power draw remains below 15W continuously for 30 minutes.',
-    condition: 'Power Draw < 15 W for > 1800s',
-    action: 'Open relay contact to eliminate phantom load',
-    type: 'VAMPIRE KILLER'
+    name: 'Standby Power Auto Cut-off',
+    description: 'Turns off workstation and television if power usage remains below 15W for 30 minutes.',
+    condition: 'Power Draw < 15 W for > 30 mins',
+    action: 'Turn off power to eliminate standby waste',
+    type: 'STANDBY SAVER'
   },
   {
     id: 'rule_peak_tariff_sentinel',
     name: 'Peak Tariff Surcharge Sentinel',
     description: 'Prevents concurrent operation of heavy heating and washing cycles during the 18:00–22:00 surcharge interval.',
-    condition: 'TOD = Peak Surcharge AND Geyser = ON',
-    action: 'Lockout washing machine start until 22:00',
+    condition: 'Time = Peak Hours AND Geyser = ON',
+    action: 'Delay washing machine start until 22:00',
     type: 'TARIFF OPTIMIZER'
   },
   {
     id: 'rule_overvoltage_guard',
-    name: 'Overvoltage Equipment Protection',
-    description: 'Isolates sensitive electronics (PC, TV) if incoming RMS voltage exceeds IS 12360 statutory upper limit (>250V).',
-    condition: 'Grid Voltage > 250.0 V AC RMS',
-    action: 'Isolate sensitive electronic branch circuits',
+    name: 'High Voltage Equipment Protection',
+    description: 'Safely turns off sensitive electronics (PC, TV) if incoming grid voltage exceeds 250V.',
+    condition: 'Grid Voltage > 250.0 V',
+    action: 'Turn off sensitive electronics',
     type: 'VOLTAGE GUARD'
   }
 ];
@@ -298,7 +298,7 @@ export function AutomationsView() {
                   </p>
 
                   <div className="p-3 rounded-xl bg-neutral-50 text-xs space-y-1.5 mb-4 border border-neutral-100 font-mono text-[11px]">
-                    <span className="text-neutral-400 text-[10px] uppercase font-bold block">Relay Actions:</span>
+                    <span className="text-neutral-400 text-[10px] uppercase font-bold block">Actions:</span>
                     {actions.map((act, actIdx) => (
                       <div key={actIdx} className="flex items-center justify-between">
                         <span className="text-neutral-700">{act.name}</span>
@@ -317,7 +317,7 @@ export function AutomationsView() {
                   className="w-full py-2.5 rounded-xl bg-neutral-900 hover:bg-neutral-800 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xs active:scale-[0.99]"
                 >
                   <Power className="w-3.5 h-3.5" />
-                  <span>Execute Scene Profile</span>
+                  <span>Activate Scene</span>
                 </button>
               </div>
             );
@@ -330,7 +330,7 @@ export function AutomationsView() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-medium text-neutral-500">
-              Active schedules trigger relays at designated times without manual intervention.
+              Active schedules automatically turn appliances on or off at set times.
             </span>
             <button
               onClick={() => setIsAddScheduleModalOpen(true)}
@@ -555,7 +555,7 @@ export function AutomationsView() {
         <div className="fixed inset-0 z-50 bg-neutral-900/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 border border-neutral-200">
             <h3 className="font-bold text-base text-neutral-900 mb-1">Create Automation Schedule</h3>
-            <p className="text-xs text-neutral-500 mb-4">Set automated relay switching for any monitored appliance</p>
+            <p className="text-xs text-neutral-500 mb-4">Set automated schedules for any appliance</p>
 
             <form onSubmit={handleCreateSchedule} className="space-y-4 text-xs">
               <div>
@@ -574,7 +574,7 @@ export function AutomationsView() {
               </div>
 
               <div>
-                <label className="font-semibold text-neutral-700 block mb-1">Relay Action</label>
+                <label className="font-semibold text-neutral-700 block mb-1">Action</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"

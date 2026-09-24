@@ -82,7 +82,7 @@ export function DevicesView() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <SlidersHorizontal className="w-5 h-5 text-neutral-700" />
-            Sub-Circuits
+            Appliances
           </h2>
           {currentUser && (
             <p className="text-xs text-neutral-500 mt-0.5">
@@ -178,13 +178,13 @@ export function DevicesView() {
                     </div>
                   )}
 
-                  {/* Floating Round Smart Relay Toggle Button */}
+                  {/* Floating Round Power Toggle Button */}
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       toggleAppliance(app.id);
                     }}
-                    title={`Relay: ${app.isOn ? 'Turn OFF' : 'Turn ON'}`}
+                    title={app.isOn ? 'Turn OFF' : 'Turn ON'}
                     className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full border flex items-center justify-center transition-all cursor-pointer z-10 ${
                       app.isOn
                         ? 'bg-emerald-50 border-emerald-300 text-emerald-600 ring-2 ring-emerald-500/20 hover:bg-emerald-100 shadow-xs'

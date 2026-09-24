@@ -165,7 +165,7 @@ export function IoTNetworkView() {
             <span className="w-7 h-7 rounded-lg bg-neutral-200 text-neutral-800 flex items-center justify-center font-bold text-xs mx-auto mb-1.5">
               1
             </span>
-            <span className="font-bold text-xs text-neutral-900 block">Mains Incomer</span>
+            <span className="font-bold text-xs text-neutral-900 block">Main Power Input</span>
             <span className="text-[10px] text-neutral-500 block mt-0.5">230V AC 50Hz</span>
           </div>
 

@@ -127,7 +127,7 @@ export function AuthModal() {
                 </span>
               </h3>
               <p className="text-xs text-neutral-400 mt-0.5">
-                Personalized metering, sub-circuit controls & billing
+                Personalized energy tracking, appliance controls & billing
               </p>
             </div>
           </div>

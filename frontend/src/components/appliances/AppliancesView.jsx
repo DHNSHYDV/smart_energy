@@ -40,15 +40,15 @@ export function AppliancesView() {
         <div>
           <h2 className="text-xl font-bold text-neutral-900 tracking-tight flex items-center gap-2">
             <Zap className="w-5 h-5 text-amber-500" />
-            Device-Level Energy Sensing & Smart Relays
+            Appliance Energy Tracking & Controls
           </h2>
           <p className="text-xs text-neutral-500 mt-0.5">
-            Simulated CT clamp sensors, RMS voltage calculations, and automated relays
+            Live power sensing, voltage monitoring, and smart automatic switches
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-neutral-600 bg-neutral-100 px-3 py-1.5 rounded-full border border-neutral-200">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Virtual CT Sensor Hub Active</span>
+          <span>Sensor Hub Active</span>
         </div>
       </div>
 

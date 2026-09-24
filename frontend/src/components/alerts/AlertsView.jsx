@@ -124,9 +124,9 @@ export function AlertsView() {
         {filteredAlerts.length === 0 ? (
           <div className="p-10 text-center bg-white border border-neutral-200/80 rounded-2xl">
             <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-neutral-800">No Incidents Detected</h3>
+            <h3 className="text-sm font-bold text-neutral-800">No Alerts Detected</h3>
             <p className="text-xs text-neutral-500 mt-1">
-              All monitored sub-circuits, voltage margins, and power factors are operating within academic baseline parameters.
+              All appliances, voltage levels, and power efficiency are operating normally.
             </p>
           </div>
         ) : (

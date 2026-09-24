@@ -242,10 +242,10 @@ export function AnalyticsView() {
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-500" />
               <h3 className="font-bold text-sm text-neutral-900">
-                24-Hour Diurnal Demand Forecast vs Actual Load
+                24-Hour Daily Power Forecast vs Actual Usage
               </h3>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-semibold bg-blue-50 text-blue-700 border border-blue-200/60">
-                Holt-Winters Moving Trend ({forecast?.confidenceScore || 91.4}% Confidence)
+                Moving Trend ({forecast?.confidenceScore || 91.4}% Confidence)
               </span>
             </div>
           </div>
@@ -253,7 +253,7 @@ export function AnalyticsView() {
           <div className="flex items-center gap-4 text-xs font-mono">
             <span className="flex items-center gap-1.5 text-blue-600 font-semibold">
               <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
-              Actual Load ({Math.round(telemetry?.totalActivePower || 0)} W Live)
+              Actual Usage ({Math.round(telemetry?.totalActivePower || 0)} W Live)
             </span>
             <span className="flex items-center gap-1.5 text-neutral-500">
               <span className="w-3 h-0.5 border-t-2 border-dashed border-amber-500"></span> Predicted Trend
@@ -388,7 +388,7 @@ export function AnalyticsView() {
         <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
             <div>
-              <h3 className="font-bold text-sm text-neutral-900">Appliance Consumption Attribution</h3>
+              <h3 className="font-bold text-sm text-neutral-900">Appliance Energy Usage Breakdown</h3>
             </div>
           </div>
 

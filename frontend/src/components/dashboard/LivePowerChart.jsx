@@ -33,7 +33,7 @@ export function LivePowerChart() {
           <div className="flex items-center gap-2">
             <h3 className="text-base font-bold text-white tracking-tight flex items-center gap-2">
               <Activity className="w-4 h-4 text-emerald-400" />
-              Real-Time Telemetry Stream
+              Real-Time Power Usage
             </h3>
             <span className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
               <Radio className="w-3 h-3 animate-pulse" />
@@ -41,7 +41,7 @@ export function LivePowerChart() {
             </span>
           </div>
           <p className="text-xs text-slate-400 mt-0.5">
-            Continuous sub-second time-series readings published by Virtual ESP32
+            Live power readings measured at 1-second intervals
           </p>
         </div>
 
