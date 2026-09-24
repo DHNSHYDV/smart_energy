@@ -35,7 +35,7 @@ const iconBadgeMap = {
   'FN001': 'FN'
 };
 
-export function OverviewView({ onOpenConnectModal, onOpenAcademicModal }) {
+export function OverviewView({ onOpenAcademicModal }) {
   const { telemetry, appliances, liveHistory, toggleAppliance, alerts, backendUrl } = useEnergy();
   
   const [selectedTimeframe, setSelectedTimeframe] = useState('24H');

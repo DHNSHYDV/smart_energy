@@ -9,7 +9,6 @@ import { AlertsView } from './components/alerts/AlertsView';
 import { ReportsView } from './components/reports/ReportsView';
 import { IoTNetworkView } from './components/network/IoTNetworkView';
 import { EnergyConfigView } from './components/config/EnergyConfigView';
-import { MobileConnectModal } from './components/system/MobileConnectModal';
 import { AcademicMappingModal } from './components/system/AcademicMappingModal';
 import { DeviceDetailDrawer } from './components/ui/DeviceDetailDrawer';
 import { BottomNav } from './components/common/BottomNav';
@@ -24,7 +23,6 @@ import {
   FileText,
   Radio,
   Settings,
-  Smartphone,
   GraduationCap,
   Search,
   Bell,
@@ -63,7 +61,6 @@ function DashboardShell() {
     setAuthModalMode
   } = useEnergy();
 
-  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [isAcademicModalOpen, setIsAcademicModalOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAlertsDropdownOpen, setIsAlertsDropdownOpen] = useState(false);
@@ -311,14 +308,6 @@ function DashboardShell() {
             </div>
             <span className="text-[10px] font-mono text-emerald-400 font-semibold">50.0 Hz</span>
           </div>
-
-          <button
-            onClick={() => setIsConnectModalOpen(true)}
-            className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-xl bg-neutral-800/70 hover:bg-neutral-800 text-xs text-neutral-300 hover:text-white transition-all cursor-pointer border border-neutral-700/50"
-          >
-            <Smartphone className="w-3.5 h-3.5 text-neutral-400" />
-            <span>Connect Mobile App</span>
-          </button>
         </div>
 
       </aside>
@@ -561,16 +550,6 @@ function DashboardShell() {
                       <GraduationCap className="w-3.5 h-3.5 text-emerald-600" />
                       Academic Project Details
                     </button>
-                    <button
-                      onClick={() => {
-                        setIsConnectModalOpen(true);
-                        setIsProfileDropdownOpen(false);
-                      }}
-                      className="w-full text-left px-3 py-1.5 rounded-xl hover:bg-neutral-100 text-neutral-600 flex items-center gap-2 cursor-pointer text-[11px]"
-                    >
-                      <Smartphone className="w-3.5 h-3.5 text-blue-600" />
-                      Mobile App (APK) Setup
-                    </button>
                   </div>
                 </div>
               )}
@@ -613,10 +592,6 @@ function DashboardShell() {
         tariffRate={telemetry.tariffRate}
         schedules={schedules}
       />
-      <MobileConnectModal 
-        isOpen={isConnectModalOpen} 
-        onClose={() => setIsConnectModalOpen(false)} 
-      />
       <AcademicMappingModal 
         isOpen={isAcademicModalOpen} 
         onClose={() => setIsAcademicModalOpen(false)} 
@@ -626,7 +601,6 @@ function DashboardShell() {
       {/* Mobile Bottom Navigation */}
       <BottomNav 
         onOpenAcademic={() => setIsAcademicModalOpen(true)}
-        onOpenConnect={() => setIsConnectModalOpen(true)}
       />
 
     </div>

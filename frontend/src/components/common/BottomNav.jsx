@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react';
 
-export function BottomNav({ onOpenAcademic, onOpenConnect }) {
+export function BottomNav({ onOpenAcademic }) {
   const { activeTab, setActiveTab, alerts } = useEnergy();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const unreadAlerts = alerts.filter(a => !a.is_resolved).length;

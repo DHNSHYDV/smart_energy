@@ -4,7 +4,6 @@ import {
   Zap, 
   Wifi, 
   Cpu, 
-  QrCode, 
   BookOpen, 
   LayoutDashboard, 
   Sliders, 
@@ -14,7 +13,7 @@ import {
   Radio
 } from 'lucide-react';
 
-export function Header({ onOpenConnectModal, onOpenAcademicModal }) {
+export function Header({ onOpenAcademicModal }) {
   const { isConnected, gatewayStatus, activeTab, setActiveTab, alerts, telemetry } = useEnergy();
 
   const unreadAlerts = alerts.filter(a => !a.is_resolved).length;
@@ -114,17 +113,6 @@ export function Header({ onOpenConnectModal, onOpenAcademicModal }) {
               <BookOpen className="w-3.5 h-3.5 text-teal-400" />
               <span className="hidden sm:inline">Project Guide</span>
             </button>
-
-            {/* Connect Mobile Phone QR Button */}
-            <button
-              onClick={onOpenConnectModal}
-              title="Connect Phone via Local Wi-Fi"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-900/30 transition-all border border-emerald-400/30 active:scale-95"
-            >
-              <QrCode className="w-4 h-4 text-emerald-200" />
-              <span>Connect Mobile</span>
-            </button>
-
           </div>
 
         </div>
