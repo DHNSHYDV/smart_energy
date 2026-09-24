@@ -189,7 +189,7 @@ function DashboardShell() {
                 <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v2.0</span>
               </div>
               <span className="text-[10px] uppercase font-mono font-semibold tracking-wider text-neutral-400 block mt-0.5">
-                Enterprise Converter
+                Conservation
               </span>
             </div>
           </div>
