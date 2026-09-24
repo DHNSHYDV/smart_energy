@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { EnergyProvider, useEnergy } from './context/EnergyContext';
 import { OverviewView } from './components/overview/OverviewView';
 import { LiveEnergyView } from './components/live/LiveEnergyView';
@@ -66,6 +66,43 @@ function DashboardShell() {
   const [isAlertsDropdownOpen, setIsAlertsDropdownOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  const searchRef = useRef(null);
+  const alertsRef = useRef(null);
+  const profileRef = useRef(null);
+
+  // Click outside and Escape key dismissal for header popovers
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (alertsRef.current && !alertsRef.current.contains(event.target)) {
+        setIsAlertsDropdownOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setIsProfileDropdownOpen(false);
+      }
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setIsSearchOpen(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') {
+        setIsAlertsDropdownOpen(false);
+        setIsProfileDropdownOpen(false);
+        setIsSearchOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const unreadAlerts = alerts.filter(a => !a.is_resolved);
 
@@ -328,7 +365,7 @@ function DashboardShell() {
           {/* Right Controls Bar */}
           <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
             {/* Search Button */}
-            <div className="relative">
+            <div className="relative" ref={searchRef}>
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
                 className="w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
@@ -372,7 +409,7 @@ function DashboardShell() {
             </div>
 
             {/* Notification Bell Button */}
-            <div className="relative">
+            <div className="relative" ref={alertsRef}>
               <button
                 onClick={() => setIsAlertsDropdownOpen(!isAlertsDropdownOpen)}
                 className="relative w-9 h-9 rounded-full bg-neutral-100 hover:bg-neutral-200/80 flex items-center justify-center text-neutral-600 transition-colors cursor-pointer"
@@ -417,7 +454,7 @@ function DashboardShell() {
             </div>
 
             {/* Resident Profile Pill */}
-            <div className="relative">
+            <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 className="bg-neutral-100 hover:bg-neutral-200/80 px-2.5 py-1.5 rounded-full flex items-center gap-2 cursor-pointer transition-colors border border-neutral-200/60 shadow-xs"

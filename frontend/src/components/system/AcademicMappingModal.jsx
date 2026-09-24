@@ -2,6 +2,15 @@ import React from 'react';
 import { X, CheckCircle2, ArrowRight, GraduationCap } from 'lucide-react';
 
 export function AcademicMappingModal({ isOpen, onClose }) {
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const mapping = [
@@ -43,8 +52,14 @@ export function AcademicMappingModal({ isOpen, onClose }) {
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-white border border-neutral-200/90 rounded-[32px] shadow-2xl p-6 sm:p-8 text-neutral-900 flex flex-col overflow-hidden">
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in cursor-pointer"
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-4xl max-h-[90vh] bg-white border border-neutral-200/90 rounded-[32px] shadow-2xl p-6 sm:p-8 text-neutral-900 flex flex-col overflow-hidden cursor-default"
+      >
         
         {/* Close Button */}
         <button

@@ -32,8 +32,14 @@ export function BottomNav({ onOpenAcademic }) {
     <>
       {/* "More" Popover Menu on Mobile */}
       {isMoreOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end p-4 animate-fade-in">
-          <div className="bg-white rounded-3xl p-5 shadow-2xl border border-neutral-200 space-y-3">
+        <div 
+          onClick={() => setIsMoreOpen(false)}
+          className="md:hidden fixed inset-0 z-50 bg-neutral-900/60 backdrop-blur-xs flex flex-col justify-end p-4 animate-fade-in cursor-pointer"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white rounded-3xl p-5 shadow-2xl border border-neutral-200 space-y-3 cursor-default"
+          >
             <div className="flex items-center justify-between pb-2 border-b border-neutral-100">
               <h4 className="font-bold text-sm text-neutral-900">System Modules & Admin</h4>
               <button onClick={() => setIsMoreOpen(false)} className="p-1 rounded-full text-neutral-400 hover:text-neutral-700">

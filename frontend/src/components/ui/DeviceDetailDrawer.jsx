@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   Power, 
@@ -14,6 +14,15 @@ import {
 
 export function DeviceDetailDrawer({ device, onClose, onToggle, tariffRate = 8.0, schedules = [] }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'telemetry' | 'energy' | 'events' | 'automation'
+
+  useEffect(() => {
+    if (!device) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [device, onClose]);
 
   if (!device) return null;
 
@@ -38,8 +47,14 @@ export function DeviceDetailDrawer({ device, onClose, onToggle, tariffRate = 8.0
   const applianceSchedules = schedules.filter(s => s.appliance_id === device.id);
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-neutral-900/40 backdrop-blur-xs flex justify-end animate-fade-in">
-      <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-neutral-200/80 animate-slide-left">
+    <div 
+      onClick={onClose}
+      className="fixed inset-0 z-50 overflow-hidden bg-neutral-900/40 backdrop-blur-xs flex justify-end animate-fade-in cursor-pointer"
+    >
+      <div 
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-neutral-200/80 animate-slide-left cursor-default"
+      >
         
         {/* Header */}
         <div className="p-5 border-b border-neutral-100 flex items-start justify-between bg-neutral-50/50">

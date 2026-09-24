@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEnergy } from '../../context/EnergyContext';
 import { 
   CalendarClock, 
@@ -12,6 +12,15 @@ import {
 export function SchedulesView() {
   const { schedules, appliances, addSchedule, toggleSchedule, deleteSchedule } = useEnergy();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
   const [selectedAppliance, setSelectedAppliance] = useState(appliances[0]?.id || 'AC001');
   const [action, setAction] = useState('OFF');
   const [time, setTime] = useState('23:00');
@@ -182,8 +191,14 @@ export function SchedulesView() {
 
       {/* New Schedule Modal Dialog */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in">
-          <div className="relative w-full max-w-md bg-white border border-neutral-200 rounded-[32px] shadow-2xl p-6 text-neutral-900">
+        <div 
+          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/40 backdrop-blur-sm animate-fade-in cursor-pointer"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md bg-white border border-neutral-200 rounded-[32px] shadow-2xl p-6 text-neutral-900 cursor-default"
+          >
             
             <button
               onClick={() => setIsModalOpen(false)}

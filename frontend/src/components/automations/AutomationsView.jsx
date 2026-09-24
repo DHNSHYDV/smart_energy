@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useEnergy } from '../../context/EnergyContext';
 import {
   Sparkles,
@@ -157,6 +157,15 @@ export function AutomationsView() {
   const [newScheduleTime, setNewScheduleTime] = useState('22:00');
   const [newScheduleAction, setNewScheduleAction] = useState('OFF');
   const [sceneSuccessToast, setSceneSuccessToast] = useState(null);
+
+  useEffect(() => {
+    if (!isAddScheduleModalOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setIsAddScheduleModalOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isAddScheduleModalOpen]);
 
   // Normalize scenes data safely
   const effectiveScenes = (scenes && scenes.length > 0) ? scenes : DEFAULT_SCENES;
@@ -552,8 +561,14 @@ export function AutomationsView() {
 
       {/* CREATE SCHEDULE MODAL */}
       {isAddScheduleModalOpen && (
-        <div className="fixed inset-0 z-50 bg-neutral-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 border border-neutral-200">
+        <div 
+          onClick={() => setIsAddScheduleModalOpen(false)}
+          className="fixed inset-0 z-50 bg-neutral-900/50 backdrop-blur-xs flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-6 border border-neutral-200 cursor-default"
+          >
             <h3 className="font-bold text-base text-neutral-900 mb-1">Create Automation Schedule</h3>
             <p className="text-xs text-neutral-500 mb-4">Set automated schedules for any appliance</p>
 
