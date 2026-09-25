@@ -39,7 +39,7 @@ export function Header({ onOpenAcademicModal }) {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-extrabold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
-                  Smart Energy Converter
+                  Smart Energy Conservation
                 </span>
                 <span className="hidden md:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   ENVIRONMENTAL

@@ -240,7 +240,7 @@ export function AuthModal() {
                 disabled={loading}
                 className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                {loading ? 'Authenticating...' : 'Sign In to Smart Energy'}
+                {loading ? 'Authenticating...' : 'Sign In to Smart Energy Conservation'}
               </button>
 
               {/* Quick One-Click Demo Profiles */}

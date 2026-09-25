@@ -126,7 +126,7 @@ httpServer.listen(PORT, '0.0.0.0', () => {
 
 // Graceful shutdown
 process.on('SIGINT', () => {
-  console.log('\nShutting down Smart Energy Converter Simulation...');
+  console.log('\nShutting down Smart Energy Conservation Simulation...');
   simulationEngine.stop();
   schedulerService.stop();
   process.exit(0);

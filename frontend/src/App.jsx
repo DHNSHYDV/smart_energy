@@ -138,7 +138,7 @@ function DashboardShell() {
       case 'config':
         return { title: 'Configuration' };
       default:
-        return { title: 'Smart Energy Converter' };
+        return { title: 'Smart Energy Conservation' };
     }
   };
 
