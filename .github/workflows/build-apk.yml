@@ -26,50 +26,46 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Fresh Debug APK (v3.0.0)
+      - name: Build Fresh Release APK (v4.0.0)
         working-directory: android
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleRelease --stacktrace
 
       - name: Prepare Fresh APK
         run: |
           mkdir -p release_apk
-          cp android/app/build/outputs/apk/debug/app-debug.apk release_apk/SmartEnergyConservation-v3.0.0.apk
+          cp android/app/build/outputs/apk/release/app-release.apk release_apk/SmartEnergyConservation-v4.0.0.apk
 
       - name: Upload APK Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SmartEnergyConservation-v3.0.0-APK
-          path: release_apk/SmartEnergyConservation-v3.0.0.apk
+          name: SmartEnergyConservation-v4.0.0-APK
+          path: release_apk/SmartEnergyConservation-v4.0.0.apk
           retention-days: 30
 
-      - name: Update Official GitHub Release
+      - name: Create Official GitHub Release v4.0.0
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.0.0
-          name: "Smart Energy Conservation v3.0.0 (Official Release)"
+          tag_name: v4.0.0
+          name: "Smart Energy Conservation v4.0.0 (Official Signed Release)"
           body: |
-            # ⚡ Smart Energy Conservation v3.0.0 — Official Release
+            # ⚡ Smart Energy Conservation v4.0.0 — Official Signed Release
 
-            An enterprise-grade, IoT-driven Smart Energy Management & Microgrid Digital Twin platform featuring synced Supabase authentication, real-time sub-second telemetry, user-specific profile analytics, and an immersive 3D digital twin room simulation.
-
-            ---
-
-            ## 🌟 Highlights & What's New
-
-            ### 📱 Android Mobile App (v3.0.0)
-            - **🔐 Synced Supabase Authentication**: Unified email/password login & registration synchronized with the Web dashboard.
-            - **🔄 Resident Profile Switcher & Sign Out**: Dedicated profile switcher button (`🔄 Switch Profile / Sign Out`) in the home header. Easily switch between resident profiles (e.g., *Dhanush Yadav*, *Priya Sharma*) or sign out cleanly.
-            - **🌑 Deep Dark Onyx Theme (`#0A0A0F`)**: Premium dark theme with `#16171F` card containers, `#3B82F6` blue accent glow, and `#10B981` emerald indicators.
-            - **⚡ Hero Live Power Draw Card**: Dynamic 52sp typography displaying real-time active power draw (W) with voltage, power factor, and frequency sub-metrics.
-            - **🌿 Peak-Shifting Insights & Action Pills**: One-tap macro controls (Night Mode, Eco Shift, Work Mode, Viva Lab) and automated peak-hour demand advisories.
-            - **🖼️ Custom Leaf-Lightning App Icon**: Custom high-resolution branding across all launcher density buckets (`mdpi` through `xxxhdpi`).
+            An enterprise-grade, IoT-driven Smart Energy Management & Microgrid Digital Twin platform with deterministic APK signing, full 5-tab native Android capsule navigation, embedded WebGL 3D digital twin room, and real-time sub-metering telemetry.
 
             ---
 
-            ### 🌐 Web Dashboard & 3D Live Space
-            - **🏢 Immersive 3D Digital Twin**: Clean, 100% full-frame 3D room canvas rendering live interactive appliances, dynamic wire glowing effects when powered, and real-time state sync.
-            - **🛡️ Supabase Fallback System**: Automatic local backend fallback (`POST /api/auth/signup`) if Supabase API calls are blocked by browser extensions or CORS policies.
-            - **🚀 Production Deployment**: Live and accessible globally on Railway at [https://web-production-29e8e.up.railway.app](https://web-production-29e8e.up.railway.app).
+            ## 🌟 Key Features in v4.0.0
+
+            ### 📱 Signed Native Android Application
+            - **🔑 Signed Release Certificate**: Signed with deterministic release keystore (`release.keystore`) for zero installation errors or package conflicts.
+            - **⚡ 5-Tab Native Floating Capsule Dock**:
+              1. 🏠 **Home**: Live active power draw gauge (W), voltage/PF metrics, top circuit switches, resident switcher (`Dhanush Yadav` / `Priya Sharma`).
+              2. ⚡ **3D Room (Live Space)**: Full-frame Three.js 3D room canvas with real-time green wire glow effects in WebGL hardware acceleration.
+              3. 📱 **Devices**: Native sub-metering circuit list with live active power (W), current (A), power factor (PF), and detailed bottom sheets.
+              4. 📊 **Analytics**: MPAndroidChart 24-hour diurnal load forecast curve (00:00–23:00) & billing analysis.
+              5. ⚙️ **Automations**: Scenario injection macros (Overload/Brownout) & 1-tap Server IP config dialog.
+            - **⚡ 1-Tap Client Demo Mode**: Instant access with zero login required for client presentations.
+            - **🛡️ Crash-Proof Offline Engine**: 100% stable local IoT simulation mode when offline.
 
             ---
 
@@ -77,8 +73,8 @@ jobs:
 
             | Asset Name | Description | Direct Download |
             | :--- | :--- | :--- |
-            | **`SmartEnergyConservation-v3.0.0.apk`** | Android Production Build (v3.0.0) | [Download APK](https://github.com/DHNSHYDV/smart_energy/releases/download/v3.0.0/SmartEnergyConservation-v3.0.0.apk) |
-          files: release_apk/SmartEnergyConservation-v3.0.0.apk
+            | **`SmartEnergyConservation-v4.0.0.apk`** | Signed Android Release (v4.0.0) | [Download v4.0.0 APK](https://github.com/DHNSHYDV/smart_energy/releases/download/v4.0.0/SmartEnergyConservation-v4.0.0.apk) |
+          files: release_apk/SmartEnergyConservation-v4.0.0.apk
           draft: false
           prerelease: false
           make_latest: true
