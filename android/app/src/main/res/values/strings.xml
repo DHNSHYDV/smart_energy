@@ -11,7 +11,7 @@
     <string name="connect_laptop">Connect to Backend</string>
     <string name="server_ip_hint">192.168.1.42:5000</string>
     <string name="greeting_user">Hello!</string>
-    <string name="greeting_subtitle">"Let's conserve energy today."</string>
+    <string name="greeting_subtitle">Let\'s conserve energy today.</string>
     <string name="action_night_mode">Night</string>
     <string name="action_eco_shift">Eco</string>
     <string name="action_work_mode">Work</string>
