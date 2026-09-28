@@ -26,19 +26,14 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Try Build APK
-        continue-on-error: true
+      - name: Build Fresh Debug APK (v3.0.0)
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Prepare Release APK Artifact
+      - name: Prepare Fresh APK
         run: |
           mkdir -p release_apk
-          if [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
-            cp android/app/build/outputs/apk/debug/app-debug.apk release_apk/SmartEnergyConservation-v3.0.0.apk
-          else
-            cp GridSense-Android-v2.0.apk release_apk/SmartEnergyConservation-v3.0.0.apk
-          fi
+          cp android/app/build/outputs/apk/debug/app-debug.apk release_apk/SmartEnergyConservation-v3.0.0.apk
 
       - name: Upload APK Build Artifact
         uses: actions/upload-artifact@v4
@@ -53,14 +48,14 @@ jobs:
           tag_name: v3.0.0-${{ github.run_number }}
           name: "Smart Energy Conservation v3.0.0 (Build ${{ github.run_number }})"
           body: |
-            ## Smart Energy Conservation v3.0.0
+            ## Smart Energy Conservation v3.0.0 (Fresh Build ${{ github.run_number }})
 
             ### What's New
             - 🔐 **Supabase Auth** — Synced login across Web & Android
-            - 🏢 **3D Live Space** — Three.js digital twin & room simulation
+            - 🏢 **3D Live Space** — Immersive 3D room simulation
             - 🌑 **Full Dark UI** — Deep black theme `#0A0A0F` with modern blue accents
             - ⚡ **Hero Power Card** — 52sp live watt display
-            - 🎨 **Redesigned Login** — Dark tabbed layout with Supabase security
+            - 🔄 **Profile Switcher** — Dedicated button in header to switch residents or sign out
             - 🖼️ **Custom App Icon** — Green leaf-lightning icon
           files: release_apk/SmartEnergyConservation-v3.0.0.apk
           draft: false
