@@ -362,14 +362,37 @@ export function EnergyProvider({ children }) {
   const signup = async (userData) => {
     try {
       const { name, doorNo, address, email, password } = userData;
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { name, door_no: doorNo, address }
+      let data, error;
+      try {
+        const res = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { name, door_no: doorNo, address }
+          }
+        });
+        data = res.data;
+        error = res.error;
+      } catch (err) {
+        error = err;
+      }
+
+      if (error) {
+        // Fallback to local SQLite backend signup if Supabase fails or network is blocked
+        const localRes = await fetch(`${backendUrl}/api/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, doorNo, address, email, password })
+        });
+        const localData = await localRes.json();
+        if (localData.success && localData.user) {
+          setCurrentUser(localData.user);
+          localStorage.setItem('smart_energy_user', JSON.stringify(localData.user));
+          return { success: true, user: localData.user };
         }
-      });
-      if (error) throw new Error(error.message);
+        throw new Error(error.message || 'Registration failed');
+      }
+
       // If email confirmation is disabled, session is returned immediately
       if (data.session) {
         return { success: true, user: data.user };
@@ -377,7 +400,7 @@ export function EnergyProvider({ children }) {
       // Email confirmation enabled — inform the user
       return { success: true, user: data.user, needsConfirmation: true };
     } catch (e) {
-      return { success: false, message: e.message };
+      return { success: false, message: e.message || 'Registration failed' };
     }
   };
 

@@ -76,20 +76,33 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.btnProfile.setOnClickListener {
+        val openProfileDialog = {
             val residentLabels = arrayOf(
-                "Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo, est. ₹1,185)",
-                "Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo, est. ₹611)"
+                "👤 Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo)",
+                "👤 Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo)",
+                "🚪 Sign Out / Switch Account"
             )
-            val residentIds = arrayOf("usr_dhanush", "usr_priya")
             androidx.appcompat.app.AlertDialog.Builder(requireContext())
                 .setTitle("Switch Resident Profile")
                 .setItems(residentLabels) { _, which ->
-                    repo.switchResident(residentIds[which])
+                    when (which) {
+                        0 -> repo.switchResident("usr_dhanush")
+                        1 -> repo.switchResident("usr_priya")
+                        2 -> {
+                            com.smartenergy.tracker.auth.SupabaseAuthManager.signOut(requireContext())
+                            startActivity(android.content.Intent(requireContext(), LoginActivity::class.java))
+                            requireActivity().finish()
+                        }
+                    }
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
         }
+
+        binding.btnSwitchProfile.setOnClickListener { openProfileDialog() }
+        binding.tvProfileInitials.setOnClickListener { openProfileDialog() }
+        binding.tvGreetingTitle.setOnClickListener { openProfileDialog() }
+        binding.btnProfile.setOnClickListener { openProfileDialog() }
 
         binding.btnVivaSandbox.setOnClickListener {
             SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
