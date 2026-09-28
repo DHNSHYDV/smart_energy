@@ -35,7 +35,8 @@ class CircuitAdapter(
 
         fun bind(appliance: Appliance) {
             val ctx = itemView.context
-            binding.tvCircuitName.text = appliance.name
+            val appName = appliance.name ?: "Appliance"
+            binding.tvCircuitName.text = appName
             binding.tvCircuitLocation.text = "${appliance.location ?: "General"}"
 
             val activeWatts = if (appliance.isOn) {
@@ -67,7 +68,7 @@ class CircuitAdapter(
             }
 
             // Consistent Icon Mapping
-            val nameLower = appliance.name.lowercase(Locale.US)
+            val nameLower = appName.lowercase(Locale.US)
             val iconType = appliance.icon?.lowercase(Locale.US) ?: ""
             when {
                 iconType == "pc" || nameLower.contains("pc") || nameLower.contains("workstation") || nameLower.contains("computer") ->

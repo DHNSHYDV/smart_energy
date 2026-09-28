@@ -5,9 +5,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -17,13 +14,15 @@ import com.smartenergy.tracker.network.EnergyRepository
 import com.smartenergy.tracker.network.PreferencesManager
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private var _binding: ActivityMainBinding? = null
+    private val binding get() = _binding!!
+
     private lateinit var repo: EnergyRepository
 
-    val homeFragment = HomeFragment()
-    val devicesFragment = DevicesFragment()
-    val analyticsFragment = AnalyticsFragment()
-    val automationsFragment = AutomationsFragment()
+    val homeFragment by lazy { HomeFragment() }
+    val devicesFragment by lazy { DevicesFragment() }
+    val analyticsFragment by lazy { AnalyticsFragment() }
+    val automationsFragment by lazy { AutomationsFragment() }
 
     private var activeTabId: Int = R.id.nav_home
     private val handler = Handler(Looper.getMainLooper())
@@ -32,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Check Supabase auth — redirect to login if no token stored
         val prefs = PreferencesManager.getInstance(this)
         if (!prefs.isLoggedIn) {
             startActivity(Intent(this, LoginActivity::class.java))
@@ -40,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         repo = EnergyRepository.getInstance(this)
@@ -49,14 +47,13 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, homeFragment)
-                .commit()
+                .commitAllowingStateLoss()
             updateDockUi(R.id.nav_home)
         }
 
         setupDockNavigation()
         setupToastObserver()
 
-        // Check for In-App Over-The-Air (OTA) Updates from backend
         UpdateManager.checkForUpdates(this, silent = true)
     }
 
@@ -85,17 +82,18 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
             .replace(R.id.fragment_container, fragment)
-            .commit()
+            .commitAllowingStateLoss()
 
         updateDockUi(tabId)
     }
 
     private fun updateDockUi(selectedTabId: Int) {
+        val b = _binding ?: return
         val tabs = listOf(
-            Triple(binding.navHome, binding.ivNavHome, binding.tvNavHome),
-            Triple(binding.navDevices, binding.ivNavDevices, binding.tvNavDevices),
-            Triple(binding.navAnalytics, binding.ivNavAnalytics, binding.tvNavAnalytics),
-            Triple(binding.navAutomations, binding.ivNavAutomations, binding.tvNavAutomations)
+            Triple(b.navHome, b.ivNavHome, b.tvNavHome),
+            Triple(b.navDevices, b.ivNavDevices, b.tvNavDevices),
+            Triple(b.navAnalytics, b.ivNavAnalytics, b.tvNavAnalytics),
+            Triple(b.navAutomations, b.ivNavAutomations, b.tvNavAutomations)
         )
 
         for ((container, iv, tv) in tabs) {
@@ -123,8 +121,9 @@ class MainActivity : AppCompatActivity() {
     private fun showFloatingNotice(message: String) {
         hideToastRunnable?.let { handler.removeCallbacks(it) }
 
-        binding.tvFloatingToastText.text = message
-        binding.floatingToastCard.apply {
+        val b = _binding ?: return
+        b.tvFloatingToastText.text = message
+        b.floatingToastCard.apply {
             alpha = 0f
             translationY = 40f
             visibility = View.VISIBLE
@@ -135,22 +134,24 @@ class MainActivity : AppCompatActivity() {
                 .start()
         }
 
-        hideToastRunnable = Runnable {
-            binding.floatingToastCard.animate()
-                .alpha(0f)
-                .translationY(30f)
-                .setDuration(200)
-                .withEndAction {
-                    binding.floatingToastCard.visibility = View.GONE
+        val runnable = Runnable {
+            _binding?.floatingToastCard?.animate()
+                ?.alpha(0f)
+                ?.translationY(30f)
+                ?.setDuration(200)
+                ?.withEndAction {
+                    _binding?.floatingToastCard?.visibility = View.GONE
                 }
-                .start()
+                ?.start()
         }
-        handler.postDelayed(hideToastRunnable!!, 2600)
+        hideToastRunnable = runnable
+        handler.postDelayed(runnable, 2600)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         hideToastRunnable?.let { handler.removeCallbacks(it) }
         repo.stop()
+        _binding = null
     }
 }

@@ -3,9 +3,9 @@ package com.smartenergy.tracker.model
 import com.google.gson.annotations.SerializedName
 
 data class ApiResponse<T>(
-    @SerializedName("success") val success: Boolean,
-    @SerializedName("data") val data: T?,
-    @SerializedName("message") val message: String?,
+    @SerializedName("success") val success: Boolean = false,
+    @SerializedName("data") val data: T? = null,
+    @SerializedName("message") val message: String? = null,
     @SerializedName("count") val count: Int? = null
 )
 
@@ -18,10 +18,10 @@ data class MonthlyUsage(
 )
 
 data class ResidentInfo(
-    @SerializedName("userId") val userId: String = "usr_dhanush",
-    @SerializedName("name") val name: String = "Dhanush Yadav",
-    @SerializedName("doorNo") val doorNo: String = "Flat 402, Block B",
-    @SerializedName("consumerId") val consumerId: String = "BESCOM-BLR-D402-A81"
+    @SerializedName("userId") val userId: String? = "usr_dhanush",
+    @SerializedName("name") val name: String? = "Dhanush Yadav",
+    @SerializedName("doorNo") val doorNo: String? = "Flat 402, Block B",
+    @SerializedName("consumerId") val consumerId: String? = "BESCOM-BLR-D402-A81"
 )
 
 data class Telemetry(
@@ -46,8 +46,8 @@ data class Telemetry(
 )
 
 data class Appliance(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
+    @SerializedName("id") val id: String = "",
+    @SerializedName("name") val name: String? = "Appliance",
     @SerializedName("type") val type: String? = null,
     @SerializedName("location") val location: String? = "Main Board",
     @SerializedName("ratedPower") val ratedPower: Double = 0.0,
@@ -88,16 +88,16 @@ data class AlertItem(
 }
 
 data class SceneItem(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
+    @SerializedName("id") val id: String = "",
+    @SerializedName("name") val name: String = "",
     @SerializedName("description") val description: String? = "",
     @SerializedName("icon") val icon: String? = "leaf",
     @SerializedName("active") var active: Boolean = false
 )
 
 data class RuleItem(
-    @SerializedName("id") val id: String,
-    @SerializedName("name") val name: String,
+    @SerializedName("id") val id: String = "",
+    @SerializedName("name") val name: String = "",
     @SerializedName("condition") val condition: String? = "",
     @SerializedName("action") val action: String? = "",
     @SerializedName("enabled") var enabled: Boolean = true
@@ -125,8 +125,8 @@ data class LoadShiftingData(
 )
 
 data class ShiftRecommendation(
-    @SerializedName("applianceId") val applianceId: String,
-    @SerializedName("applianceName") val applianceName: String,
+    @SerializedName("applianceId") val applianceId: String = "",
+    @SerializedName("applianceName") val applianceName: String = "",
     @SerializedName("currentCost") val currentCost: Double = 0.0,
     @SerializedName("shiftedCost") val shiftedCost: Double = 0.0,
     @SerializedName("savings") val savings: Double = 0.0,
@@ -134,13 +134,13 @@ data class ShiftRecommendation(
 )
 
 data class ToggleResponse(
-    @SerializedName("success") val success: Boolean,
-    @SerializedName("message") val message: String?,
-    @SerializedName("data") val data: Appliance?
+    @SerializedName("success") val success: Boolean = false,
+    @SerializedName("message") val message: String? = null,
+    @SerializedName("data") val data: Appliance? = null
 )
 
 data class AppUpdateResponse(
-    @SerializedName("success") val success: Boolean,
+    @SerializedName("success") val success: Boolean = false,
     @SerializedName("hasUpdate") val hasUpdate: Boolean = false,
     @SerializedName("latestVersion") val latestVersion: String? = null,
     @SerializedName("versionCode") val versionCode: Int = 0,

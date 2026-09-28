@@ -292,14 +292,18 @@ class EnergyRepository private constructor(private val context: Context) {
             try {
                 val api = ApiClient.getService(context)
                 val appResp = api.getAppliances()
-                if (appResp.isSuccessful && appResp.body()?.data != null) {
-                    _appliances.postValue(appResp.body()!!.data)
-                    recalculateState()
+                if (appResp.isSuccessful) {
+                    appResp.body()?.data?.let { list ->
+                        _appliances.postValue(list)
+                        recalculateState()
+                    }
                 }
 
                 val alertResp = api.getAlerts()
-                if (alertResp.isSuccessful && alertResp.body()?.data != null) {
-                    _alerts.postValue(alertResp.body()!!.data)
+                if (alertResp.isSuccessful) {
+                    alertResp.body()?.data?.let { list ->
+                        _alerts.postValue(list)
+                    }
                 }
             } catch (e: Exception) {
                 Log.d(TAG, "Backend offline, continuing in standalone simulated IoT mode: ${e.message}")

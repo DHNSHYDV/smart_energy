@@ -39,7 +39,8 @@ class AnalyticsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repo = EnergyRepository.getInstance(requireContext())
+        val ctx = context ?: return
+        repo = EnergyRepository.getInstance(ctx.applicationContext)
 
         setupChart()
         setupListeners()
@@ -48,7 +49,9 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun setupChart() {
-        val chart = binding.forecastChart
+        val ctx = context ?: return
+        val b = _binding ?: return
+        val chart = b.forecastChart
         chart.description.isEnabled = false
         chart.legend.isEnabled = false
         chart.setTouchEnabled(true)
@@ -62,7 +65,7 @@ class AnalyticsFragment : Fragment() {
         val xAxis = chart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+        xAxis.textColor = ContextCompat.getColor(ctx, R.color.text_secondary)
         xAxis.textSize = 10f
         xAxis.granularity = 4f
         xAxis.valueFormatter = object : ValueFormatter() {
@@ -74,7 +77,7 @@ class AnalyticsFragment : Fragment() {
 
         // Left Y Axis: kW load
         val leftAxis = chart.axisLeft
-        leftAxis.textColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+        leftAxis.textColor = ContextCompat.getColor(ctx, R.color.text_secondary)
         leftAxis.textSize = 10f
         leftAxis.setDrawGridLines(true)
         leftAxis.gridColor = Color.parseColor("#E2E8F0")
@@ -97,29 +100,31 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun renderChartData(entries: List<Entry>) {
+        val ctx = context ?: return
+        val b = _binding ?: return
         val dataSet = LineDataSet(entries, "Load Forecast (kW)").apply {
             mode = LineDataSet.Mode.CUBIC_BEZIER
-            color = ContextCompat.getColor(requireContext(), R.color.card_purple_primary)
+            color = ContextCompat.getColor(ctx, R.color.card_purple_primary)
             lineWidth = 2.5f
             setDrawCircles(false)
             setDrawValues(false)
             setDrawFilled(true)
-            fillColor = ContextCompat.getColor(requireContext(), R.color.card_purple_primary)
+            fillColor = ContextCompat.getColor(ctx, R.color.card_purple_primary)
             fillAlpha = 40
         }
 
-        binding.forecastChart.data = LineData(dataSet)
-        binding.forecastChart.invalidate()
+        b.forecastChart.data = LineData(dataSet)
+        b.forecastChart.invalidate()
     }
 
     private fun loadForecastData() {
+        val ctx = context ?: return
         viewLifecycleOwner.lifecycleScope.launch {
             try {
-                val api = ApiClient.getService(requireContext())
+                val api = ApiClient.getService(ctx.applicationContext)
                 val resp = withContext(Dispatchers.IO) { api.getForecast() }
-                if (resp.isSuccessful && resp.body()?.data != null) {
-                    val forecast = resp.body()!!.data!!
-                    forecast.hourly?.let { hours ->
+                if (resp.isSuccessful) {
+                    resp.body()?.data?.hourly?.let { hours ->
                         val entries = hours.map { Entry(it.hour.toFloat(), it.predictedKw.toFloat()) }
                         if (entries.isNotEmpty()) {
                             renderChartData(entries)
@@ -140,23 +145,24 @@ class AnalyticsFragment : Fragment() {
 
     private fun observeData() {
         repo.telemetry.observe(viewLifecycleOwner) { telem ->
+            val b = _binding ?: return@observe
             // Section A: Today
-            binding.tvTodayKwh.text = String.format(Locale.US, "%.1f kWh", telem.totalEnergyTodayKwh)
-            binding.tvCostToday.text = String.format(Locale.US, "₹%.2f", telem.estimatedCost)
-            binding.tvTodayAvgLoad.text = "175 W"
-            binding.tvTodayPeakLoad.text = "2.4 kW"
+            b.tvTodayKwh.text = String.format(Locale.US, "%.1f kWh", telem.totalEnergyTodayKwh)
+            b.tvCostToday.text = String.format(Locale.US, "₹%.2f", telem.estimatedCost)
+            b.tvTodayAvgLoad.text = "175 W"
+            b.tvTodayPeakLoad.text = "2.4 kW"
 
             // Section D & E: Monthly Cost & Carbon
             val monthly = telem.monthlyUsage
-            binding.tvCostAnalysisKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
-            binding.tvCostAnalysisBill.text = String.format(Locale.US, "₹%.0f", monthly.estimatedBill)
-            binding.tvCarbonFootprintVal.text = String.format(Locale.US, "%.1f kg CO₂", telem.carbonKg)
+            b.tvCostAnalysisKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
+            b.tvCostAnalysisBill.text = String.format(Locale.US, "₹%.0f", monthly.estimatedBill)
+            b.tvCarbonFootprintVal.text = String.format(Locale.US, "%.1f kg CO₂", telem.carbonKg)
 
             // Section F: Grid Power Quality
-            binding.tvGridVoltage.text = String.format(Locale.US, "%.1f V", telem.gridVoltage)
-            binding.tvGridCurrent.text = String.format(Locale.US, "%.2f A", telem.totalCurrent)
-            binding.tvGridPf.text = String.format(Locale.US, "%.2f", telem.systemPowerFactor)
-            binding.tvGridFrequency.text = String.format(Locale.US, "%.1f Hz", telem.frequency)
+            b.tvGridVoltage.text = String.format(Locale.US, "%.1f V", telem.gridVoltage)
+            b.tvGridCurrent.text = String.format(Locale.US, "%.2f A", telem.totalCurrent)
+            b.tvGridPf.text = String.format(Locale.US, "%.2f", telem.systemPowerFactor)
+            b.tvGridFrequency.text = String.format(Locale.US, "%.1f Hz", telem.frequency)
         }
     }
 

@@ -34,7 +34,8 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repo = EnergyRepository.getInstance(requireContext())
+        val ctx = context ?: return
+        repo = EnergyRepository.getInstance(ctx.applicationContext)
 
         setupRecyclerView()
         setupListeners()
@@ -42,6 +43,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val ctx = context ?: return
         circuitAdapter = CircuitAdapter(
             onCircuitClick = { appliance ->
                 DeviceDetailBottomSheet.newInstance(appliance)
@@ -52,7 +54,7 @@ class HomeFragment : Fragment() {
             }
         )
 
-        binding.rvCircuits.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvCircuits.layoutManager = LinearLayoutManager(ctx)
         binding.rvCircuits.adapter = circuitAdapter
     }
 
@@ -77,26 +79,29 @@ class HomeFragment : Fragment() {
         }
 
         val openProfileDialog = {
-            val residentLabels = arrayOf(
-                "👤 Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo)",
-                "👤 Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo)",
-                "🚪 Sign Out / Switch Account"
-            )
-            androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Switch Resident Profile")
-                .setItems(residentLabels) { _, which ->
-                    when (which) {
-                        0 -> repo.switchResident("usr_dhanush")
-                        1 -> repo.switchResident("usr_priya")
-                        2 -> {
-                            com.smartenergy.tracker.auth.SupabaseAuthManager.signOut(requireContext())
-                            startActivity(android.content.Intent(requireContext(), LoginActivity::class.java))
-                            requireActivity().finish()
+            val ctx = context
+            if (ctx != null) {
+                val residentLabels = arrayOf(
+                    "👤 Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo)",
+                    "👤 Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo)",
+                    "🚪 Sign Out / Switch Account"
+                )
+                androidx.appcompat.app.AlertDialog.Builder(ctx)
+                    .setTitle("Switch Resident Profile")
+                    .setItems(residentLabels) { _, which ->
+                        when (which) {
+                            0 -> repo.switchResident("usr_dhanush")
+                            1 -> repo.switchResident("usr_priya")
+                            2 -> {
+                                com.smartenergy.tracker.auth.SupabaseAuthManager.signOut(ctx)
+                                startActivity(android.content.Intent(ctx, LoginActivity::class.java))
+                                activity?.finish()
+                            }
                         }
                     }
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         }
 
         binding.btnSwitchProfile.setOnClickListener { openProfileDialog() }
@@ -108,12 +113,10 @@ class HomeFragment : Fragment() {
             SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
         }
 
-        // Navigate to full Devices screen
         binding.btnViewAllDevices.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_devices)
         }
 
-        // 4 Macro Actions
         binding.actionNightMode.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 repo.applyScene("night_mode")
@@ -139,34 +142,36 @@ class HomeFragment : Fragment() {
 
     private fun observeData() {
         repo.isConnected.observe(viewLifecycleOwner) { connected ->
+            val ctx = context ?: return@observe
+            val b = _binding ?: return@observe
             if (connected) {
-                binding.tvOnlineBadge.text = "● ONLINE 50.0Hz"
-                binding.tvOnlineBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.emerald_400))
+                b.tvOnlineBadge.text = "● ONLINE 50.0Hz"
+                b.tvOnlineBadge.setTextColor(ContextCompat.getColor(ctx, R.color.emerald_400))
             } else {
-                binding.tvOnlineBadge.text = "● SIMULATION 50.0Hz"
-                binding.tvOnlineBadge.setTextColor(ContextCompat.getColor(requireContext(), R.color.emerald_400))
+                b.tvOnlineBadge.text = "● SIMULATION 50.0Hz"
+                b.tvOnlineBadge.setTextColor(ContextCompat.getColor(ctx, R.color.emerald_400))
             }
         }
 
         repo.telemetry.observe(viewLifecycleOwner) { telem ->
-            // Resident Profile header updates
+            val b = _binding ?: return@observe
             telem.resident?.let { res ->
-                val firstName = res.name.split(" ").firstOrNull() ?: res.name
-                binding.tvGreetingTitle.text = "Hello, $firstName"
-                binding.tvGreetingSubtitle.text = "${res.doorNo} · ${res.consumerId}"
-                val initials = res.name.split(" ")
+                val name = res.name ?: "Dhanush"
+                val firstName = name.split(" ").firstOrNull() ?: name
+                b.tvGreetingTitle.text = "Hello, $firstName"
+                b.tvGreetingSubtitle.text = "${res.doorNo ?: "Flat 402"} · ${res.consumerId ?: "BESCOM-BLR"}"
+                val initials = name.split(" ")
                     .filter { it.isNotEmpty() }
                     .take(2)
                     .map { it.first().uppercase() }
                     .joinToString("")
                 if (initials.isNotEmpty()) {
-                    binding.tvProfileInitials.text = initials
+                    b.tvProfileInitials.text = initials
                 }
             }
 
-            // Current Power (W)
-            binding.tvTotalPowerValue.text = String.format(Locale.US, "%,.0f", telem.totalActivePower)
-            binding.tvCardBottomMetrics.text = String.format(
+            b.tvTotalPowerValue.text = String.format(Locale.US, "%,.0f", telem.totalActivePower)
+            b.tvCardBottomMetrics.text = String.format(
                 Locale.US,
                 "%.1f V · %.2f PF · %.1f Hz",
                 telem.gridVoltage,
@@ -174,45 +179,41 @@ class HomeFragment : Fragment() {
                 telem.frequency
             )
 
-            // Monthly billing inside card
             val monthly = telem.monthlyUsage
-            binding.tvCardBillingSummary.text = String.format(
+            b.tvCardBillingSummary.text = String.format(
                 Locale.US,
                 "This Month: %.1f kWh · ₹%.0f est.",
                 monthly.kwh,
                 monthly.estimatedBill
             )
 
-            // Monthly Energy Card
-            binding.tvMonthlyKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
-            binding.tvMonthlyBillEst.text = String.format(Locale.US, "Estimated Bill: ₹%.0f", monthly.estimatedBill)
-            binding.tvDailyAverageKwh.text = String.format(Locale.US, "%.2f kWh", monthly.dailyAverageKwh)
+            b.tvMonthlyKwh.text = String.format(Locale.US, "%.1f kWh", monthly.kwh)
+            b.tvMonthlyBillEst.text = String.format(Locale.US, "Estimated Bill: ₹%.0f", monthly.estimatedBill)
+            b.tvDailyAverageKwh.text = String.format(Locale.US, "%.2f kWh", monthly.dailyAverageKwh)
             val compSign = if (monthly.comparisonPct >= 0) "↑ +" else "↓ -"
-            binding.tvMonthComparisonBadge.text = String.format(Locale.US, "%s%.1f%% vs last mo", compSign, Math.abs(monthly.comparisonPct))
+            b.tvMonthComparisonBadge.text = String.format(Locale.US, "%s%.1f%% vs last mo", compSign, Math.abs(monthly.comparisonPct))
 
-            // Quick Status
-            binding.tvQuickTotalDevices.text = "${telem.totalDevicesCount}"
-            binding.tvQuickActiveDevices.text = "${telem.activeDevicesCount}"
-            binding.tvQuickCurrentLoad.text = String.format(Locale.US, "%,.0f W", telem.totalActivePower)
+            b.tvQuickTotalDevices.text = "${telem.totalDevicesCount}"
+            b.tvQuickActiveDevices.text = "${telem.activeDevicesCount}"
+            b.tvQuickCurrentLoad.text = String.format(Locale.US, "%,.0f W", telem.totalActivePower)
 
-            // Dynamic insight text
             if (telem.totalActivePower > 2500) {
-                binding.tvEnergyInsightText.text = "High demand alert: Aggregate load is ${String.format(Locale.US, "%,.0f W", telem.totalActivePower)}. Running non-essential appliances during peak hours increases demand charges."
+                b.tvEnergyInsightText.text = "High demand alert: Aggregate load is ${String.format(Locale.US, "%,.0f W", telem.totalActivePower)}. Running non-essential appliances during peak hours increases demand charges."
             } else {
-                binding.tvEnergyInsightText.text = "Peak usage is expected between 18:00–22:00. Shifting your Water Heater & EV charging to off-peak hours could reduce your estimated monthly bill."
+                b.tvEnergyInsightText.text = "Peak usage is expected between 18:00–22:00. Shifting your Water Heater & EV charging to off-peak hours could reduce your estimated monthly bill."
             }
         }
 
         repo.appliances.observe(viewLifecycleOwner) { list ->
-            // Only show top 2-3 active devices on Home to avoid duplication with Devices screen!
             val activeDevices = list.filter { it.isOn }.take(3)
             val displayList = if (activeDevices.isNotEmpty()) activeDevices else list.take(2)
             circuitAdapter.submitList(displayList)
         }
 
         repo.alerts.observe(viewLifecycleOwner) { alerts ->
+            val b = _binding ?: return@observe
             val hasUnresolved = alerts.any { !it.resolved }
-            binding.indicatorBellAlert.visibility = if (hasUnresolved) View.VISIBLE else View.GONE
+            b.indicatorBellAlert.visibility = if (hasUnresolved) View.VISIBLE else View.GONE
         }
     }
 

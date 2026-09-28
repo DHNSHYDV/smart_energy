@@ -27,10 +27,11 @@ class SystemLabBottomSheet : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val prefs = PreferencesManager.getInstance(requireContext())
+        val ctx = context ?: return
+        val prefs = PreferencesManager.getInstance(ctx.applicationContext)
         binding.tvLabServerUrl.text = "Target: ${prefs.baseUrl}"
 
-        val repo = EnergyRepository.getInstance(requireContext())
+        val repo = EnergyRepository.getInstance(ctx.applicationContext)
 
         binding.btnScenarioOverload.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {

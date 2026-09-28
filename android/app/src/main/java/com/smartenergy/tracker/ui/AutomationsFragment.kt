@@ -31,7 +31,8 @@ class AutomationsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repo = EnergyRepository.getInstance(requireContext())
+        val ctx = context ?: return
+        repo = EnergyRepository.getInstance(ctx.applicationContext)
 
         setupListeners()
         updateScenePills()
@@ -39,8 +40,10 @@ class AutomationsFragment : Fragment() {
     }
 
     private fun displayServerConfig() {
-        val prefs = PreferencesManager.getInstance(requireContext())
-        binding.tvSettingServerUrl.text = "Target: ${prefs.baseUrl}"
+        val ctx = context ?: return
+        val b = _binding ?: return
+        val prefs = PreferencesManager.getInstance(ctx.applicationContext)
+        b.tvSettingServerUrl.text = "Target: ${prefs.baseUrl}"
     }
 
     private fun setupListeners() {
@@ -99,20 +102,22 @@ class AutomationsFragment : Fragment() {
     }
 
     private fun updateScenePills() {
-        val activeColor = ContextCompat.getColor(requireContext(), R.color.emerald_500)
-        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.text_secondary)
+        val ctx = context ?: return
+        val b = _binding ?: return
+        val activeColor = ContextCompat.getColor(ctx, R.color.emerald_500)
+        val inactiveColor = ContextCompat.getColor(ctx, R.color.text_secondary)
 
-        binding.pillSceneNight.text = if (activeSceneId == "night_mode") "ACTIVE" else "INACTIVE"
-        binding.pillSceneNight.setTextColor(if (activeSceneId == "night_mode") activeColor else inactiveColor)
+        b.pillSceneNight.text = if (activeSceneId == "night_mode") "ACTIVE" else "INACTIVE"
+        b.pillSceneNight.setTextColor(if (activeSceneId == "night_mode") activeColor else inactiveColor)
 
-        binding.pillSceneEco.text = if (activeSceneId == "eco_saver") "ACTIVE" else "INACTIVE"
-        binding.pillSceneEco.setTextColor(if (activeSceneId == "eco_saver") activeColor else inactiveColor)
+        b.pillSceneEco.text = if (activeSceneId == "eco_saver") "ACTIVE" else "INACTIVE"
+        b.pillSceneEco.setTextColor(if (activeSceneId == "eco_saver") activeColor else inactiveColor)
 
-        binding.pillSceneWork.text = if (activeSceneId == "work_mode") "ACTIVE" else "INACTIVE"
-        binding.pillSceneWork.setTextColor(if (activeSceneId == "work_mode") activeColor else inactiveColor)
+        b.pillSceneWork.text = if (activeSceneId == "work_mode") "ACTIVE" else "INACTIVE"
+        b.pillSceneWork.setTextColor(if (activeSceneId == "work_mode") activeColor else inactiveColor)
 
-        binding.pillSceneViva.text = if (activeSceneId == "viva_demo") "ACTIVE" else "INACTIVE"
-        binding.pillSceneViva.setTextColor(if (activeSceneId == "viva_demo") activeColor else inactiveColor)
+        b.pillSceneViva.text = if (activeSceneId == "viva_demo") "ACTIVE" else "INACTIVE"
+        b.pillSceneViva.setTextColor(if (activeSceneId == "viva_demo") activeColor else inactiveColor)
     }
 
     override fun onResume() {

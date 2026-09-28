@@ -48,30 +48,32 @@ class DeviceDetailBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun bindData(app: Appliance) {
-        binding.sheetApplianceName.text = app.name
-        binding.sheetApplianceLocation.text = "${app.location ?: "General"} · ${app.category ?: "Zone"}"
+        val b = _binding ?: return
+        val name = app.name ?: "Appliance"
+        b.sheetApplianceName.text = name
+        b.sheetApplianceLocation.text = "${app.location ?: "General"} · ${app.category ?: "Zone"}"
 
-        val nameLower = app.name.lowercase(Locale.US)
+        val nameLower = name.lowercase(Locale.US)
         val iconType = app.icon?.lowercase(Locale.US) ?: ""
         when {
             iconType == "pc" || nameLower.contains("pc") || nameLower.contains("workstation") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_pc)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_pc)
             iconType == "fridge" || nameLower.contains("fridge") || nameLower.contains("refrigerator") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_fridge)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_fridge)
             iconType == "bulb" || nameLower.contains("light") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_bulb)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_bulb)
             iconType == "tv" || nameLower.contains("tv") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_tv)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_tv)
             iconType == "ac" || nameLower.contains("ac") || nameLower.contains("air") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_ac)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_ac)
             iconType == "heater" || nameLower.contains("heater") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_heater)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_heater)
             iconType == "ev" || nameLower.contains("ev") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_ev)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_ev)
             iconType == "microwave" || nameLower.contains("microwave") ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_microwave)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_microwave)
             else ->
-                binding.sheetApplianceIcon.setImageResource(R.drawable.ic_bolt)
+                b.sheetApplianceIcon.setImageResource(R.drawable.ic_bolt)
         }
 
         val reading = app.reading
@@ -80,30 +82,35 @@ class DeviceDetailBottomSheet : BottomSheetDialogFragment() {
         val pf = if (app.isOn) reading?.powerFactor ?: app.powerFactor else 1.0
         val kwh = reading?.cumulativeEnergyKwh ?: 0.0
 
-        binding.sheetValActivePower.text = String.format(Locale.US, "%,.0f W", activeWatts)
-        binding.sheetValCurrent.text = String.format(Locale.US, "%.2f A", currentAmps)
-        binding.sheetValPf.text = String.format(Locale.US, "%.2f", pf)
-        binding.sheetValEnergy.text = String.format(Locale.US, "%.2f kWh", kwh)
+        b.sheetValActivePower.text = String.format(Locale.US, "%,.0f W", activeWatts)
+        b.sheetValCurrent.text = String.format(Locale.US, "%.2f A", currentAmps)
+        b.sheetValPf.text = String.format(Locale.US, "%.2f", pf)
+        b.sheetValEnergy.text = String.format(Locale.US, "%.2f kWh", kwh)
 
-        binding.sheetRelaySwitch.setOnCheckedChangeListener(null)
-        binding.sheetRelaySwitch.isChecked = app.isOn
-        binding.sheetRelaySwitch.setOnCheckedChangeListener { _, isChecked ->
-            EnergyRepository.getInstance(requireContext()).toggleAppliance(app.id, isChecked)
-            app.isOn = isChecked
-            bindData(app)
+        b.sheetRelaySwitch.setOnCheckedChangeListener(null)
+        b.sheetRelaySwitch.isChecked = app.isOn
+        b.sheetRelaySwitch.setOnCheckedChangeListener { _, isChecked ->
+            val ctx = context
+            if (ctx != null) {
+                EnergyRepository.getInstance(ctx).toggleAppliance(app.id, isChecked)
+                app.isOn = isChecked
+                bindData(app)
+            }
         }
     }
 
     private fun setupActions(app: Appliance) {
-        binding.btnInjectSpike.setOnClickListener {
+        val b = _binding ?: return
+        b.btnInjectSpike.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    val api = ApiClient.getService(requireContext())
+                    val api = ApiClient.getService(ctx.applicationContext)
                     val resp = withContext(Dispatchers.IO) {
                         api.injectAnomaly(app.id, mapOf("type" to "OVERCURRENT", "multiplier" to 2.5))
                     }
                     if (resp.isSuccessful) {
-                        Toast.makeText(context, "Injected Overcurrent spike on ${app.name}!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Injected Overcurrent spike on ${app.name ?: "Appliance"}!", Toast.LENGTH_SHORT).show()
                         dismiss()
                     }
                 } catch (e: Exception) {
@@ -112,15 +119,16 @@ class DeviceDetailBottomSheet : BottomSheetDialogFragment() {
             }
         }
 
-        binding.btnInjectBadPf.setOnClickListener {
+        b.btnInjectBadPf.setOnClickListener {
+            val ctx = context ?: return@setOnClickListener
             viewLifecycleOwner.lifecycleScope.launch {
                 try {
-                    val api = ApiClient.getService(requireContext())
+                    val api = ApiClient.getService(ctx.applicationContext)
                     val resp = withContext(Dispatchers.IO) {
                         api.injectAnomaly(app.id, mapOf("type" to "BAD_POWER_FACTOR", "targetPf" to 0.62))
                     }
                     if (resp.isSuccessful) {
-                        Toast.makeText(context, "Simulating PF degradation on ${app.name}!", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Simulating PF degradation on ${app.name ?: "Appliance"}!", Toast.LENGTH_SHORT).show()
                         dismiss()
                     }
                 } catch (e: Exception) {

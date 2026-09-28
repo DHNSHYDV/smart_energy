@@ -3,27 +3,29 @@ package com.smartenergy.tracker.network
 import android.content.Context
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object ApiClient {
+    @Volatile
     private var retrofit: Retrofit? = null
+
+    @Volatile
     private var currentBaseUrl: String? = null
 
+    @Synchronized
     fun getService(context: Context): ApiService {
         val prefs = PreferencesManager.getInstance(context)
-        val baseUrl = prefs.baseUrl
+        val targetUrl = prefs.baseUrl
 
-        if (retrofit == null || currentBaseUrl != baseUrl) {
-            currentBaseUrl = baseUrl
+        if (retrofit == null || currentBaseUrl != targetUrl) {
+            currentBaseUrl = targetUrl
             val logging = HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BODY
             }
 
-            // Attach Supabase JWT to every request if available
             val authInterceptor = Interceptor { chain ->
                 val token = PreferencesManager.getInstance(context).supabaseAccessToken
                 val request = if (!token.isNullOrEmpty()) {
@@ -44,16 +46,17 @@ object ApiClient {
                 .addInterceptor(logging)
                 .build()
 
-            try {
-                retrofit = Retrofit.Builder()
-                    .baseUrl(baseUrl)
+            retrofit = try {
+                Retrofit.Builder()
+                    .baseUrl(targetUrl)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
             } catch (e: Exception) {
-                currentBaseUrl = PreferencesManager.DEFAULT_RAILWAY_URL + "/"
-                retrofit = Retrofit.Builder()
-                    .baseUrl(currentBaseUrl!!)
+                val fallbackUrl = PreferencesManager.DEFAULT_RAILWAY_URL + "/"
+                currentBaseUrl = fallbackUrl
+                Retrofit.Builder()
+                    .baseUrl(fallbackUrl)
                     .client(okHttpClient)
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
@@ -63,6 +66,7 @@ object ApiClient {
         return retrofit!!.create(ApiService::class.java)
     }
 
+    @Synchronized
     fun invalidate() {
         retrofit = null
         currentBaseUrl = null

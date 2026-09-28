@@ -38,9 +38,9 @@ object UpdateManager {
                 val currentVersionCode = BuildConfig.VERSION_CODE
                 val response = service.checkAppUpdate(currentVersionCode)
 
-                if (response.isSuccessful && response.body() != null) {
-                    val update = response.body()!!
-                    if (update.hasUpdate && update.versionCode > currentVersionCode) {
+                if (response.isSuccessful) {
+                    val update = response.body()
+                    if (update != null && update.hasUpdate && update.versionCode > currentVersionCode) {
                         withContext(Dispatchers.Main) {
                             showUpdateDialog(activity, update)
                         }
@@ -71,7 +71,7 @@ object UpdateManager {
     private fun showUpdateDialog(activity: Activity, update: AppUpdateResponse) {
         if (activity.isFinishing || activity.isDestroyed) return
 
-        val view = LayoutInflater.from(activity).inflate(R.layout.dialog_update_available, null)
+        val view = LayoutInflater.from(activity).inflate(R.layout.dialog_update_available, null) ?: return
         val dialog = AlertDialog.Builder(activity)
             .setView(view)
             .setCancelable(!update.isMandatory)
@@ -87,22 +87,21 @@ object UpdateManager {
         val tvPercent = view.findViewById<TextView>(R.id.tvDownloadPercent)
         val tvStatus = view.findViewById<TextView>(R.id.tvDownloadStatus)
 
-        tvTitle.text = update.title ?: "GridSense v${update.latestVersion} Available"
-        tvSubtitle.text = "Version ${update.latestVersion} (Build ${update.versionCode}) · ${update.fileSizeFormatted ?: "8 MB"}"
+        tvTitle?.text = update.title ?: "GridSense v${update.latestVersion ?: "3.0"} Available"
+        tvSubtitle?.text = "Version ${update.latestVersion ?: "3.0"} (Build ${update.versionCode}) · ${update.fileSizeFormatted ?: "8 MB"}"
         if (!update.releaseNotes.isNullOrBlank()) {
-            tvNotes.text = update.releaseNotes
+            tvNotes?.text = update.releaseNotes
         }
 
         if (update.isMandatory) {
-            btnLater.visibility = View.GONE
+            btnLater?.visibility = View.GONE
         } else {
-            btnLater.setOnClickListener {
+            btnLater?.setOnClickListener {
                 dialog.dismiss()
             }
         }
 
-        btnDownload.setOnClickListener {
-            // Check unknown sources installation permission on Android 8.0+
+        btnDownload?.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 if (!activity.packageManager.canRequestPackageInstalls()) {
                     Toast.makeText(
@@ -119,8 +118,8 @@ object UpdateManager {
             }
 
             btnDownload.isEnabled = false
-            btnLater.visibility = View.GONE
-            layoutProgress.visibility = View.VISIBLE
+            btnLater?.visibility = View.GONE
+            layoutProgress?.visibility = View.VISIBLE
 
             val baseUrl = PreferencesManager.getInstance(activity).baseUrl.trimEnd('/')
             val downloadUrl = if (update.apkUrl?.startsWith("http") == true) {
@@ -133,21 +132,22 @@ object UpdateManager {
                 try {
                     val service = ApiClient.getService(activity)
                     val response = service.downloadApkFile(downloadUrl)
+                    val responseBody = response.body()
 
-                    if (response.isSuccessful && response.body() != null) {
+                    if (response.isSuccessful && responseBody != null) {
                         val apkFile = downloadResponseBodyToFile(
-                            response.body()!!,
+                            responseBody,
                             activity
                         ) { percent ->
                             CoroutineScope(Dispatchers.Main).launch {
-                                progressBar.progress = percent
-                                tvPercent.text = "$percent%"
-                                tvStatus.text = "Downloading update: $percent%"
+                                progressBar?.progress = percent
+                                tvPercent?.text = "$percent%"
+                                tvStatus?.text = "Downloading update: $percent%"
                             }
                         }
 
                         withContext(Dispatchers.Main) {
-                            tvStatus.text = "Download complete. Starting installer..."
+                            tvStatus?.text = "Download complete. Starting installer..."
                             dialog.dismiss()
                             installApk(activity, apkFile)
                         }
@@ -155,14 +155,14 @@ object UpdateManager {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(activity, "Download failed: Server returned ${response.code()}", Toast.LENGTH_LONG).show()
                             btnDownload.isEnabled = true
-                            if (!update.isMandatory) btnLater.visibility = View.VISIBLE
+                            if (!update.isMandatory) btnLater?.visibility = View.VISIBLE
                         }
                     }
                 } catch (e: Exception) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(activity, "Download error: ${e.message}", Toast.LENGTH_LONG).show()
                         btnDownload.isEnabled = true
-                        if (!update.isMandatory) btnLater.visibility = View.VISIBLE
+                        if (!update.isMandatory) btnLater?.visibility = View.VISIBLE
                     }
                 }
             }

@@ -29,7 +29,8 @@ class DevicesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repo = EnergyRepository.getInstance(requireContext())
+        val ctx = context ?: return
+        repo = EnergyRepository.getInstance(ctx.applicationContext)
 
         setupRecyclerView()
         setupListeners()
@@ -37,6 +38,7 @@ class DevicesFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        val ctx = context ?: return
         circuitAdapter = CircuitAdapter(
             onCircuitClick = { appliance ->
                 DeviceDetailBottomSheet.newInstance(appliance)
@@ -47,7 +49,7 @@ class DevicesFragment : Fragment() {
             }
         )
 
-        binding.rvDeviceList.layoutManager = LinearLayoutManager(requireContext())
+        binding.rvDeviceList.layoutManager = LinearLayoutManager(ctx)
         binding.rvDeviceList.adapter = circuitAdapter
     }
 
@@ -60,13 +62,14 @@ class DevicesFragment : Fragment() {
 
     private fun observeData() {
         repo.appliances.observe(viewLifecycleOwner) { list ->
+            val b = _binding ?: return@observe
             circuitAdapter.submitList(list)
-            binding.tvStatTotalDevices.text = "${list.size}"
+            b.tvStatTotalDevices.text = "${list.size}"
             val active = list.count { it.isOn }
-            binding.tvStatActiveDevices.text = "$active"
+            b.tvStatActiveDevices.text = "$active"
 
             val totalW = list.filter { it.isOn }.sumOf { it.reading?.activePower ?: it.ratedPower }
-            binding.tvStatTotalWatts.text = String.format(Locale.US, "%,.0f W", totalW)
+            b.tvStatTotalWatts.text = String.format(Locale.US, "%,.0f W", totalW)
         }
     }
 

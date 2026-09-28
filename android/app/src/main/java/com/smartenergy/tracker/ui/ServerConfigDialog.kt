@@ -16,8 +16,9 @@ class ServerConfigDialog : DialogFragment() {
     private val binding get() = _binding!!
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        _binding = DialogServerIpBinding.inflate(LayoutInflater.from(context))
-        val prefs = PreferencesManager.getInstance(requireContext())
+        val ctx = requireContext()
+        _binding = DialogServerIpBinding.inflate(LayoutInflater.from(ctx))
+        val prefs = PreferencesManager.getInstance(ctx.applicationContext)
 
         binding.etServerIp.setText(prefs.serverUrl)
 
@@ -43,14 +44,15 @@ class ServerConfigDialog : DialogFragment() {
             if (input.isNotEmpty()) {
                 prefs.serverUrl = input
                 ApiClient.invalidate()
-                EnergyRepository.getInstance(requireContext()).reconnect()
+                val safeCtx = context ?: return@setOnClickListener
+                EnergyRepository.getInstance(safeCtx.applicationContext).reconnect()
 
-                Toast.makeText(context, "Target set: ${prefs.serverUrl}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(safeCtx, "Target set: ${prefs.serverUrl}", Toast.LENGTH_SHORT).show()
                 dismiss()
             }
         }
 
-        return AlertDialog.Builder(requireContext())
+        return AlertDialog.Builder(ctx)
             .setView(binding.root)
             .create()
     }
