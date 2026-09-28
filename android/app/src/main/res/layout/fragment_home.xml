@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/swipeRefresh"
+    android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_dark">
@@ -45,7 +45,7 @@
                         android:layout_marginEnd="12dp">
 
                         <TextView
-                            android:id="@+id/tvProfileInitials"
+                            android:id="@+id/tv_profile_initials"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -61,7 +61,7 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/tvGreetingTitle"
+                            android:id="@+id/tv_greeting_title"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Hello, Dhanush"
@@ -70,7 +70,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvGreetingSubtitle"
+                            android:id="@+id/tv_greeting_subtitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Flat 402 · BESCOM-BLR-D402"
@@ -90,7 +90,7 @@
 
                     <!-- Online badge -->
                     <TextView
-                        android:id="@+id/tvOnlineBadge"
+                        android:id="@+id/tv_online_badge"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="● 50Hz"
@@ -101,7 +101,7 @@
 
                     <!-- Bell -->
                     <FrameLayout
-                        android:id="@+id/btnBell"
+                        android:id="@+id/btn_bell"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@drawable/bg_action_pill"
@@ -117,7 +117,7 @@
                             app:tint="@color/text_secondary" />
 
                         <View
-                            android:id="@+id/indicatorBellAlert"
+                            android:id="@+id/indicator_bell_alert"
                             android:layout_width="8dp"
                             android:layout_height="8dp"
                             android:layout_gravity="top|end"
@@ -129,7 +129,7 @@
 
                     <!-- Menu -->
                     <FrameLayout
-                        android:id="@+id/btnMenu"
+                        android:id="@+id/btn_menu"
                         android:layout_width="36dp"
                         android:layout_height="36dp"
                         android:background="@drawable/bg_action_pill"
@@ -137,7 +137,7 @@
                         android:focusable="true">
 
                         <ImageView
-                            android:id="@+id/btnProfile"
+                            android:id="@+id/btn_profile"
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             android:layout_gravity="center"
@@ -183,7 +183,7 @@
                             android:letterSpacing="0.05" />
 
                         <TextView
-                            android:id="@+id/tvCardBillingSummary"
+                            android:id="@+id/tv_card_billing_summary"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="This month: 124.6 kWh"
@@ -199,7 +199,7 @@
                         android:gravity="bottom">
 
                         <TextView
-                            android:id="@+id/tvTotalPowerValue"
+                            android:id="@+id/tv_total_power_value"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1,240"
@@ -221,7 +221,7 @@
 
                     <!-- Grid metrics row -->
                     <TextView
-                        android:id="@+id/tvCardBottomMetrics"
+                        android:id="@+id/tv_card_bottom_metrics"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
@@ -252,7 +252,7 @@
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvQuickTotalDevices"
+                                android:id="@+id/tv_quick_total_devices"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="8"
@@ -282,7 +282,7 @@
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvQuickActiveDevices"
+                                android:id="@+id/tv_quick_active_devices"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="5"
@@ -312,7 +312,7 @@
                             android:gravity="center">
 
                             <TextView
-                                android:id="@+id/tvMonthlyKwh"
+                                android:id="@+id/tv_monthly_kwh"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="124.6"
@@ -340,7 +340,7 @@
                         android:padding="12dp">
 
                         <TextView
-                            android:id="@+id/tvMonthlyBillEst"
+                            android:id="@+id/tv_monthly_bill_est"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
@@ -349,7 +349,7 @@
                             android:textSize="12sp" />
 
                         <TextView
-                            android:id="@+id/tvMonthComparisonBadge"
+                            android:id="@+id/tv_month_comparison_badge"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="↓ -8.4% vs last mo"
@@ -371,7 +371,7 @@
 
                 <!-- Night Mode -->
                 <LinearLayout
-                    android:id="@+id/actionNightMode"
+                    android:id="@+id/action_night_mode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -401,7 +401,7 @@
 
                 <!-- Eco -->
                 <LinearLayout
-                    android:id="@+id/actionEcoShift"
+                    android:id="@+id/action_eco_shift"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -431,7 +431,7 @@
 
                 <!-- Work -->
                 <LinearLayout
-                    android:id="@+id/actionWorkMode"
+                    android:id="@+id/action_work_mode"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -461,7 +461,7 @@
 
                 <!-- Lab -->
                 <LinearLayout
-                    android:id="@+id/actionSandbox"
+                    android:id="@+id/action_sandbox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -509,7 +509,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/btnViewAllDevices"
+                    android:id="@+id/btn_view_all_devices"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="View all →"
@@ -522,7 +522,7 @@
 
             <!-- Live Loads RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCircuits"
+                android:id="@+id/rv_circuits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
@@ -531,7 +531,7 @@
 
             <!-- ══ DAILY AVG + INSIGHT ════════════════════════════ -->
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardEnergyInsight"
+                android:id="@+id/card_energy_insight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -573,7 +573,7 @@
                             android:textStyle="bold" />
 
                         <TextView
-                            android:id="@+id/tvDailyAverageKwh"
+                            android:id="@+id/tv_daily_average_kwh"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="4.15 kWh/day"
@@ -583,7 +583,7 @@
                     </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvEnergyInsightText"
+                        android:id="@+id/tv_energy_insight_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="3dp"
@@ -593,7 +593,7 @@
 
                     <!-- Viva Sandbox button -->
                     <TextView
-                        android:id="@+id/btnVivaSandbox"
+                        android:id="@+id/btn_viva_sandbox"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -613,7 +613,7 @@
 
             <!-- Hidden views required by HomeFragment data binding -->
             <TextView
-                android:id="@+id/tvQuickCurrentLoad"
+                android:id="@+id/tv_quick_current_load"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:visibility="gone" />

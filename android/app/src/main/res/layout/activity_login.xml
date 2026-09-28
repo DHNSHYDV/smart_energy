@@ -101,7 +101,7 @@
                     android:layout_marginBottom="24dp">
 
                     <TextView
-                        android:id="@+id/tabLogin"
+                        android:id="@+id/tab_login"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -113,7 +113,7 @@
                         android:textColor="#0A0A0F" />
 
                     <TextView
-                        android:id="@+id/tabSignup"
+                        android:id="@+id/tab_signup"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
@@ -127,7 +127,7 @@
 
                 <!-- Banner -->
                 <TextView
-                    android:id="@+id/tvBanner"
+                    android:id="@+id/tv_banner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="gone"
@@ -140,7 +140,7 @@
 
                 <!-- ── LOGIN FIELDS ── -->
                 <LinearLayout
-                    android:id="@+id/loginFields"
+                    android:id="@+id/login_fields"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
@@ -156,7 +156,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etEmail"
+                        android:id="@+id/et_email"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -180,7 +180,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etPassword"
+                        android:id="@+id/et_password"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -195,7 +195,7 @@
 
                     <!-- Forgot Password Link -->
                     <TextView
-                        android:id="@+id/tvForgotPassword"
+                        android:id="@+id/tv_forgot_password"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
@@ -208,7 +208,7 @@
 
                     <!-- Sign In Button -->
                     <TextView
-                        android:id="@+id/btnSignIn"
+                        android:id="@+id/btn_sign_in"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_btn_primary_selector"
@@ -223,7 +223,7 @@
 
                 <!-- ── SIGNUP FIELDS ── -->
                 <LinearLayout
-                    android:id="@+id/signupFields"
+                    android:id="@+id/signup_fields"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -241,7 +241,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etName"
+                        android:id="@+id/et_name"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -266,7 +266,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etDoorNo"
+                        android:id="@+id/et_door_no"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -291,7 +291,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etAddress"
+                        android:id="@+id/et_address"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -316,7 +316,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etSignupEmail"
+                        android:id="@+id/et_signup_email"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -341,7 +341,7 @@
                         android:layout_marginBottom="8dp" />
 
                     <EditText
-                        android:id="@+id/etSignupPassword"
+                        android:id="@+id/et_signup_password"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
@@ -356,7 +356,7 @@
 
                     <!-- Register Button -->
                     <TextView
-                        android:id="@+id/btnRegister"
+                        android:id="@+id/btn_register"
                         android:layout_width="match_parent"
                         android:layout_height="52dp"
                         android:background="@drawable/bg_btn_primary_selector"

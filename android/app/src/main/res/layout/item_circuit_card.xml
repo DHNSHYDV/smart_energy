@@ -2,7 +2,7 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardCircuitRoot"
+    android:id="@+id/card_circuit_root"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="20dp"
@@ -31,7 +31,7 @@
             android:background="@drawable/bg_icon_container">
 
             <ImageView
-                android:id="@+id/ivCircuitIcon"
+                android:id="@+id/iv_circuit_icon"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_gravity="center"
@@ -39,7 +39,7 @@
                 app:tint="@color/blue_400" />
 
             <View
-                android:id="@+id/indicatorAnomaly"
+                android:id="@+id/indicator_anomaly"
                 android:layout_width="9dp"
                 android:layout_height="9dp"
                 android:layout_gravity="top|end"
@@ -65,7 +65,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvCircuitName"
+                    android:id="@+id/tv_circuit_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -78,7 +78,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tvCircuitStatusBadge"
+                    android:id="@+id/tv_circuit_status_badge"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/bg_action_pill"
@@ -94,7 +94,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvCircuitLocation"
+                android:id="@+id/tv_circuit_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
@@ -106,7 +106,7 @@
                 android:textSize="11sp" />
 
             <TextView
-                android:id="@+id/tvCircuitMetrics"
+                android:id="@+id/tv_circuit_metrics"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
@@ -119,7 +119,7 @@
 
         <!-- Toggle -->
         <com.google.android.material.switchmaterial.SwitchMaterial
-            android:id="@+id/switchCircuit"
+            android:id="@+id/switch_circuit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
