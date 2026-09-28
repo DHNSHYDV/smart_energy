@@ -104,16 +104,16 @@ class LoginActivity : AppCompatActivity() {
             loginFields.visibility = View.VISIBLE
             signupFields.visibility = View.GONE
             tabLogin.setBackgroundResource(R.drawable.bg_active_nav_pill)
-            tabLogin.setTextColor(0xFF0A0A0F.toInt())
+            tabLogin.setTextColor(android.graphics.Color.parseColor("#0A0A0F"))
             tabSignup.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            tabSignup.setTextColor(0xFF475569.toInt())
+            tabSignup.setTextColor(android.graphics.Color.parseColor("#475569"))
         } else {
             loginFields.visibility = View.GONE
             signupFields.visibility = View.VISIBLE
             tabSignup.setBackgroundResource(R.drawable.bg_active_nav_pill)
-            tabSignup.setTextColor(0xFF0A0A0F.toInt())
+            tabSignup.setTextColor(android.graphics.Color.parseColor("#0A0A0F"))
             tabLogin.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            tabLogin.setTextColor(0xFF475569.toInt())
+            tabLogin.setTextColor(android.graphics.Color.parseColor("#475569"))
         }
     }
 
@@ -230,7 +230,8 @@ class LoginActivity : AppCompatActivity() {
             tvBanner.visibility = View.VISIBLE
             tvBanner.text = message
             tvBanner.setTextColor(
-                if (isError) 0xFFF87171.toInt() else 0xFF34D399.toInt()
+                if (isError) android.graphics.Color.parseColor("#F87171")
+                else android.graphics.Color.parseColor("#34D399")
             )
         }
     }

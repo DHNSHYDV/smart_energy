@@ -5,6 +5,9 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build Debug APK
@@ -26,23 +29,22 @@ jobs:
 
       - name: Build Debug APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Rename APK
+      - name: Copy APK artifact
         run: |
           mkdir -p artifacts
           cp android/app/build/outputs/apk/debug/app-debug.apk \
              artifacts/SmartEnergyConservation-v3.0.0-debug.apk
 
-      - name: Upload APK as artifact
+      - name: Upload APK as Build Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SmartEnergyConservation-APK
+          name: SmartEnergyConservation-v3.0.0-APK
           path: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
           retention-days: 30
 
       - name: Create GitHub Release
-        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v3.0.0-${{ github.run_number }}
@@ -51,22 +53,12 @@ jobs:
             ## Smart Energy Conservation v3.0.0
 
             ### What's New
-            - 🔐 **Supabase Auth** — Email/password login synced across web & Android
-            - 🌑 **Full Dark Theme** — Premium deep black UI throughout the app
-            - ⚡ **Hero Power Card** — Big live watt display with grid metrics
-            - 🎨 **Redesigned Login Screen** — Polished Sign In / Register tabs
-            - 🏠 **Redesigned Home** — Quick actions, live loads, energy insights
-            - 📱 **Dark Device Cards** — Blue accent, clean toggle switches
-            - 🧭 **Dark Navigation Dock** — Floating pill nav at the bottom
-            - 🏷️ App renamed to **Smart Energy Conservation**
-
-            ### Install
-            Download the APK below → transfer to Android phone → install
-            (Allow "Install from unknown sources" in Settings)
-
-            ### Login
-            Create an account on [the web app](https://web-production-29e8e.up.railway.app) first,
-            then use the same email + password in the Android app.
+            - 🔐 **Supabase Auth** — Synced login across Web & Android
+            - 🏢 **3D Live Space** — Three.js digital twin & room simulation
+            - 🌑 **Full Dark UI** — Deep black theme `#0A0A0F` with modern blue accents
+            - ⚡ **Hero Power Card** — 52sp live watt display
+            - 🎨 **Redesigned Login** — Dark tabbed layout with Supabase security
+            - 🖼️ **Custom App Icon** — Green leaf-lightning icon
           files: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
           draft: false
           prerelease: false
