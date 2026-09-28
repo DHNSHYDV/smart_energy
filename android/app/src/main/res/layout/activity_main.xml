@@ -109,42 +109,7 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <!-- Tab 2: 3D Space -->
-            <LinearLayout
-                android:id="@+id/nav_space"
-                android:layout_width="0dp"
-                android:layout_height="44dp"
-                android:layout_weight="1"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp">
-
-                <ImageView
-                    android:id="@+id/iv_nav_space"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:src="@drawable/ic_bolt"
-                    app:tint="@color/inactive_nav_text" />
-
-                <TextView
-                    android:id="@+id/tv_nav_space"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:ellipsize="none"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:text="3D Room"
-                    android:textColor="@color/active_nav_text"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </LinearLayout>
-
-            <!-- Tab 3: Devices -->
+            <!-- Tab 2: Devices -->
             <LinearLayout
                 android:id="@+id/nav_devices"
                 android:layout_width="0dp"

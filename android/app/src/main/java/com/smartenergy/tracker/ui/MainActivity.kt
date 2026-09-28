@@ -19,7 +19,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var repo: EnergyRepository
 
     val homeFragment by lazy { HomeFragment() }
-    val liveSpaceFragment by lazy { LiveSpaceFragment() }
     val devicesFragment by lazy { DevicesFragment() }
     val analyticsFragment by lazy { AnalyticsFragment() }
     val automationsFragment by lazy { AutomationsFragment() }
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupDockNavigation() {
         binding.navHome.setOnClickListener { switchTab(R.id.nav_home, homeFragment) }
-        binding.navSpace.setOnClickListener { switchTab(R.id.nav_space, liveSpaceFragment) }
         binding.navDevices.setOnClickListener { switchTab(R.id.nav_devices, devicesFragment) }
         binding.navAnalytics.setOnClickListener { switchTab(R.id.nav_analytics, analyticsFragment) }
         binding.navAutomations.setOnClickListener { switchTab(R.id.nav_automations, automationsFragment) }
@@ -61,7 +59,6 @@ class MainActivity : AppCompatActivity() {
     fun navigateToTab(tabId: Int) {
         val fragment = when (tabId) {
             R.id.nav_home -> homeFragment
-            R.id.nav_space -> liveSpaceFragment
             R.id.nav_devices -> devicesFragment
             R.id.nav_analytics -> analyticsFragment
             R.id.nav_automations -> automationsFragment
@@ -86,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         val b = _binding ?: return
         val tabs = listOf(
             Triple(b.navHome, b.ivNavHome, b.tvNavHome),
-            Triple(b.navSpace, b.ivNavSpace, b.tvNavSpace),
             Triple(b.navDevices, b.ivNavDevices, b.tvNavDevices),
             Triple(b.navAnalytics, b.ivNavAnalytics, b.tvNavAnalytics),
             Triple(b.navAutomations, b.ivNavAutomations, b.tvNavAutomations)
