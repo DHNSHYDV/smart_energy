@@ -58,23 +58,23 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun bindViews() {
-        tabLogin = findViewById(R.id.tabLogin)
-        tabSignup = findViewById(R.id.tabSignup)
-        loginFields = findViewById(R.id.loginFields)
-        signupFields = findViewById(R.id.signupFields)
-        tvBanner = findViewById(R.id.tvBanner)
+        tabLogin = findViewById(R.id.tab_login)
+        tabSignup = findViewById(R.id.tab_signup)
+        loginFields = findViewById(R.id.login_fields)
+        signupFields = findViewById(R.id.signup_fields)
+        tvBanner = findViewById(R.id.tv_banner)
 
-        etEmail = findViewById(R.id.etEmail)
-        etPassword = findViewById(R.id.etPassword)
-        btnSignIn = findViewById(R.id.btnSignIn)
-        tvForgotPassword = findViewById(R.id.tvForgotPassword)
+        etEmail = findViewById(R.id.et_email)
+        etPassword = findViewById(R.id.et_password)
+        btnSignIn = findViewById(R.id.btn_sign_in)
+        tvForgotPassword = findViewById(R.id.tv_forgot_password)
 
-        etName = findViewById(R.id.etName)
-        etDoorNo = findViewById(R.id.etDoorNo)
-        etAddress = findViewById(R.id.etAddress)
-        etSignupEmail = findViewById(R.id.etSignupEmail)
-        etSignupPassword = findViewById(R.id.etSignupPassword)
-        btnRegister = findViewById(R.id.btnRegister)
+        etName = findViewById(R.id.et_name)
+        etDoorNo = findViewById(R.id.et_door_no)
+        etAddress = findViewById(R.id.et_address)
+        etSignupEmail = findViewById(R.id.et_signup_email)
+        etSignupPassword = findViewById(R.id.et_signup_password)
+        btnRegister = findViewById(R.id.btn_register)
     }
 
     private fun setupListeners() {
