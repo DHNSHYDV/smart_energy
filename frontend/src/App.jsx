@@ -37,7 +37,8 @@ import {
   UserPlus,
   LogOut,
   MapPin,
-  Building
+  Building,
+  Box
 } from 'lucide-react';
 
 function DashboardShell() {
@@ -227,6 +228,24 @@ function DashboardShell() {
             >
               <Activity className="w-4 h-4 shrink-0" />
               <span className="hidden md:inline">Live Energy</span>
+            </button>
+
+            {/* 3. 3D Live Space */}
+            <button
+              onClick={() => setActiveTab('live-space')}
+              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
+                activeTab === 'live-space' || activeTab === 'livespace' || activeTab === 'lab'
+                  ? 'text-white bg-emerald-500/20 shadow-sm ring-1 ring-emerald-500/30'
+                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Box className="w-4 h-4 shrink-0 text-emerald-400" />
+                <span className="hidden md:inline text-emerald-300 font-bold">3D Live Space</span>
+              </div>
+              <span className="hidden md:inline text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950">
+                3D
+              </span>
             </button>
 
             {/* 3. Devices */}
