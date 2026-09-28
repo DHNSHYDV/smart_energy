@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -8,11 +9,15 @@ if (!supabaseUrl || !supabaseServiceKey) {
 }
 
 // Admin client with service role — server-side only, never expose to browser
+// Pass 'ws' package as transport to fix Node.js < 22 WebSocket compatibility
 export const supabaseAdmin = supabaseUrl && supabaseServiceKey
   ? createClient(supabaseUrl, supabaseServiceKey, {
       auth: {
         autoRefreshToken: false,
         persistSession: false
+      },
+      realtime: {
+        transport: ws
       }
     })
   : null;
