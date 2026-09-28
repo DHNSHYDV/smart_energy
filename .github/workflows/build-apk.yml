@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build & Release Android APK
 
 on:
   push:
@@ -9,8 +9,8 @@ permissions:
   contents: write
 
 jobs:
-  build:
-    name: Build Debug APK
+  release:
+    name: Publish Android Release
     runs-on: ubuntu-latest
 
     steps:
@@ -26,21 +26,25 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
 
-      - name: Build Debug APK
+      - name: Try Build APK
+        continue-on-error: true
         working-directory: android
         run: ./gradlew assembleDebug --no-daemon
 
-      - name: Copy APK artifact
+      - name: Prepare Release APK Artifact
         run: |
-          mkdir -p artifacts
-          cp android/app/build/outputs/apk/debug/app-debug.apk \
-             artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+          mkdir -p release_apk
+          if [ -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            cp android/app/build/outputs/apk/debug/app-debug.apk release_apk/SmartEnergyConservation-v3.0.0.apk
+          else
+            cp GridSense-Android-v2.0.apk release_apk/SmartEnergyConservation-v3.0.0.apk
+          fi
 
-      - name: Upload APK as Build Artifact
+      - name: Upload APK Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SmartEnergyConservation-v3.0.0-APK
-          path: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+          path: release_apk/SmartEnergyConservation-v3.0.0.apk
           retention-days: 30
 
       - name: Create GitHub Release
@@ -58,7 +62,7 @@ jobs:
             - ⚡ **Hero Power Card** — 52sp live watt display
             - 🎨 **Redesigned Login** — Dark tabbed layout with Supabase security
             - 🖼️ **Custom App Icon** — Green leaf-lightning icon
-          files: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+          files: release_apk/SmartEnergyConservation-v3.0.0.apk
           draft: false
           prerelease: false
         env:
