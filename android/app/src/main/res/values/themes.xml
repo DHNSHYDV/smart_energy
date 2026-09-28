@@ -23,8 +23,8 @@
         <!-- Surface colors -->
         <item name="colorSurface">@color/bg_card</item>
         <item name="colorOnSurface">@color/text_primary</item>
-        <item name="colorBackground">@color/bg_dark</item>
-        <item name="colorOnBackground">@color/text_primary</item>
+        <item name="android:colorBackground">@color/bg_dark</item>
+        <item name="android:colorOnBackground">@color/text_primary</item>
     </style>
 
     <!-- Premium input style for login -->
