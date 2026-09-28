@@ -165,7 +165,7 @@
             </LinearLayout>
 
             <!-- ══ HERO POWER CARD ═══════════════════════════════ -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -375,7 +375,7 @@
                             android:textStyle="bold" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- ══ QUICK ACTIONS ══════════════════════════════════ -->
             <LinearLayout
@@ -547,7 +547,7 @@
                 tools:listitem="@layout/item_circuit_card" />
 
             <!-- ══ DAILY AVG + INSIGHT ════════════════════════════ -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/card_energy_insight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -626,7 +626,7 @@
                         android:clickable="true"
                         android:focusable="true" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Hidden views required by HomeFragment data binding -->
             <TextView

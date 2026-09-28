@@ -28,7 +28,10 @@ class PreferencesManager(context: Context) {
     }
 
     var serverUrl: String
-        get() = prefs.getString(KEY_SERVER_URL, DEFAULT_RAILWAY_URL) ?: DEFAULT_RAILWAY_URL
+        get() {
+            val raw = prefs.getString(KEY_SERVER_URL, DEFAULT_RAILWAY_URL) ?: DEFAULT_RAILWAY_URL
+            return normalizeUrl(raw)
+        }
         set(value) {
             val normalized = normalizeUrl(value)
             prefs.edit().putString(KEY_SERVER_URL, normalized).apply()

@@ -48,7 +48,7 @@
             </LinearLayout>
 
             <!-- Metrics Highlight Banner -->
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -148,7 +148,7 @@
                             android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Device List -->
             <androidx.recyclerview.widget.RecyclerView

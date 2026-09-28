@@ -44,11 +44,20 @@ object ApiClient {
                 .addInterceptor(logging)
                 .build()
 
-            retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
+            try {
+                retrofit = Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            } catch (e: Exception) {
+                currentBaseUrl = PreferencesManager.DEFAULT_RAILWAY_URL + "/"
+                retrofit = Retrofit.Builder()
+                    .baseUrl(currentBaseUrl!!)
+                    .client(okHttpClient)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+            }
         }
 
         return retrofit!!.create(ApiService::class.java)

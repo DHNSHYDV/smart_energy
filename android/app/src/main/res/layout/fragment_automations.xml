@@ -67,7 +67,7 @@
                 android:orientation="horizontal">
 
                 <!-- Scene 1: Night Mode -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSceneNight"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -146,10 +146,10 @@
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Scene 2: Eco Shift -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSceneEco"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -228,7 +228,7 @@
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
             <!-- Row 2: Work Mode & Viva Full Load -->
@@ -241,7 +241,7 @@
                 android:orientation="horizontal">
 
                 <!-- Scene 3: Work Mode -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSceneWork"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -320,10 +320,10 @@
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
 
                 <!-- Scene 4: Viva Full Load -->
-                <androidx.cardview.widget.CardView
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardSceneViva"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -402,7 +402,7 @@
                             android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
                     </LinearLayout>
-                </androidx.cardview.widget.CardView>
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
             <!-- Section 2: Peak Load Shifting (TOU Tariff) -->
@@ -416,7 +416,7 @@
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -570,7 +570,7 @@
                             app:strokeColor="@color/card_purple_primary" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Section 3: Gateway & System Configuration (Section 17) -->
             <TextView
@@ -583,7 +583,7 @@
                 android:textSize="17sp"
                 android:textStyle="bold" />
 
-            <androidx.cardview.widget.CardView
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -712,7 +712,7 @@
                         android:textSize="13sp"
                         android:textStyle="bold" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
