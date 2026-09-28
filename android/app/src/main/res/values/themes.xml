@@ -25,9 +25,6 @@
         <item name="colorOnSurface">@color/text_primary</item>
         <item name="colorBackground">@color/bg_dark</item>
         <item name="colorOnBackground">@color/text_primary</item>
-
-        <!-- Ripple -->
-        <item name="colorControlHighlight">#1A3B82F6</item>
     </style>
 
     <!-- Premium input style for login -->
