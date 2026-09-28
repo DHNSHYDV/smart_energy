@@ -26,9 +26,10 @@
         </provider>
 
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustPan">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.SmartEnergyTracker">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,9 +37,9 @@
         </activity>
 
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.MainActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
+            android:windowSoftInputMode="adjustPan"
             android:theme="@style/Theme.SmartEnergyTracker" />
 
     </application>

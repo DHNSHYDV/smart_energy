@@ -75,6 +75,13 @@ class LoginActivity : AppCompatActivity() {
         etSignupEmail = findViewById(R.id.et_signup_email)
         etSignupPassword = findViewById(R.id.et_signup_password)
         btnRegister = findViewById(R.id.btn_register)
+        val btnGuestDemo = findViewById<TextView>(R.id.btn_guest_demo)
+        btnGuestDemo.setOnClickListener {
+            val prefs = PreferencesManager.getInstance(this)
+            prefs.supabaseAccessToken = "demo_guest_access_token"
+            prefs.supabaseUserEmail = "demo@grid-sense.io"
+            startMainActivity()
+        }
     }
 
     private fun setupListeners() {
