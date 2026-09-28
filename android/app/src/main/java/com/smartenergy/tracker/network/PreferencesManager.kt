@@ -11,6 +11,9 @@ class PreferencesManager(context: Context) {
         private const val KEY_SERVER_URL = "server_url"
         private const val KEY_SERVER_IP = "server_ip"
         private const val KEY_SERVER_PORT = "server_port"
+        private const val KEY_SUPABASE_ACCESS_TOKEN = "supabase_access_token"
+        private const val KEY_SUPABASE_REFRESH_TOKEN = "supabase_refresh_token"
+        private const val KEY_SUPABASE_USER_EMAIL = "supabase_user_email"
         const val DEFAULT_RAILWAY_URL = "https://web-production-29e8e.up.railway.app"
         const val DEFAULT_LOCAL_URL = "http://192.168.1.42:5000"
 
@@ -43,6 +46,31 @@ class PreferencesManager(context: Context) {
             return if (url.endsWith("/")) url.substring(0, url.length - 1) else url
         }
 
+    // ── Supabase Auth Token Storage ───────────────────────────────────────────
+
+    var supabaseAccessToken: String?
+        get() = prefs.getString(KEY_SUPABASE_ACCESS_TOKEN, null)
+        set(value) = prefs.edit().putString(KEY_SUPABASE_ACCESS_TOKEN, value).apply()
+
+    var supabaseRefreshToken: String?
+        get() = prefs.getString(KEY_SUPABASE_REFRESH_TOKEN, null)
+        set(value) = prefs.edit().putString(KEY_SUPABASE_REFRESH_TOKEN, value).apply()
+
+    var supabaseUserEmail: String?
+        get() = prefs.getString(KEY_SUPABASE_USER_EMAIL, null)
+        set(value) = prefs.edit().putString(KEY_SUPABASE_USER_EMAIL, value).apply()
+
+    val isLoggedIn: Boolean
+        get() = !supabaseAccessToken.isNullOrEmpty()
+
+    fun clearAuthTokens() {
+        prefs.edit()
+            .remove(KEY_SUPABASE_ACCESS_TOKEN)
+            .remove(KEY_SUPABASE_REFRESH_TOKEN)
+            .remove(KEY_SUPABASE_USER_EMAIL)
+            .apply()
+    }
+
     fun normalizeUrl(raw: String): String {
         var clean = raw.trim()
         if (clean.isEmpty()) return DEFAULT_RAILWAY_URL
@@ -66,3 +94,4 @@ class PreferencesManager(context: Context) {
         }
     }
 }
+

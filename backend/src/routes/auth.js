@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import crypto from 'crypto';
 import { db, generateSalt, hashPassword, verifyPassword } from '../config/database.js';
+import { verifySupabaseToken } from '../config/supabase.js';
 
 export function createAuthRouter(simulationEngine, mqttService) {
   const router = Router();
@@ -78,7 +79,85 @@ export function createAuthRouter(simulationEngine, mqttService) {
     }
   });
 
+  // POST /api/auth/verify - Verify a Supabase JWT and return/create the local resident profile
+  // Called by web and Android after they get a token from Supabase Auth
+  router.post('/verify', async (req, res) => {
+    try {
+      const authHeader = req.headers.authorization || '';
+      const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : req.body?.token;
+
+      if (!token) {
+        return res.status(401).json({ success: false, message: 'No token provided.' });
+      }
+
+      const { user: supaUser, error: tokenErr } = await verifySupabaseToken(token);
+      if (tokenErr || !supaUser) {
+        return res.status(401).json({ success: false, message: tokenErr || 'Invalid token.' });
+      }
+
+      const email = supaUser.email?.toLowerCase();
+      if (!email) {
+        return res.status(400).json({ success: false, message: 'Token has no email claim.' });
+      }
+
+      // Find existing local profile by email
+      let localUser = db.prepare(
+        'SELECT id, name, door_no, address, consumer_id, email, base_monthly_kwh, daily_avg_kwh, comparison_pct, created_at FROM users WHERE LOWER(email) = ?'
+      ).get(email);
+
+      // Auto-provision a minimal profile if first login via Supabase
+      if (!localUser) {
+        const userId = `usr_${Date.now()}_${crypto.randomBytes(3).toString('hex')}`;
+        const displayName = supaUser.user_metadata?.name || supaUser.user_metadata?.full_name || email.split('@')[0];
+        const doorNo = supaUser.user_metadata?.door_no || 'Flat 1';
+        const address = supaUser.user_metadata?.address || 'Bengaluru, Karnataka';
+        const doorMatch = doorNo.replace(/[^a-zA-Z0-9]/g, '').slice(0, 5).toUpperCase() || 'RES';
+        const randHex = crypto.randomBytes(2).toString('hex').toUpperCase();
+        const consumerId = `BESCOM-BLR-D${doorMatch}-${randHex}`;
+
+        const allAppliances = db.prepare('SELECT id FROM appliances').all();
+        const defaultOn = ['AC001', 'FR001', 'TV001', 'LT001', 'FN001'];
+
+        const tx = db.transaction(() => {
+          db.prepare(
+            'INSERT INTO users (id, name, door_no, address, consumer_id, email, password_hash, salt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
+          ).run(userId, displayName, doorNo, address, consumerId, email, '', '');
+
+          for (const app of allAppliances) {
+            const isOn = defaultOn.includes(app.id) ? 1 : 0;
+            db.prepare(
+              'INSERT OR REPLACE INTO user_appliance_states (user_id, appliance_id, is_on) VALUES (?, ?, ?)'
+            ).run(userId, app.id, isOn);
+          }
+        });
+        tx();
+
+        localUser = db.prepare(
+          'SELECT id, name, door_no, address, consumer_id, email, base_monthly_kwh, daily_avg_kwh, comparison_pct, created_at FROM users WHERE id = ?'
+        ).get(userId);
+
+        console.log(`[Auth] Supabase: Auto-provisioned new resident profile for ${email} — Consumer ID: ${consumerId}`);
+      }
+
+      syncEngineToUser(localUser.id);
+      const applianceStates = getUserApplianceStates(localUser.id);
+
+      console.log(`[Auth] Supabase token verified — Resident: ${localUser.name} (${localUser.email})`);
+
+      res.json({
+        success: true,
+        message: `Welcome, ${localUser.name}!`,
+        user: localUser,
+        applianceStates
+      });
+    } catch (err) {
+      console.error('[Auth] Supabase verify error:', err);
+      res.status(500).json({ success: false, message: 'Token verification failed.' });
+    }
+  });
+
   // POST /api/auth/signup - Register a new resident locally
+
   router.post('/signup', (req, res) => {
     try {
       const { name, doorNo, address, email, password } = req.body;

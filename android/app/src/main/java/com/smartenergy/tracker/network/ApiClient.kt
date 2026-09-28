@@ -1,7 +1,9 @@
 package com.smartenergy.tracker.network
 
 import android.content.Context
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -21,10 +23,24 @@ object ApiClient {
                 level = HttpLoggingInterceptor.Level.BODY
             }
 
+            // Attach Supabase JWT to every request if available
+            val authInterceptor = Interceptor { chain ->
+                val token = PreferencesManager.getInstance(context).supabaseAccessToken
+                val request = if (!token.isNullOrEmpty()) {
+                    chain.request().newBuilder()
+                        .addHeader("Authorization", "Bearer $token")
+                        .build()
+                } else {
+                    chain.request()
+                }
+                chain.proceed(request)
+            }
+
             val okHttpClient = OkHttpClient.Builder()
                 .connectTimeout(5, TimeUnit.SECONDS)
                 .readTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
+                .addInterceptor(authInterceptor)
                 .addInterceptor(logging)
                 .build()
 

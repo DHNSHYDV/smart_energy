@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { io } from 'socket.io-client';
+import { supabase } from '../lib/supabase.js';
 
 const EnergyContext = createContext(null);
 
@@ -41,7 +42,8 @@ export function EnergyProvider({ children }) {
   const [toastAlert, setToastAlert] = useState(null);
   const [selectedDeviceForDetail, setSelectedDeviceForDetail] = useState(null);
 
-  // Local User Authentication & Profile state
+  // Supabase session + local profile state
+  const [supabaseSession, setSupabaseSession] = useState(null);
   const [currentUser, setCurrentUser] = useState(() => {
     try {
       const saved = localStorage.getItem('smart_energy_user');
@@ -154,7 +156,53 @@ export function EnergyProvider({ children }) {
     };
   }, [backendUrl]);
 
-  // REST API Fetchers
+  // Supabase auth state listener — fires on login, logout, and token refresh
+  const verifyWithBackend = useCallback(async (session) => {
+    if (!session?.access_token) return;
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        }
+      });
+      const data = await res.json();
+      if (data.success && data.user) {
+        setCurrentUser(data.user);
+        localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
+      }
+    } catch (e) {
+      console.warn('[EnergyContext] Backend verify error:', e.message);
+    }
+  }, [backendUrl]);
+
+  useEffect(() => {
+    // Check existing session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSupabaseSession(session);
+      if (session) verifyWithBackend(session);
+    });
+
+    // Listen for auth state changes (login, logout, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSupabaseSession(session);
+      if (session) {
+        verifyWithBackend(session);
+        setIsAuthModalOpen(false);
+      } else {
+        // Logged out
+        setCurrentUser(null);
+        localStorage.removeItem('smart_energy_user');
+        setIsAuthModalOpen(true);
+        setAuthModalMode('login');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [verifyWithBackend]);
+
+
   const fetchNetworkInfo = useCallback(async () => {
     try {
       const res = await fetch(`${backendUrl}/api/system/network`);
@@ -298,22 +346,13 @@ export function EnergyProvider({ children }) {
     fetchCarbonIntelligence
   ]);
 
-  // Auth action methods:
+  // ── Supabase Auth Actions ──────────────────────────────────────────────────
+
   const login = async (email, password) => {
     try {
-      const res = await fetch(`${backendUrl}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.message || 'Login failed');
-      }
-      setCurrentUser(data.user);
-      localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
-      fetchUsers();
-      setIsAuthModalOpen(false);
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw new Error(error.message);
+      // onAuthStateChange will call verifyWithBackend and update currentUser automatically
       return { success: true, user: data.user };
     } catch (e) {
       return { success: false, message: e.message };
@@ -322,20 +361,21 @@ export function EnergyProvider({ children }) {
 
   const signup = async (userData) => {
     try {
-      const res = await fetch(`${backendUrl}/api/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData)
+      const { name, doorNo, address, email, password } = userData;
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: { name, door_no: doorNo, address }
+        }
       });
-      const data = await res.json();
-      if (!data.success) {
-        throw new Error(data.message || 'Signup failed');
+      if (error) throw new Error(error.message);
+      // If email confirmation is disabled, session is returned immediately
+      if (data.session) {
+        return { success: true, user: data.user };
       }
-      setCurrentUser(data.user);
-      localStorage.setItem('smart_energy_user', JSON.stringify(data.user));
-      fetchUsers();
-      setIsAuthModalOpen(false);
-      return { success: true, user: data.user };
+      // Email confirmation enabled — inform the user
+      return { success: true, user: data.user, needsConfirmation: true };
     } catch (e) {
       return { success: false, message: e.message };
     }
@@ -360,12 +400,22 @@ export function EnergyProvider({ children }) {
     return { success: false };
   };
 
-  const logout = () => {
-    localStorage.removeItem('smart_energy_user');
-    setCurrentUser(null);
-    setAuthModalMode('login');
-    setIsAuthModalOpen(true);
+  const logout = async () => {
+    await supabase.auth.signOut();
+    // onAuthStateChange handles clearing currentUser and opening auth modal
   };
+
+  const sendPasswordReset = async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+      if (error) throw new Error(error.message);
+      return { success: true };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  };
+
+
 
   // Action methods:
   const toggleAppliance = (id, targetState = null) => {
@@ -573,6 +623,8 @@ export function EnergyProvider({ children }) {
     signup,
     switchUser,
     logout,
+    sendPasswordReset,
+    supabaseSession,
     refreshUsers: fetchUsers,
     refreshSchedules: fetchSchedules,
     refreshForecast: fetchForecast,

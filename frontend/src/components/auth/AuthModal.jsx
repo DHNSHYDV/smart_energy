@@ -24,6 +24,7 @@ export function AuthModal() {
     setAuthModalMode,
     login,
     signup,
+    sendPasswordReset,
     currentUser,
     allUsers,
     switchUser
@@ -40,6 +41,9 @@ export function AuthModal() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
+  const [forgotLoading, setForgotLoading] = useState(false);
 
   useEffect(() => {
     if (!isAuthModalOpen) return;
@@ -93,10 +97,12 @@ export function AuthModal() {
     setLoading(false);
 
     if (res.success) {
-      setSuccessMsg(`Resident account created! Consumer ID: ${res.user.consumer_id}`);
-      setTimeout(() => {
-        setIsAuthModalOpen(false);
-      }, 1000);
+      if (res.needsConfirmation) {
+        setSuccessMsg('Account created! Please check your email to confirm before signing in.');
+      } else {
+        setSuccessMsg(`Resident account created! Consumer ID: ${res.user?.consumer_id || 'Provisioning...'}`);
+        setTimeout(() => { setIsAuthModalOpen(false); }, 1000);
+      }
     } else {
       setError(res.message || 'Account registration failed.');
     }
@@ -110,14 +116,30 @@ export function AuthModal() {
     const res = await login(demoEmail, demoPassword);
     setLoading(false);
     if (res.success) {
-      setSuccessMsg(`Switched to ${res.user.name}`);
-      setTimeout(() => {
-        setIsAuthModalOpen(false);
-      }, 600);
+      setSuccessMsg(`Switched to ${res.user?.name || demoEmail}`);
+      setTimeout(() => { setIsAuthModalOpen(false); }, 600);
     } else {
       setError(res.message || 'Demo login failed');
     }
   };
+
+  const handleForgotPassword = async (e) => {
+    e?.preventDefault();
+    if (!forgotEmail.trim() || !forgotEmail.includes('@')) {
+      return setError('Please enter a valid email address.');
+    }
+    setForgotLoading(true);
+    setError('');
+    const res = await sendPasswordReset(forgotEmail.trim());
+    setForgotLoading(false);
+    if (res.success) {
+      setSuccessMsg('Password reset email sent! Check your inbox.');
+      setShowForgot(false);
+    } else {
+      setError(res.message || 'Failed to send reset email.');
+    }
+  };
+
 
   return (
     <div 
@@ -137,8 +159,8 @@ export function AuthModal() {
             <div>
               <h3 className="text-base font-bold tracking-tight text-white flex items-center gap-2">
                 GridSense Resident Portal
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  Local SQLite
+                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                  Supabase Auth
                 </span>
               </h3>
               <p className="text-xs text-neutral-400 mt-0.5">
@@ -242,6 +264,45 @@ export function AuthModal() {
               >
                 {loading ? 'Authenticating...' : 'Sign In to Smart Energy Conservation'}
               </button>
+
+              {/* Forgot Password */}
+              {!showForgot ? (
+                <button
+                  type="button"
+                  onClick={() => { setShowForgot(true); setError(''); setSuccessMsg(''); }}
+                  className="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 mt-1 cursor-pointer transition-colors"
+                >
+                  Forgot password?
+                </button>
+              ) : (
+                <div className="mt-2 p-3 rounded-2xl bg-neutral-800/60 border border-neutral-700/60 space-y-2">
+                  <p className="text-[11px] text-neutral-300 font-medium">Enter your email to receive a reset link:</p>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      className="flex-1 bg-neutral-950/70 border border-neutral-700 rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleForgotPassword}
+                      disabled={forgotLoading}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold rounded-xl cursor-pointer transition-colors"
+                    >
+                      {forgotLoading ? '...' : 'Send'}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowForgot(false)}
+                      className="px-3 py-2 bg-neutral-700 hover:bg-neutral-600 text-neutral-300 text-xs rounded-xl cursor-pointer transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Quick One-Click Demo Profiles */}
               <div className="pt-4 border-t border-neutral-800/80">
@@ -377,7 +438,7 @@ export function AuthModal() {
                   BESCOM Consumer ID Generation
                 </p>
                 <p className="mt-1 leading-relaxed">
-                  A unique, compliant Karnataka electricity consumer identifier will be automatically generated and bound to this local SQLite profile.
+                  A unique, compliant Karnataka electricity consumer identifier will be automatically generated and linked to your Supabase account.
                 </p>
               </div>
 

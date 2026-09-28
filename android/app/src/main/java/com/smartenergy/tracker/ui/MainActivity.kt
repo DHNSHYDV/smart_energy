@@ -1,5 +1,6 @@
 package com.smartenergy.tracker.ui
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.smartenergy.tracker.R
 import com.smartenergy.tracker.databinding.ActivityMainBinding
 import com.smartenergy.tracker.network.EnergyRepository
+import com.smartenergy.tracker.network.PreferencesManager
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -29,6 +31,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Check Supabase auth — redirect to login if no token stored
+        val prefs = PreferencesManager.getInstance(this)
+        if (!prefs.isLoggedIn) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
