@@ -31,7 +31,7 @@ jobs:
 
       - name: Build Fresh Debug APK (v3.0.0)
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Prepare Fresh APK
         run: |
