@@ -114,7 +114,7 @@ class HomeFragment : Fragment() {
         }
 
         binding.btnViewAllDevices.setOnClickListener {
-            (activity as? MainActivity)?.loadWebApp()
+            (activity as? MainActivity)?.navigateToTab(R.id.nav_devices)
         }
 
         binding.actionNightMode.setOnClickListener {
