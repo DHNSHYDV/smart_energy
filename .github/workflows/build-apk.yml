@@ -42,23 +42,45 @@ jobs:
           path: release_apk/SmartEnergyConservation-v3.0.0.apk
           retention-days: 30
 
-      - name: Create GitHub Release
+      - name: Update Official GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: v3.0.0-${{ github.run_number }}
-          name: "Smart Energy Conservation v3.0.0 (Build ${{ github.run_number }})"
+          tag_name: v3.0.0
+          name: "Smart Energy Conservation v3.0.0 (Official Release)"
           body: |
-            ## Smart Energy Conservation v3.0.0 (Fresh Build ${{ github.run_number }})
+            # ⚡ Smart Energy Conservation v3.0.0 — Official Release
 
-            ### What's New
-            - 🔐 **Supabase Auth** — Synced login across Web & Android
-            - 🏢 **3D Live Space** — Immersive 3D room simulation
-            - 🌑 **Full Dark UI** — Deep black theme `#0A0A0F` with modern blue accents
-            - ⚡ **Hero Power Card** — 52sp live watt display
-            - 🔄 **Profile Switcher** — Dedicated button in header to switch residents or sign out
-            - 🖼️ **Custom App Icon** — Green leaf-lightning icon
+            An enterprise-grade, IoT-driven Smart Energy Management & Microgrid Digital Twin platform featuring synced Supabase authentication, real-time sub-second telemetry, user-specific profile analytics, and an immersive 3D digital twin room simulation.
+
+            ---
+
+            ## 🌟 Highlights & What's New
+
+            ### 📱 Android Mobile App (v3.0.0)
+            - **🔐 Synced Supabase Authentication**: Unified email/password login & registration synchronized with the Web dashboard.
+            - **🔄 Resident Profile Switcher & Sign Out**: Dedicated profile switcher button (`🔄 Switch Profile / Sign Out`) in the home header. Easily switch between resident profiles (e.g., *Dhanush Yadav*, *Priya Sharma*) or sign out cleanly.
+            - **🌑 Deep Dark Onyx Theme (`#0A0A0F`)**: Premium dark theme with `#16171F` card containers, `#3B82F6` blue accent glow, and `#10B981` emerald indicators.
+            - **⚡ Hero Live Power Draw Card**: Dynamic 52sp typography displaying real-time active power draw (W) with voltage, power factor, and frequency sub-metrics.
+            - **🌿 Peak-Shifting Insights & Action Pills**: One-tap macro controls (Night Mode, Eco Shift, Work Mode, Viva Lab) and automated peak-hour demand advisories.
+            - **🖼️ Custom Leaf-Lightning App Icon**: Custom high-resolution branding across all launcher density buckets (`mdpi` through `xxxhdpi`).
+
+            ---
+
+            ### 🌐 Web Dashboard & 3D Live Space
+            - **🏢 Immersive 3D Digital Twin**: Clean, 100% full-frame 3D room canvas rendering live interactive appliances, dynamic wire glowing effects when powered, and real-time state sync.
+            - **🛡️ Supabase Fallback System**: Automatic local backend fallback (`POST /api/auth/signup`) if Supabase API calls are blocked by browser extensions or CORS policies.
+            - **🚀 Production Deployment**: Live and accessible globally on Railway at [https://web-production-29e8e.up.railway.app](https://web-production-29e8e.up.railway.app).
+
+            ---
+
+            ## 📦 Download Assets
+
+            | Asset Name | Description | Direct Download |
+            | :--- | :--- | :--- |
+            | **`SmartEnergyConservation-v3.0.0.apk`** | Android Production Build (v3.0.0) | [Download APK](https://github.com/DHNSHYDV/smart_energy/releases/download/v3.0.0/SmartEnergyConservation-v3.0.0.apk) |
           files: release_apk/SmartEnergyConservation-v3.0.0.apk
           draft: false
           prerelease: false
+          make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
