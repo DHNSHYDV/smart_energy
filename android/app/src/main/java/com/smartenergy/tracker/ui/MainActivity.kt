@@ -1,157 +1,140 @@
 package com.smartenergy.tracker.ui
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.view.View
+import android.webkit.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.smartenergy.tracker.R
-import com.smartenergy.tracker.databinding.ActivityMainBinding
-import com.smartenergy.tracker.network.EnergyRepository
 import com.smartenergy.tracker.network.PreferencesManager
 
 class MainActivity : AppCompatActivity() {
-    private var _binding: ActivityMainBinding? = null
-    private val binding get() = _binding!!
 
-    private lateinit var repo: EnergyRepository
+    private lateinit var webView: WebView
+    private lateinit var swipeRefresh: SwipeRefreshLayout
+    private lateinit var layoutError: LinearLayout
+    private lateinit var tvErrorMessage: TextView
+    private lateinit var btnRetry: Button
+    private lateinit var btnChangeServer: Button
 
-    val homeFragment by lazy { HomeFragment() }
-    val devicesFragment by lazy { DevicesFragment() }
-    val analyticsFragment by lazy { AnalyticsFragment() }
-    val automationsFragment by lazy { AutomationsFragment() }
-
-    private var activeTabId: Int = R.id.nav_home
-    private val handler = Handler(Looper.getMainLooper())
-    private var hideToastRunnable: Runnable? = null
-
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-        val prefs = PreferencesManager.getInstance(this)
-        if (!prefs.isLoggedIn) {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-            return
-        }
+        webView = findViewById(R.id.webView)
+        swipeRefresh = findViewById(R.id.swipeRefresh)
+        layoutError = findViewById(R.id.layoutError)
+        tvErrorMessage = findViewById(R.id.tvErrorMessage)
+        btnRetry = findViewById(R.id.btnRetry)
+        btnChangeServer = findViewById(R.id.btnChangeServer)
 
-        _binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        repo = EnergyRepository.getInstance(this)
-        repo.start()
-
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, homeFragment)
-                .commitAllowingStateLoss()
-            updateDockUi(R.id.nav_home)
-        }
-
-        setupDockNavigation()
-        setupToastObserver()
-
-        UpdateManager.checkForUpdates(this, silent = true)
+        setupWebView()
+        setupListeners()
+        loadWebApp()
     }
 
-    private fun setupDockNavigation() {
-        binding.navHome.setOnClickListener { switchTab(R.id.nav_home, homeFragment) }
-        binding.navDevices.setOnClickListener { switchTab(R.id.nav_devices, devicesFragment) }
-        binding.navAnalytics.setOnClickListener { switchTab(R.id.nav_analytics, analyticsFragment) }
-        binding.navAutomations.setOnClickListener { switchTab(R.id.nav_automations, automationsFragment) }
-    }
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView() {
+        val settings = webView.settings
+        settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.databaseEnabled = true
+        settings.loadWithOverviewMode = true
+        settings.useWideViewPort = true
+        settings.allowFileAccess = true
+        settings.allowContentAccess = true
+        settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        settings.userAgentString = settings.userAgentString + " SmartEnergyApp/3.0.0"
 
-    fun navigateToTab(tabId: Int) {
-        val fragment = when (tabId) {
-            R.id.nav_home -> homeFragment
-            R.id.nav_devices -> devicesFragment
-            R.id.nav_analytics -> analyticsFragment
-            R.id.nav_automations -> automationsFragment
-            else -> homeFragment
-        }
-        switchTab(tabId, fragment)
-    }
+        webView.setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
-    private fun switchTab(tabId: Int, fragment: Fragment) {
-        if (activeTabId == tabId) return
-        activeTabId = tabId
-
-        supportFragmentManager.beginTransaction()
-            .setCustomAnimations(android.R.anim.fade_in, android.R.anim.fade_out)
-            .replace(R.id.fragment_container, fragment)
-            .commitAllowingStateLoss()
-
-        updateDockUi(tabId)
-    }
-
-    private fun updateDockUi(selectedTabId: Int) {
-        val b = _binding ?: return
-        val tabs = listOf(
-            Triple(b.navHome, b.ivNavHome, b.tvNavHome),
-            Triple(b.navDevices, b.ivNavDevices, b.tvNavDevices),
-            Triple(b.navAnalytics, b.ivNavAnalytics, b.tvNavAnalytics),
-            Triple(b.navAutomations, b.ivNavAutomations, b.tvNavAutomations)
-        )
-
-        for ((container, iv, tv) in tabs) {
-            val isSelected = container.id == selectedTabId
-            if (isSelected) {
-                container.setBackgroundResource(R.drawable.bg_active_nav_pill)
-                iv.setColorFilter(ContextCompat.getColor(this, R.color.active_nav_text))
-                tv.visibility = View.VISIBLE
-            } else {
-                container.background = null
-                iv.setColorFilter(ContextCompat.getColor(this, R.color.inactive_nav_text))
-                tv.visibility = View.GONE
-            }
-        }
-    }
-
-    private fun setupToastObserver() {
-        repo.toastEvent.observe(this) { message ->
-            if (!message.isNullOrEmpty()) {
-                showFloatingNotice(message)
-            }
-        }
-    }
-
-    private fun showFloatingNotice(message: String) {
-        hideToastRunnable?.let { handler.removeCallbacks(it) }
-
-        val b = _binding ?: return
-        b.tvFloatingToastText.text = message
-        b.floatingToastCard.apply {
-            alpha = 0f
-            translationY = 40f
-            visibility = View.VISIBLE
-            animate()
-                .alpha(1f)
-                .translationY(0f)
-                .setDuration(220)
-                .start()
-        }
-
-        val runnable = Runnable {
-            _binding?.floatingToastCard?.animate()
-                ?.alpha(0f)
-                ?.translationY(30f)
-                ?.setDuration(200)
-                ?.withEndAction {
-                    _binding?.floatingToastCard?.visibility = View.GONE
+        webView.webChromeClient = object : WebChromeClient() {
+            override fun onProgressChanged(view: WebView?, newProgress: Int) {
+                if (newProgress == 100) {
+                    swipeRefresh.isRefreshing = false
                 }
-                ?.start()
+            }
         }
-        hideToastRunnable = runnable
-        handler.postDelayed(runnable, 2600)
+
+        webView.webViewClient = object : WebViewClient() {
+            override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                layoutError.visibility = View.GONE
+            }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                swipeRefresh.isRefreshing = false
+            }
+
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                if (request?.isForMainFrame == true) {
+                    showError("Unable to reach cloud server. Check connection.")
+                }
+            }
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                val url = request?.url?.toString() ?: return false
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false
+                }
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                    return true
+                } catch (_: Exception) {
+                    return true
+                }
+            }
+        }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        hideToastRunnable?.let { handler.removeCallbacks(it) }
-        repo.stop()
-        _binding = null
+    private fun setupListeners() {
+        swipeRefresh.setOnRefreshListener {
+            webView.reload()
+        }
+
+        btnRetry.setOnClickListener {
+            layoutError.visibility = View.GONE
+            loadWebApp()
+        }
+
+        btnChangeServer.setOnClickListener {
+            ServerConfigDialog().show(supportFragmentManager, "ServerConfigDialog")
+        }
+    }
+
+    fun loadWebApp() {
+        val prefs = PreferencesManager.getInstance(this)
+        val url = prefs.baseUrl
+        webView.loadUrl(url)
+    }
+
+    private fun showError(msg: String) {
+        swipeRefresh.isRefreshing = false
+        layoutError.visibility = View.VISIBLE
+        tvErrorMessage.text = msg
+    }
+
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack()
+        } else {
+            super.onBackPressed()
+        }
     }
 }

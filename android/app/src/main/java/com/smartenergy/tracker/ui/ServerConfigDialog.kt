@@ -45,7 +45,7 @@ class ServerConfigDialog : DialogFragment() {
                 prefs.serverUrl = input
                 ApiClient.invalidate()
                 val safeCtx = context ?: return@setOnClickListener
-                EnergyRepository.getInstance(safeCtx.applicationContext).reconnect()
+                (activity as? MainActivity)?.loadWebApp()
 
                 Toast.makeText(safeCtx, "Target set: ${prefs.serverUrl}", Toast.LENGTH_SHORT).show()
                 dismiss()
