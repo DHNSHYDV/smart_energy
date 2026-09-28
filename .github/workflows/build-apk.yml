@@ -1,66 +1,74 @@
-name: Build & Release Android APK
+name: Build Android APK
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [ main ]
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 jobs:
-  build-apk:
+  build:
+    name: Build Debug APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
           distribution: 'temurin'
+          java-version: '17'
           cache: gradle
 
-      - name: Make Gradlew Executable
+      - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
-      - name: Build Android Release APK
+      - name: Build Debug APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon
 
-      - name: Upload APK Build Artifact
+      - name: Rename APK
+        run: |
+          mkdir -p artifacts
+          cp android/app/build/outputs/apk/debug/app-debug.apk \
+             artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+
+      - name: Upload APK as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: GridSense-Android-v2.0
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: SmartEnergyConservation-APK
+          path: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+          retention-days: 30
 
       - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: |
-            android/app/build/outputs/apk/debug/app-debug.apk
-            GridSense-Android-v2.0.apk
-          name: "Smart Energy Converter ${{ github.ref_name }} - Production Release"
+          tag_name: v3.0.0-${{ github.run_number }}
+          name: "Smart Energy Conservation v3.0.0 (Build ${{ github.run_number }})"
           body: |
-            ## Smart Energy Converter (Release ${{ github.ref_name }})
-            ### Production-Grade IoT Energy Management System & Native Android Kotlin App
+            ## Smart Energy Conservation v3.0.0
 
-            - **🌐 Live Railway Cloud Web App**: [https://web-production-29e8e.up.railway.app](https://web-production-29e8e.up.railway.app)
-            - **📱 Native Android APK**: Download `GridSense-Android-v2.0.apk` below (defaults to live Railway cloud with 1-tap local fallback).
+            ### What's New
+            - 🔐 **Supabase Auth** — Email/password login synced across web & Android
+            - 🌑 **Full Dark Theme** — Premium deep black UI throughout the app
+            - ⚡ **Hero Power Card** — Big live watt display with grid metrics
+            - 🎨 **Redesigned Login Screen** — Polished Sign In / Register tabs
+            - 🏠 **Redesigned Home** — Quick actions, live loads, energy insights
+            - 📱 **Dark Device Cards** — Blue accent, clean toggle switches
+            - 🧭 **Dark Navigation Dock** — Floating pill nav at the bottom
+            - 🏷️ App renamed to **Smart Energy Conservation**
 
-            #### Key Capabilities:
-            - **True RMS Telemetry Engine**: Computes instantaneous active power ($P$), current ($I_{\text{RMS}}$), voltage ($V$), and power factor ($\cos\phi$).
-            - **Native Android Kotlin App**: 4 functionally differentiated tabs, MPAndroidChart diurnal curves, sub-50ms haptic relay switches.
-            - **Railway.com 1-Click Deployment**: Multi-stage Docker container with embedded SQLite WAL mode and Socket.IO.
-            - **Research Datasets**: 1,440-minute diurnal 24h CSV/JSON load profile conforming to IEC 62053-21 standards.
+            ### Install
+            Download the APK below → transfer to Android phone → install
+            (Allow "Install from unknown sources" in Settings)
 
-            #### Android Installation:
-            ```bash
-            adb install -r GridSense-Android-v2.0.apk
-            ```
+            ### Login
+            Create an account on [the web app](https://web-production-29e8e.up.railway.app) first,
+            then use the same email + password in the Android app.
+          files: artifacts/SmartEnergyConservation-v3.0.0-debug.apk
+          draft: false
+          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

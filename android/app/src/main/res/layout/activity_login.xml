@@ -3,72 +3,87 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0A0A0A"
+    android:background="#0A0A0F"
     android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="28dp"
-        android:gravity="center_horizontal">
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:paddingBottom="32dp">
 
-        <!-- Logo / Icon -->
+        <!-- ── Logo Section ── -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginTop="48dp"
-            android:layout_marginBottom="8dp">
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="56dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <!-- Glow Ring + Icon -->
+            <FrameLayout
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp">
+
+                <View
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:background="@drawable/bg_icon_glow_blue"
+                    android:alpha="0.6" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="⚡"
+                    android:textSize="32sp" />
+            </FrameLayout>
 
             <TextView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:gravity="center"
-                android:text="⚡"
-                android:textSize="24sp"
-                android:background="@drawable/bg_active_nav_pill" />
-
-            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="12dp">
+                android:gravity="center"
+                android:text="Smart Energy"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:letterSpacing="-0.02" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Smart Energy"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Conservation"
+                android:textColor="#3B82F6"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:letterSpacing="-0.02" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Conservation"
-                    android:textColor="#3B82F6"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="IoT Energy Management System"
+                android:textColor="#475569"
+                android:textSize="12sp" />
         </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="GridSense IoT Dashboard"
-            android:textColor="#6B7280"
-            android:textSize="12sp"
-            android:layout_marginBottom="32dp" />
-
-        <!-- Card -->
+        <!-- ── Auth Card ── -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="#141414"
-            app:cardElevation="4dp">
+            app:cardCornerRadius="24dp"
+            app:cardBackgroundColor="#16171F"
+            app:cardElevation="0dp"
+            app:strokeColor="#252530"
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -78,13 +93,12 @@
 
                 <!-- Tab Row -->
                 <LinearLayout
-                    android:id="@+id/tabRow"
                     android:layout_width="match_parent"
-                    android:layout_height="44dp"
+                    android:layout_height="48dp"
                     android:orientation="horizontal"
                     android:background="@drawable/bg_tab_row"
                     android:padding="4dp"
-                    android:layout_marginBottom="20dp">
+                    android:layout_marginBottom="24dp">
 
                     <TextView
                         android:id="@+id/tabLogin"
@@ -93,10 +107,10 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Sign In"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:textStyle="bold"
                         android:background="@drawable/bg_active_nav_pill"
-                        android:textColor="#FFFFFF" />
+                        android:textColor="#0A0A0F" />
 
                     <TextView
                         android:id="@+id/tabSignup"
@@ -105,13 +119,13 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Register"
-                        android:textSize="12sp"
+                        android:textSize="13sp"
                         android:textStyle="bold"
                         android:background="@android:color/transparent"
-                        android:textColor="#6B7280" />
+                        android:textColor="#475569" />
                 </LinearLayout>
 
-                <!-- Error / Success Banner -->
+                <!-- Banner -->
                 <TextView
                     android:id="@+id/tvBanner"
                     android:layout_width="match_parent"
@@ -121,10 +135,10 @@
                     android:textSize="12sp"
                     android:textColor="#F87171"
                     android:background="@drawable/bg_error_banner"
-                    android:layout_marginBottom="12dp"
+                    android:layout_marginBottom="16dp"
                     android:text="" />
 
-                <!-- LOGIN FIELDS -->
+                <!-- ── LOGIN FIELDS ── -->
                 <LinearLayout
                     android:id="@+id/loginFields"
                     android:layout_width="match_parent"
@@ -135,72 +149,79 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Email Address"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="your@email.com"
                         android:inputType="textEmailAddress"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="14dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="16dp" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Password"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="••••••••"
                         android:inputType="textPassword"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="20dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="8dp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnSignIn"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="Sign In"
-                        android:textColor="#FFFFFF"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        app:backgroundTint="#2563EB"
-                        app:cornerRadius="14dp"
-                        android:layout_marginBottom="10dp" />
-
+                    <!-- Forgot Password Link -->
                     <TextView
                         android:id="@+id/tvForgotPassword"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="end"
                         android:text="Forgot password?"
                         android:textColor="#3B82F6"
-                        android:textSize="11sp"
+                        android:textSize="12sp"
+                        android:layout_marginBottom="20dp"
+                        android:paddingTop="4dp"
                         android:paddingBottom="4dp" />
+
+                    <!-- Sign In Button -->
+                    <TextView
+                        android:id="@+id/btnSignIn"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_btn_primary_selector"
+                        android:gravity="center"
+                        android:text="Sign In"
+                        android:textColor="#FFFFFF"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
 
-                <!-- SIGNUP FIELDS -->
+                <!-- ── SIGNUP FIELDS ── -->
                 <LinearLayout
                     android:id="@+id/signupFields"
                     android:layout_width="match_parent"
@@ -208,145 +229,172 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
+                    <!-- Full Name -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Full Name"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etName"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="e.g. Rahul Varma"
                         android:inputType="textPersonName"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="14dp" />
 
+                    <!-- Door No -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Door / Flat Number"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etDoorNo"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="e.g. Flat 301, Tower A"
                         android:inputType="text"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="14dp" />
 
+                    <!-- Address -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Residential Address"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etAddress"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="e.g. Whitefield, Bengaluru"
+                        android:hint="e.g. Whitefield, Bengaluru - 560048"
                         android:inputType="text"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="14dp" />
 
+                    <!-- Email -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Email Address"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etSignupEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="your@email.com"
                         android:inputType="textEmailAddress"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
+                        android:layout_marginBottom="14dp" />
 
+                    <!-- Password -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Password (min 6 characters)"
-                        android:textColor="#D1D5DB"
+                        android:textColor="#94A3B8"
                         android:textSize="11sp"
                         android:textStyle="bold"
-                        android:layout_marginBottom="6dp" />
+                        android:letterSpacing="0.05"
+                        android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/etSignupPassword"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="52dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="••••••••"
                         android:inputType="textPassword"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
-                        android:textColor="#FFFFFF"
-                        android:textColorHint="#4B5563"
-                        android:textSize="13sp"
+                        android:textColor="#F1F5F9"
+                        android:textColorHint="#475569"
+                        android:textSize="14sp"
                         android:layout_marginBottom="20dp" />
 
-                    <com.google.android.material.button.MaterialButton
+                    <!-- Register Button -->
+                    <TextView
                         android:id="@+id/btnRegister"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="Register &amp; Provision Meter"
+                        android:layout_height="52dp"
+                        android:background="@drawable/bg_btn_primary_selector"
+                        android:gravity="center"
+                        android:text="Create Account"
                         android:textColor="#FFFFFF"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         android:textStyle="bold"
-                        app:backgroundTint="#2563EB"
-                        app:cornerRadius="14dp" />
+                        android:clickable="true"
+                        android:focusable="true" />
                 </LinearLayout>
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Footer -->
-        <TextView
+        <!-- Supabase badge -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="Powered by Supabase Auth · Department of CSE 2026-27"
-            android:textColor="#374151"
-            android:textSize="10sp"
-            android:gravity="center" />
+            android:layout_gravity="center_horizontal"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginTop="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔐"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="Secured by Supabase Auth"
+                android:textColor="#334155"
+                android:textSize="11sp" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

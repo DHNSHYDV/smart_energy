@@ -7,13 +7,10 @@ import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import com.google.android.material.button.MaterialButton
 import com.smartenergy.tracker.R
 import com.smartenergy.tracker.auth.SupabaseAuthManager
-import com.smartenergy.tracker.network.ApiClient
 import com.smartenergy.tracker.network.PreferencesManager
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -31,7 +28,7 @@ class LoginActivity : AppCompatActivity() {
     // Login fields
     private lateinit var etEmail: EditText
     private lateinit var etPassword: EditText
-    private lateinit var btnSignIn: MaterialButton
+    private lateinit var btnSignIn: TextView
     private lateinit var tvForgotPassword: TextView
 
     // Signup fields
@@ -40,7 +37,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var etAddress: EditText
     private lateinit var etSignupEmail: EditText
     private lateinit var etSignupPassword: EditText
-    private lateinit var btnRegister: MaterialButton
+    private lateinit var btnRegister: TextView
 
     private var isLoginTab = true
 
@@ -49,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
 
         val prefs = PreferencesManager.getInstance(this)
 
-        // If already logged in, go straight to MainActivity
+        // Already logged in → go straight to main
         if (prefs.isLoggedIn) {
             startMainActivity()
             return
@@ -83,7 +80,6 @@ class LoginActivity : AppCompatActivity() {
     private fun setupListeners() {
         tabLogin.setOnClickListener { switchTab(true) }
         tabSignup.setOnClickListener { switchTab(false) }
-
         btnSignIn.setOnClickListener { handleSignIn() }
         btnRegister.setOnClickListener { handleSignUp() }
 
@@ -94,12 +90,10 @@ class LoginActivity : AppCompatActivity() {
         tvForgotPassword.setOnClickListener {
             val email = etEmail.text.toString().trim()
             if (email.isEmpty() || !email.contains("@")) {
-                showBanner("Enter your email above first, then tap Forgot Password.", isError = true)
+                showBanner("Enter your email first, then tap Forgot Password.", isError = true)
                 return@setOnClickListener
             }
-            lifecycleScope.launch {
-                sendPasswordResetEmail(email)
-            }
+            lifecycleScope.launch { sendPasswordResetEmail(email) }
         }
     }
 
@@ -110,16 +104,16 @@ class LoginActivity : AppCompatActivity() {
             loginFields.visibility = View.VISIBLE
             signupFields.visibility = View.GONE
             tabLogin.setBackgroundResource(R.drawable.bg_active_nav_pill)
-            tabLogin.setTextColor(getColor(android.R.color.white))
-            tabSignup.setBackgroundColor(getColor(android.R.color.transparent))
-            tabSignup.setTextColor(getColor(android.R.color.darker_gray))
+            tabLogin.setTextColor(0xFF0A0A0F.toInt())
+            tabSignup.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            tabSignup.setTextColor(0xFF475569.toInt())
         } else {
             loginFields.visibility = View.GONE
             signupFields.visibility = View.VISIBLE
             tabSignup.setBackgroundResource(R.drawable.bg_active_nav_pill)
-            tabSignup.setTextColor(getColor(android.R.color.white))
-            tabLogin.setBackgroundColor(getColor(android.R.color.transparent))
-            tabLogin.setTextColor(getColor(android.R.color.darker_gray))
+            tabSignup.setTextColor(0xFF0A0A0F.toInt())
+            tabLogin.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            tabLogin.setTextColor(0xFF475569.toInt())
         }
     }
 
@@ -140,7 +134,6 @@ class LoginActivity : AppCompatActivity() {
             setLoading(false)
             if (result.success && result.accessToken != null) {
                 SupabaseAuthManager.saveSession(this@LoginActivity, result)
-                // Tell backend to verify and provision local profile
                 verifyWithBackend(result.accessToken)
             } else {
                 showBanner(result.error ?: "Login failed. Check your credentials.", isError = true)
@@ -174,9 +167,7 @@ class LoginActivity : AppCompatActivity() {
                     showBanner("✅ Account created! Check your email to confirm, then sign in.", isError = false)
                     switchTab(true)
                 }
-                else -> {
-                    showBanner(result.error ?: "Registration failed.", isError = true)
-                }
+                else -> showBanner(result.error ?: "Registration failed.", isError = true)
             }
         }
     }
@@ -194,21 +185,15 @@ class LoginActivity : AppCompatActivity() {
                 doOutput = true
             }
             conn.outputStream.write("{}".toByteArray())
-            val responseCode = conn.responseCode
-            if (responseCode in 200..299) {
-                startMainActivity()
-            } else {
-                showBanner("Auth verified with Supabase but backend sync failed. Continuing...", isError = false)
-                startMainActivity()
-            }
-        } catch (e: Exception) {
-            // Backend might be offline — still let them in if Supabase auth succeeded
-            startMainActivity()
+            conn.responseCode // trigger request
+        } catch (_: Exception) {
+            // Supabase auth succeeded — let them in even if backend is unreachable
         }
+        startMainActivity()
     }
 
     private suspend fun sendPasswordResetEmail(email: String) {
-        showBanner("Sending reset email...", isError = false)
+        showBanner("Sending reset link…", isError = false)
         try {
             val url = URL("https://zylkysxotwhdeyffbotn.supabase.co/auth/v1/recover")
             val conn = (url.openConnection() as HttpURLConnection).apply {
@@ -222,7 +207,7 @@ class LoginActivity : AppCompatActivity() {
             conn.responseCode
             showBanner("✅ Password reset email sent! Check your inbox.", isError = false)
         } catch (e: Exception) {
-            showBanner("Failed to send reset email: ${e.message}", isError = true)
+            showBanner("Failed to send reset email.", isError = true)
         }
     }
 
@@ -234,17 +219,20 @@ class LoginActivity : AppCompatActivity() {
     private fun setLoading(loading: Boolean) {
         btnSignIn.isEnabled = !loading
         btnRegister.isEnabled = !loading
-        btnSignIn.text = if (loading && isLoginTab) "Signing In..." else "Sign In"
-        btnRegister.text = if (loading && !isLoginTab) "Creating Account..." else "Register & Provision Meter"
+        btnSignIn.alpha = if (loading && isLoginTab) 0.6f else 1f
+        btnRegister.alpha = if (loading && !isLoginTab) 0.6f else 1f
+        btnSignIn.text = if (loading && isLoginTab) "Signing In…" else "Sign In"
+        btnRegister.text = if (loading && !isLoginTab) "Creating Account…" else "Create Account"
     }
 
     private fun showBanner(message: String, isError: Boolean) {
-        tvBanner.visibility = View.VISIBLE
-        tvBanner.text = message
-        tvBanner.setTextColor(
-            if (isError) getColor(android.R.color.holo_red_light)
-            else getColor(android.R.color.holo_green_light)
-        )
+        runOnUiThread {
+            tvBanner.visibility = View.VISIBLE
+            tvBanner.text = message
+            tvBanner.setTextColor(
+                if (isError) 0xFFF87171.toInt() else 0xFF34D399.toInt()
+            )
+        }
     }
 
     private fun hideBanner() {
