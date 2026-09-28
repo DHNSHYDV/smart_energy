@@ -1,6 +1,6 @@
 {
   "name": "smart-energy-converter",
-  "version": "2.0.0",
+  "version": "5.0.0",
   "description": "Smart Energy Conservation - IoT Edge Energy Sensing & Conservation System",
   "private": true,
   "main": "backend/src/server.js",

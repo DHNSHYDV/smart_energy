@@ -296,60 +296,61 @@ export function OverviewView() {
             </div>
           </div>
 
-          {/* ACTIVE DEVICES STRIP */}
-          <div className="p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-xs">
+          {/* QUICK APPLIANCE CONTROL GRID */}
+          <div className="p-4 sm:p-5 rounded-2xl bg-white border border-neutral-200/80 shadow-xs">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-base font-bold text-neutral-900 tracking-tight flex items-center gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-neutral-900 tracking-tight flex items-center gap-2">
                 <Power className="w-4 h-4 text-emerald-600" />
-                Active Loads
+                Quick Appliance Switches
               </h3>
               <button 
                 onClick={() => setActiveTab('devices')}
                 className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 cursor-pointer"
               >
-                All Devices ({appliances.length}) <ArrowRight className="w-3.5 h-3.5" />
+                All ({appliances.length}) <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="space-y-2">
-              {activeAppliances.slice(0, 4).map((app) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {appliances.slice(0, 6).map((app) => {
                 const powerW = app.reading ? Math.round(app.reading.activePower) : 0;
-                const currentA = app.reading ? app.reading.current : 0;
 
                 return (
                   <div 
                     key={app.id} 
-                    className="p-3 rounded-xl bg-neutral-50/80 hover:bg-neutral-100/70 border border-neutral-200/60 flex items-center justify-between transition-colors"
+                    className={`p-3 rounded-xl border flex items-center justify-between transition-all ${
+                      app.isOn 
+                        ? 'bg-emerald-50/50 border-emerald-200/80' 
+                        : 'bg-neutral-50/80 border-neutral-200/60'
+                    }`}
                   >
                     <div 
                       onClick={() => setSelectedDeviceForDetail(app)}
-                      className="flex items-center gap-3 cursor-pointer flex-1"
+                      className="flex items-center gap-3 cursor-pointer overflow-hidden flex-1"
                     >
-                      <div className="w-9 h-9 rounded-xl bg-neutral-100 border border-neutral-200/90 flex items-center justify-center shrink-0">
+                      <div className={`w-9 h-9 rounded-xl border flex items-center justify-center shrink-0 ${
+                        app.isOn ? 'bg-emerald-100 border-emerald-200' : 'bg-neutral-100 border-neutral-200'
+                      }`}>
                         {getApplianceIcon(app)}
                       </div>
-                      <div>
-                        <h4 className="font-bold text-xs text-neutral-900">{app.name}</h4>
-                        <span className="text-[11px] text-neutral-400 font-mono">
-                          {app.location} · {app.ratedPower}W rated
+                      <div className="overflow-hidden">
+                        <h4 className="font-bold text-xs text-neutral-900 truncate">{app.name}</h4>
+                        <span className="text-[10px] text-neutral-400 font-mono block truncate">
+                          {app.isOn ? `${powerW} W · ON` : 'OFF'}
                         </span>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <div className="text-right font-mono">
-                        <span className="text-xs font-bold text-neutral-900 block">{powerW} W</span>
-                        <span className="text-[10px] text-neutral-400 block">{currentA} A</span>
-                      </div>
-
-                      <button
-                        onClick={() => toggleAppliance(app.id, false)}
-                        title="Turn OFF"
-                        className="p-1.5 rounded-lg bg-neutral-200 hover:bg-rose-100 text-neutral-600 hover:text-rose-700 transition-colors cursor-pointer"
-                      >
-                        <Power className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => toggleAppliance(app.id, !app.isOn)}
+                      className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
+                        app.isOn 
+                          ? 'bg-emerald-600 text-white shadow-xs' 
+                          : 'bg-neutral-200 text-neutral-600 hover:bg-neutral-300'
+                      }`}
+                    >
+                      {app.isOn ? 'ON' : 'OFF'}
+                    </button>
                   </div>
                 );
               })}

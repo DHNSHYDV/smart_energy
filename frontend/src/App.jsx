@@ -3,7 +3,6 @@ import { EnergyProvider, useEnergy } from './context/EnergyContext';
 import { VirtualLabProvider } from './context/VirtualLabContext';
 import { OverviewView } from './components/overview/OverviewView';
 import { LiveEnergyView } from './components/live/LiveEnergyView';
-import { LiveSpaceView } from './components/liveSpace/LiveSpaceView';
 import { DevicesView } from './components/devices/DevicesView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { AutomationsView } from './components/automations/AutomationsView';
@@ -170,8 +169,8 @@ function DashboardShell() {
         </div>
       )}
 
-      {/* LEFT DOCKED DARK SIDEBAR (Professional Enterprise Desktop Layout) */}
-      <aside className="w-full md:w-64 md:h-screen md:sticky md:top-0 bg-[#111215] flex md:flex-col justify-between p-3 md:p-4 shrink-0 border-b md:border-b-0 md:border-r border-neutral-800/80 z-20 text-neutral-300 select-none">
+      {/* LEFT DOCKED DARK SIDEBAR (Desktop Layout) */}
+      <aside className="hidden md:flex md:w-64 md:h-screen md:sticky md:top-0 bg-[#111215] md:flex-col justify-between p-4 shrink-0 border-r border-neutral-800/80 z-20 text-neutral-300 select-none">
         
         {/* Top: Logo + Nav Items */}
         <div className="flex md:flex-col gap-4 w-full">
@@ -186,10 +185,10 @@ function DashboardShell() {
                 <path d="M13 2L4 13h6l-1 9 9-11h-6l1-9z" fill="white" />
               </svg>
             </div>
-            <div className="hidden md:block leading-tight">
+            <div className="leading-tight">
               <div className="flex items-center gap-1.5">
                 <span className="font-bold text-white text-sm tracking-tight">Smart Energy</span>
-                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">v2.0</span>
+                <span className="text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Mobile</span>
               </div>
               <span className="text-[10px] uppercase font-mono font-semibold tracking-wider text-neutral-400 block mt-0.5">
                 Conservation
@@ -198,9 +197,9 @@ function DashboardShell() {
           </div>
 
           {/* Navigation Items */}
-          <nav className="flex md:flex-col gap-1 w-full overflow-x-auto md:overflow-visible">
+          <nav className="flex md:flex-col gap-1 w-full">
             
-            <div className="hidden md:block text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-3 pt-2 pb-1">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-3 pt-2 pb-1">
               Operations
             </div>
 
@@ -214,7 +213,7 @@ function DashboardShell() {
               }`}
             >
               <LayoutGrid className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">Overview</span>
+              <span>Overview</span>
             </button>
 
             {/* 2. Live Energy */}
@@ -227,25 +226,7 @@ function DashboardShell() {
               }`}
             >
               <Activity className="w-4 h-4 shrink-0" />
-              <span className="hidden md:inline">Live Energy</span>
-            </button>
-
-            {/* 3. 3D Live Space */}
-            <button
-              onClick={() => setActiveTab('live-space')}
-              className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer w-full text-left ${
-                activeTab === 'live-space' || activeTab === 'livespace' || activeTab === 'lab'
-                  ? 'text-white bg-emerald-500/20 shadow-sm ring-1 ring-emerald-500/30'
-                  : 'text-neutral-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              <div className="flex items-center gap-3">
-                <Box className="w-4 h-4 shrink-0 text-emerald-400" />
-                <span className="hidden md:inline text-emerald-300 font-bold">3D Live Space</span>
-              </div>
-              <span className="hidden md:inline text-[9px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500 text-slate-950">
-                3D
-              </span>
+              <span>Live Energy</span>
             </button>
 
             {/* 3. Devices */}
@@ -371,20 +352,33 @@ function DashboardShell() {
       </aside>
 
       {/* FULL-SCREEN INNER CANVAS */}
-      <main className="flex-1 bg-white md:m-3 md:rounded-[32px] p-5 sm:p-7 lg:p-8 flex flex-col justify-between shadow-2xl overflow-y-auto h-[calc(100vh-1rem)] md:h-[calc(100vh-1.5rem)] pb-20 md:pb-8">
+      <main className="flex-1 bg-neutral-900 md:bg-white md:m-3 md:rounded-[32px] p-4 sm:p-6 lg:p-8 flex flex-col justify-between overflow-y-auto h-screen md:h-[calc(100vh-1.5rem)] pb-24 md:pb-8">
         
         {/* Top Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-neutral-100 gap-3">
+        <div className="flex items-center justify-between pb-3 mb-4 border-b border-neutral-800 md:border-neutral-100 gap-3">
           
-          {/* Bold Title Only (No AI Slop Subtitle) */}
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900">
-              {currentTabInfo.title}
-            </h1>
+          {/* Title & Mobile Brand Header */}
+          <div className="flex items-center gap-2.5">
+            {/* Mobile Brand Icon (Visible only on mobile) */}
+            <div className="md:hidden w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white shrink-0 shadow-md">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4 13h6l-1 9 9-11h-6l1-9z" fill="white" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-lg sm:text-2xl font-bold tracking-tight text-white md:text-neutral-900">
+                {currentTabInfo.title}
+              </h1>
+            </div>
           </div>
 
           {/* Right Controls Bar */}
-          <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Live Power Badge on Mobile Header */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 md:bg-emerald-50 text-emerald-400 md:text-emerald-700 border border-emerald-500/20 text-xs font-mono font-bold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>{telemetry.totalActivePower || 0}W</span>
+            </div>
             {/* Search Button */}
             <div className="relative" ref={searchRef}>
               <button
@@ -620,7 +614,6 @@ function DashboardShell() {
         {/* Canvas Body View */}
         <div className="flex-1 w-full">
           {(activeTab === 'dashboard' || activeTab === 'overview') && <OverviewView />}
-          {(activeTab === 'live-space' || activeTab === 'livespace' || activeTab === 'lab') && <LiveSpaceView />}
           {activeTab === 'live' && <LiveEnergyView />}
           {(activeTab === 'devices' || activeTab === 'appliances') && <DevicesView />}
           {activeTab === 'analytics' && <AnalyticsView />}
