@@ -10,7 +10,8 @@ import {
   BarChart3, 
   Bell, 
   CalendarClock,
-  Radio
+  Radio,
+  Box
 } from 'lucide-react';
 
 export function Header({ onOpenAcademicModal }) {
@@ -20,6 +21,7 @@ export function Header({ onOpenAcademicModal }) {
 
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'live-space', label: 'Live Space', icon: Box },
     { id: 'appliances', label: 'Appliances', icon: Sliders },
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'alerts', label: 'Alerts', icon: Bell, badge: unreadAlerts },

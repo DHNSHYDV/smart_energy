@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { EnergyProvider, useEnergy } from './context/EnergyContext';
+import { VirtualLabProvider } from './context/VirtualLabContext';
 import { OverviewView } from './components/overview/OverviewView';
 import { LiveEnergyView } from './components/live/LiveEnergyView';
+import { LiveSpaceView } from './components/liveSpace/LiveSpaceView';
 import { DevicesView } from './components/devices/DevicesView';
 import { AnalyticsView } from './components/analytics/AnalyticsView';
 import { AutomationsView } from './components/automations/AutomationsView';
@@ -599,6 +601,7 @@ function DashboardShell() {
         {/* Canvas Body View */}
         <div className="flex-1 w-full">
           {(activeTab === 'dashboard' || activeTab === 'overview') && <OverviewView />}
+          {(activeTab === 'live-space' || activeTab === 'livespace' || activeTab === 'lab') && <LiveSpaceView />}
           {activeTab === 'live' && <LiveEnergyView />}
           {(activeTab === 'devices' || activeTab === 'appliances') && <DevicesView />}
           {activeTab === 'analytics' && <AnalyticsView />}
@@ -647,7 +650,9 @@ function DashboardShell() {
 export default function App() {
   return (
     <EnergyProvider>
-      <DashboardShell />
+      <VirtualLabProvider>
+        <DashboardShell />
+      </VirtualLabProvider>
     </EnergyProvider>
   );
 }
