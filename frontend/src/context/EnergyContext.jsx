@@ -156,6 +156,34 @@ export function EnergyProvider({ children }) {
     };
   }, [backendUrl]);
 
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await fetch(`${backendUrl}/api/auth/users`);
+      const data = await res.json();
+      if (data.success && data.users) {
+        setAllUsers(data.users);
+        setCurrentUser(prev => {
+          if (prev) {
+            // Keep current user updated with DB
+            const updated = data.users.find(u => u.id === prev.id);
+            if (updated) {
+              localStorage.setItem('smart_energy_user', JSON.stringify(updated));
+              return updated;
+            }
+          }
+          const defaultUser = data.users.find(u => u.id === data.activeUserId) || data.users[0];
+          if (defaultUser) {
+            localStorage.setItem('smart_energy_user', JSON.stringify(defaultUser));
+            return defaultUser;
+          }
+          return prev;
+        });
+      }
+    } catch (e) {
+      console.warn('[EnergyContext] Error loading resident accounts:', e.message);
+    }
+  }, [backendUrl]);
+
   // Supabase auth state listener — fires on login, logout, and token refresh
   const verifyWithBackend = useCallback(async (session) => {
     if (!session?.access_token) return;
@@ -293,33 +321,6 @@ export function EnergyProvider({ children }) {
     }
   }, [backendUrl]);
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      const res = await fetch(`${backendUrl}/api/auth/users`);
-      const data = await res.json();
-      if (data.success && data.users) {
-        setAllUsers(data.users);
-        setCurrentUser(prev => {
-          if (prev) {
-            // Keep current user updated with DB
-            const updated = data.users.find(u => u.id === prev.id);
-            if (updated) {
-              localStorage.setItem('smart_energy_user', JSON.stringify(updated));
-              return updated;
-            }
-          }
-          const defaultUser = data.users.find(u => u.id === data.activeUserId) || data.users[0];
-          if (defaultUser) {
-            localStorage.setItem('smart_energy_user', JSON.stringify(defaultUser));
-            return defaultUser;
-          }
-          return prev;
-        });
-      }
-    } catch (e) {
-      console.warn('[EnergyContext] Error loading resident accounts:', e.message);
-    }
-  }, [backendUrl]);
 
   useEffect(() => {
     fetchUsers();
