@@ -16,7 +16,7 @@ import java.net.URL
  */
 object SupabaseAuthManager {
 
-    private const val SUPABASE_URL = "https://zylkysxotwhdeyffbotn.supabase.co"
+    private const val SUPABASE_URL = "https://zylkysxotwhdeytfbotn.supabase.co"
     private const val SUPABASE_ANON_KEY = "sb_publishable_4wlluZJHZMhjrslaZy8FSA_Qn94nsa_"
 
     data class AuthResult(

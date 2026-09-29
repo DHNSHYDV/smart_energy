@@ -197,7 +197,7 @@ class LoginActivity : AppCompatActivity() {
     private suspend fun sendPasswordResetEmail(email: String) {
         showBanner("Sending reset link…", isError = false)
         try {
-            val url = URL("https://zylkysxotwhdeyffbotn.supabase.co/auth/v1/recover")
+            val url = URL("https://zylkysxotwhdeytfbotn.supabase.co/auth/v1/recover")
             val conn = (url.openConnection() as HttpURLConnection).apply {
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "application/json")
