@@ -84,18 +84,16 @@ class HomeFragment : Fragment() {
                 val residentLabels = arrayOf(
                     "👤 Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo)",
                     "👤 Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo)",
-                    "🚪 Sign Out / Switch Account"
+                    "🔑 Sign In / Register New Account"
                 )
                 androidx.appcompat.app.AlertDialog.Builder(ctx)
-                    .setTitle("Switch Resident Profile")
+                    .setTitle("Resident Profile")
                     .setItems(residentLabels) { _, which ->
                         when (which) {
                             0 -> repo.switchResident("usr_dhanush")
                             1 -> repo.switchResident("usr_priya")
                             2 -> {
-                                com.smartenergy.tracker.auth.SupabaseAuthManager.signOut(ctx)
                                 startActivity(android.content.Intent(ctx, LoginActivity::class.java))
-                                activity?.finish()
                             }
                         }
                     }
@@ -109,9 +107,6 @@ class HomeFragment : Fragment() {
         binding.tvGreetingTitle.setOnClickListener { openProfileDialog() }
         binding.btnProfile.setOnClickListener { openProfileDialog() }
 
-        binding.btnVivaSandbox.setOnClickListener {
-            SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
-        }
 
         binding.btnViewAllDevices.setOnClickListener {
             (activity as? MainActivity)?.navigateToTab(R.id.nav_devices)
@@ -135,9 +130,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        binding.actionSandbox.setOnClickListener {
-            SystemLabBottomSheet().show(parentFragmentManager, "SystemLabBottomSheet")
-        }
     }
 
     private fun observeData() {

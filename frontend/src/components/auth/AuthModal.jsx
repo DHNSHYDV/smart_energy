@@ -151,22 +151,14 @@ export function AuthModal() {
         className="relative w-full max-w-lg bg-neutral-900 border border-neutral-800 rounded-3xl shadow-2xl overflow-hidden text-neutral-100 flex flex-col cursor-default"
       >
         {/* Top Header */}
-        <div className="relative p-6 border-b border-neutral-800/80 bg-neutral-900/90 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold tracking-tight text-white flex items-center gap-2">
-                GridSense Resident Portal
-                <span className="text-[10px] uppercase font-mono px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                  Supabase Auth
-                </span>
-              </h3>
-              <p className="text-xs text-neutral-400 mt-0.5">
-                Personalized energy tracking, appliance controls & billing
-              </p>
-            </div>
+        <div className="relative p-6 border-b border-neutral-800 bg-neutral-900 flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-white">
+              Resident Account
+            </h3>
+            <p className="text-xs text-neutral-400 mt-0.5">
+              Sign in or create an account to manage your home energy
+            </p>
           </div>
           <button
             onClick={() => setIsAuthModalOpen(false)}
@@ -262,7 +254,7 @@ export function AuthModal() {
                 disabled={loading}
                 className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                {loading ? 'Authenticating...' : 'Sign In to Smart Energy Conservation'}
+                {loading ? 'Signing In...' : 'Sign In'}
               </button>
 
               {/* Forgot Password */}
@@ -305,9 +297,9 @@ export function AuthModal() {
               )}
 
               {/* Quick One-Click Demo Profiles */}
-              <div className="pt-4 border-t border-neutral-800/80">
-                <span className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider block mb-2">
-                  ⚡ Quick Demo Accounts (1-Click Switch)
+              <div className="pt-4 border-t border-neutral-800">
+                <span className="text-[11px] font-semibold text-neutral-400 block mb-2">
+                  Demo Accounts
                 </span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <button
@@ -432,22 +424,12 @@ export function AuthModal() {
                 </div>
               </div>
 
-              <div className="p-3 rounded-2xl bg-neutral-950/50 border border-neutral-800/80 text-[11px] text-neutral-400">
-                <p className="flex items-center gap-1.5 font-semibold text-neutral-300">
-                  <Building className="w-3.5 h-3.5 text-blue-400" />
-                  BESCOM Consumer ID Generation
-                </p>
-                <p className="mt-1 leading-relaxed">
-                  A unique, compliant Karnataka electricity consumer identifier will be automatically generated and linked to your Supabase account.
-                </p>
-              </div>
-
               <button
                 type="submit"
                 disabled={loading}
                 className="w-full mt-2 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-lg transition-colors cursor-pointer flex items-center justify-center gap-2"
               >
-                {loading ? 'Creating Profile...' : 'Register Resident & Provision Meter'}
+                {loading ? 'Creating Account...' : 'Create Account'}
               </button>
             </form>
           )}

@@ -43,21 +43,16 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val prefs = PreferencesManager.getInstance(this)
-
-        // Already logged in → go straight to main
-        if (prefs.isLoggedIn) {
-            startMainActivity()
-            return
-        }
-
         setContentView(R.layout.activity_login)
         bindViews()
         setupListeners()
     }
 
     private fun bindViews() {
+        findViewById<View>(R.id.btn_back)?.setOnClickListener {
+            finish()
+        }
+
         tabLogin = findViewById(R.id.tab_login)
         tabSignup = findViewById(R.id.tab_signup)
         loginFields = findViewById(R.id.login_fields)
@@ -171,7 +166,7 @@ class LoginActivity : AppCompatActivity() {
                     verifyWithBackend(result.accessToken)
                 }
                 result.success && result.error == "CONFIRM_EMAIL" -> {
-                    showBanner("✅ Account created! Check your email to confirm, then sign in.", isError = false)
+                    showBanner("Account created! Check your email to confirm, then sign in.", isError = false)
                     switchTab(true)
                 }
                 else -> showBanner(result.error ?: "Registration failed.", isError = true)
@@ -212,7 +207,7 @@ class LoginActivity : AppCompatActivity() {
             }
             conn.outputStream.write(JSONObject().put("email", email).toString().toByteArray())
             conn.responseCode
-            showBanner("✅ Password reset email sent! Check your inbox.", isError = false)
+            showBanner("Password reset email sent. Check your inbox.", isError = false)
         } catch (e: Exception) {
             showBanner("Failed to send reset email.", isError = true)
         }

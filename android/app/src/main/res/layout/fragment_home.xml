@@ -452,7 +452,6 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
                     android:orientation="vertical"
                     android:gravity="center"
                     android:background="@drawable/bg_action_pill"
@@ -471,35 +470,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Work"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <!-- Lab -->
-                <LinearLayout
-                    android:id="@+id/action_sandbox"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:background="@drawable/bg_action_pill"
-                    android:padding="12dp"
-                    android:clickable="true"
-                    android:focusable="true">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⚗️"
-                        android:textSize="20sp"
-                        android:layout_marginBottom="4dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Lab"
                         android:textColor="@color/text_secondary"
                         android:textSize="11sp"
                         android:textStyle="bold" />
@@ -608,23 +578,7 @@
                         android:textColor="@color/text_secondary"
                         android:textSize="12sp" />
 
-                    <!-- Viva Sandbox button -->
-                    <TextView
-                        android:id="@+id/btn_viva_sandbox"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:background="@drawable/bg_action_pill"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="14dp"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:text="⚗️  Open System Lab"
-                        android:textColor="@color/text_secondary"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:clickable="true"
-                        android:focusable="true" />
+
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

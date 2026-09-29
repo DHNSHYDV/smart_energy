@@ -84,13 +84,6 @@ class AutomationsFragment : Fragment() {
             }
         }
 
-        binding.btnApplyShiftHeater.setOnClickListener {
-            repo.applyShiftRecommendation("app_heater", "05:00 AM")
-        }
-
-        binding.btnApplyShiftEv.setOnClickListener {
-            repo.applyShiftRecommendation("app_ev", "23:30 PM")
-        }
 
         binding.btnOpenServerConfig.setOnClickListener {
             ServerConfigDialog().show(parentFragmentManager, "ServerConfigDialog")

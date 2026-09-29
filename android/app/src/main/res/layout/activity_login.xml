@@ -14,72 +14,43 @@
         android:paddingEnd="24dp"
         android:paddingBottom="32dp">
 
-        <!-- ── Logo Section ── -->
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <!-- ── Top Bar ── -->
+        <FrameLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="56dp"
-            android:layout_marginBottom="32dp"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:layout_marginTop="24dp">
 
-            <!-- Glow Ring + Icon -->
-            <FrameLayout
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp">
-
-                <View
-                    android:layout_width="72dp"
-                    android:layout_height="72dp"
-                    android:background="@drawable/bg_icon_glow_blue"
-                    android:alpha="0.6" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="⚡"
-                    android:textSize="32sp" />
-            </FrameLayout>
+            <ImageView
+                android:id="@+id/btn_back"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:padding="10dp"
+                android:layout_gravity="start|center_vertical"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/bg_circle_button"
+                android:contentDescription="Close"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:layout_gravity="center"
                 android:text="Smart Energy"
                 android:textColor="#FFFFFF"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:letterSpacing="-0.02" />
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="Conservation"
-                android:textColor="#3B82F6"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:letterSpacing="-0.02" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:gravity="center"
-                android:text="IoT Energy Management System"
-                android:textColor="#475569"
-                android:textSize="12sp" />
-        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
 
         <!-- ── Auth Card ── -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="24dp"
+            app:cardCornerRadius="16dp"
             app:cardBackgroundColor="#16171F"
             app:cardElevation="0dp"
             app:strokeColor="#252530"
@@ -94,7 +65,7 @@
                 <!-- Tab Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="44dp"
                     android:orientation="horizontal"
                     android:background="@drawable/bg_tab_row"
                     android:padding="4dp"
@@ -148,19 +119,17 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email Address"
+                        android:text="Email"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_email"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="your@email.com"
+                        android:hint="you@example.com"
                         android:inputType="textEmailAddress"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
@@ -174,15 +143,13 @@
                         android:layout_height="wrap_content"
                         android:text="Password"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_password"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="••••••••"
                         android:inputType="textPassword"
@@ -193,7 +160,6 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="8dp" />
 
-                    <!-- Forgot Password Link -->
                     <TextView
                         android:id="@+id/tv_forgot_password"
                         android:layout_width="wrap_content"
@@ -206,11 +172,10 @@
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp" />
 
-                    <!-- Sign In Button -->
                     <TextView
                         android:id="@+id/btn_sign_in"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_btn_primary_selector"
                         android:gravity="center"
                         android:text="Sign In"
@@ -229,23 +194,20 @@
                     android:orientation="vertical"
                     android:visibility="gone">
 
-                    <!-- Full Name -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Full Name"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_name"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="e.g. Rahul Varma"
+                        android:hint="Rahul Varma"
                         android:inputType="textPersonName"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
@@ -254,23 +216,20 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="14dp" />
 
-                    <!-- Door No -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Door / Flat Number"
+                        android:text="Door / Flat No."
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_door_no"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="e.g. Flat 301, Tower A"
+                        android:hint="Flat 301, Tower A"
                         android:inputType="text"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
@@ -279,23 +238,20 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="14dp" />
 
-                    <!-- Address -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Residential Address"
+                        android:text="Address"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_address"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="e.g. Whitefield, Bengaluru - 560048"
+                        android:hint="Whitefield, Bengaluru"
                         android:inputType="text"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
@@ -304,23 +260,20 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="14dp" />
 
-                    <!-- Email -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Email Address"
+                        android:text="Email"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_signup_email"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
-                        android:hint="your@email.com"
+                        android:hint="you@example.com"
                         android:inputType="textEmailAddress"
                         android:paddingStart="16dp"
                         android:paddingEnd="16dp"
@@ -329,21 +282,18 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="14dp" />
 
-                    <!-- Password -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Password (min 6 characters)"
+                        android:text="Password (min 6 chars)"
                         android:textColor="#94A3B8"
-                        android:textSize="11sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.05"
+                        android:textSize="12sp"
                         android:layout_marginBottom="8dp" />
 
                     <EditText
                         android:id="@+id/et_signup_password"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_input_field"
                         android:hint="••••••••"
                         android:inputType="textPassword"
@@ -354,11 +304,10 @@
                         android:textSize="14sp"
                         android:layout_marginBottom="20dp" />
 
-                    <!-- Register Button -->
                     <TextView
                         android:id="@+id/btn_register"
                         android:layout_width="match_parent"
-                        android:layout_height="52dp"
+                        android:layout_height="48dp"
                         android:background="@drawable/bg_btn_primary_selector"
                         android:gravity="center"
                         android:text="Create Account"
@@ -377,46 +326,21 @@
                     android:layout_marginBottom="16dp"
                     android:background="#252530" />
 
-                <!-- 1-Tap Guest / Demo Access Button -->
+                <!-- Demo Access -->
                 <TextView
                     android:id="@+id/btn_guest_demo"
                     android:layout_width="match_parent"
-                    android:layout_height="48dp"
+                    android:layout_height="44dp"
                     android:background="@drawable/bg_action_pill"
                     android:gravity="center"
-                    android:text="⚡ Explore Demo Mode (No Login Required)"
-                    android:textColor="#3B82F6"
+                    android:text="Try Demo"
+                    android:textColor="#475569"
                     android:textSize="13sp"
-                    android:textStyle="bold"
                     android:clickable="true"
                     android:focusable="true" />
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- Supabase badge -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:layout_marginTop="24dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="🔐"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="6dp"
-                android:text="Secured by Supabase Auth"
-                android:textColor="#334155"
-                android:textSize="11sp" />
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

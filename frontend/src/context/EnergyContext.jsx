@@ -191,16 +191,15 @@ export function EnergyProvider({ children }) {
         verifyWithBackend(session);
         setIsAuthModalOpen(false);
       } else {
-        // Logged out
-        setCurrentUser(null);
+        // Logged out: clean up session, fall back to default resident (Dhanush) without forcing modal popup
         localStorage.removeItem('smart_energy_user');
-        setIsAuthModalOpen(true);
-        setAuthModalMode('login');
+        setIsAuthModalOpen(false);
+        fetchUsers();
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [verifyWithBackend]);
+  }, [verifyWithBackend, fetchUsers]);
 
 
   const fetchNetworkInfo = useCallback(async () => {
