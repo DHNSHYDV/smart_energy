@@ -66,7 +66,8 @@ export function AuthModal() {
     setLoading(false);
 
     if (res.success) {
-      setSuccessMsg(`Welcome, ${res.user.name}!`);
+      const displayName = res.user?.name || res.user?.user_metadata?.name || res.user?.email?.split('@')[0] || 'Resident';
+      setSuccessMsg(`Welcome, ${displayName}!`);
       setTimeout(() => {
         setIsAuthModalOpen(false);
       }, 700);

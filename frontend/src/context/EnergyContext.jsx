@@ -355,7 +355,23 @@ export function EnergyProvider({ children }) {
       // onAuthStateChange will call verifyWithBackend and update currentUser automatically
       return { success: true, user: data.user };
     } catch (e) {
-      return { success: false, message: e.message };
+      // Fallback: authenticate against local SQLite backend if Supabase fails or user is a local resident
+      try {
+        const localRes = await fetch(`${backendUrl}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const localData = await localRes.json();
+        if (localData.success && localData.user) {
+          setCurrentUser(localData.user);
+          localStorage.setItem('smart_energy_user', JSON.stringify(localData.user));
+          return { success: true, user: localData.user };
+        }
+      } catch (localErr) {
+        console.warn('[Auth] Local login fallback error:', localErr.message);
+      }
+      return { success: false, message: e.message || 'Login failed. Please check credentials.' };
     }
   };
 
