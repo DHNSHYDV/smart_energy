@@ -14,7 +14,8 @@ class PreferencesManager(context: Context) {
         private const val KEY_SUPABASE_ACCESS_TOKEN = "supabase_access_token"
         private const val KEY_SUPABASE_REFRESH_TOKEN = "supabase_refresh_token"
         private const val KEY_SUPABASE_USER_EMAIL = "supabase_user_email"
-        const val DEFAULT_RAILWAY_URL = "https://web-production-29e8e.up.railway.app"
+        const val DEFAULT_RENDER_URL = "https://smart-energy-nrsa.onrender.com"
+        const val DEFAULT_RAILWAY_URL = DEFAULT_RENDER_URL
         const val DEFAULT_LOCAL_URL = "http://192.168.1.42:5000"
 
         @Volatile
@@ -29,7 +30,11 @@ class PreferencesManager(context: Context) {
 
     var serverUrl: String
         get() {
-            val raw = prefs.getString(KEY_SERVER_URL, DEFAULT_RAILWAY_URL) ?: DEFAULT_RAILWAY_URL
+            val raw = prefs.getString(KEY_SERVER_URL, null)
+            if (raw == null || raw.contains("railway.app")) {
+                prefs.edit().putString(KEY_SERVER_URL, DEFAULT_RENDER_URL).apply()
+                return DEFAULT_RENDER_URL
+            }
             return normalizeUrl(raw)
         }
         set(value) {
@@ -76,7 +81,7 @@ class PreferencesManager(context: Context) {
 
     fun normalizeUrl(raw: String): String {
         var clean = raw.trim()
-        if (clean.isEmpty()) return DEFAULT_RAILWAY_URL
+        if (clean.isEmpty()) return DEFAULT_RENDER_URL
 
         while (clean.endsWith("/")) {
             clean = clean.substring(0, clean.length - 1)
@@ -86,7 +91,7 @@ class PreferencesManager(context: Context) {
             return clean
         }
 
-        return if (clean.contains(".railway.app") || clean.contains(".up.railway.app") || clean.contains(".com") || clean.contains(".app") || clean.contains(".org")) {
+        return if (clean.contains(".onrender.com") || clean.contains(".railway.app") || clean.contains(".up.railway.app") || clean.contains(".com") || clean.contains(".app") || clean.contains(".org")) {
             "https://$clean"
         } else {
             if (!clean.contains(":")) {
