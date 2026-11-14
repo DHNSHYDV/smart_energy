@@ -82,7 +82,7 @@ class HomeFragment : Fragment() {
             val ctx = context
             if (ctx != null) {
                 val residentLabels = arrayOf(
-                    "👤 Dhanush Yadav (Flat 402, Block B · ~148 kWh/mo)",
+                    "👤 Dhanush (Flat 402, Block B · ~148 kWh/mo)",
                     "👤 Priya Sharma (Villa 12, Whitefield · ~76 kWh/mo)",
                     "🔑 Sign In / Register New Account"
                 )

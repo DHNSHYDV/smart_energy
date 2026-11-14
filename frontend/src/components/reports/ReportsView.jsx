@@ -231,7 +231,7 @@ export function ReportsView() {
           <div>
             <div className="h-12 border-b border-neutral-400"></div>
             <p className="mt-2 font-bold text-neutral-900">Project Candidate</p>
-            <p className="text-[11px] text-neutral-500">Dhanush Yadav (USN: 1NH22CS...)</p>
+            <p className="text-[11px] text-neutral-500">Dhanush</p>
           </div>
           <div>
             <div className="h-12 border-b border-neutral-400"></div>

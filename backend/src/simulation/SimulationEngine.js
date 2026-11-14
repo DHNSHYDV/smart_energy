@@ -353,7 +353,7 @@ export class SimulationEngine extends EventEmitter {
       timestamp: new Date().toISOString(),
       resident: {
         userId: this.activeUserId,
-        name: this.activeUser?.name || 'Dhanush Yadav',
+        name: this.activeUser?.name || 'Dhanush',
         doorNo: this.activeUser?.door_no || 'Flat 402, Block B',
         consumerId: this.activeUser?.consumer_id || 'BESCOM-BLR-D402-A81'
       },
@@ -443,7 +443,7 @@ export class SimulationEngine extends EventEmitter {
     return {
       resident: {
         userId: this.activeUserId,
-        name: this.activeUser?.name || 'Dhanush Yadav',
+        name: this.activeUser?.name || 'Dhanush',
         doorNo: this.activeUser?.door_no || 'Flat 402, Block B',
         consumerId: this.activeUser?.consumer_id || 'BESCOM-BLR-D402-A81'
       },

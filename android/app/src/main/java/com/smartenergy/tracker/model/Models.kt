@@ -19,7 +19,7 @@ data class MonthlyUsage(
 
 data class ResidentInfo(
     @SerializedName("userId") val userId: String? = "usr_dhanush",
-    @SerializedName("name") val name: String? = "Dhanush Yadav",
+    @SerializedName("name") val name: String? = "Dhanush",
     @SerializedName("doorNo") val doorNo: String? = "Flat 402, Block B",
     @SerializedName("consumerId") val consumerId: String? = "BESCOM-BLR-D402-A81"
 )

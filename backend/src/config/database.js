@@ -194,7 +194,7 @@ export function initDatabase() {
     'ota_version_code': '3',
     'ota_min_version_code': '1',
     'ota_title': 'GridSense v2.1.0 Update Available',
-    'ota_release_notes': '• Multi-tenant resident switching (Dhanush Yadav & Priya Sharma)\n• User-specific diurnal energy curves & billing breakdown\n• Real-time sub-metering telemetry sync\n• In-app Over-The-Air (OTA) auto-updating',
+    'ota_release_notes': '• Multi-tenant resident switching (Dhanush & Priya Sharma)\n• User-specific diurnal energy curves & billing breakdown\n• Real-time sub-metering telemetry sync\n• In-app Over-The-Air (OTA) auto-updating',
     'ota_apk_url': '/download/apk',
     'ota_file_size': '8.1 MB',
     'ota_is_mandatory': '0'
@@ -369,10 +369,10 @@ export function seedDefaultUsers() {
   const priyaHash = hashPassword('password123', priyaSalt);
 
   const seedTx = db.transaction(() => {
-    // 1. Dhanush Yadav (High Urban Domestic Load: 148.2 kWh baseline, 11.45 kWh today)
+    // 1. Dhanush (High Urban Domestic Load: 148.2 kWh baseline, 11.45 kWh today)
     upsertUser.run(
       'usr_dhanush',
-      'Dhanush Yadav',
+      'Dhanush',
       'Flat 402, Block B',
       'Green Glen Layout, Bellandur, Bengaluru - 560103',
       'BESCOM-BLR-D402-A81',
@@ -431,6 +431,6 @@ export function seedDefaultUsers() {
   });
 
   seedTx();
-  console.log('[Database] Seeded distinct user profiles & usages for Dhanush Yadav and Priya Sharma.');
+  console.log('[Database] Seeded distinct user profiles & usages for Dhanush and Priya Sharma.');
   seedHistoricalAnalytics();
 }

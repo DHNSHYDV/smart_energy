@@ -309,10 +309,10 @@ export function AuthModal() {
                     className="p-3 rounded-2xl bg-neutral-800/60 hover:bg-neutral-800 border border-neutral-700/60 text-left transition-colors cursor-pointer flex items-center gap-2.5"
                   >
                     <div className="w-8 h-8 rounded-full bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center shrink-0">
-                      DY
+                      D
                     </div>
                     <div className="overflow-hidden">
-                      <p className="text-xs font-bold text-white truncate">Dhanush Yadav</p>
+                      <p className="text-xs font-bold text-white truncate">Dhanush</p>
                       <p className="text-[10px] text-neutral-400 truncate">Flat 402, Block B</p>
                     </div>
                   </button>
